@@ -1,0 +1,86 @@
+@model List<Proyecto.Models.Ticket>
+
+<div class="table-responsive shadow-sm rounded-3">
+    <table class="table table-hover table-striped align-middle mb-0 bg-white">
+
+        <thead class="table-dark text-uppercase">
+            <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Descripción</th>
+                <th class="text-center">Estado</th>
+                <th class="text-center">Prioridad</th>
+                <th>Fecha de creación</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="6" class="text-center py-4 text-muted">
+                        No hay tickets registrados.
+                    </td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var ticket in Model)
+                {
+                    var statusClass = ticket.Status?.ToLower() switch
+                    {
+                        "open" or "abierto" => "bg-success",
+                        "in progress" or "en progreso" => "bg-warning text-dark",
+                        "closed" or "cerrado" or "done" => "bg-secondary",
+                        "blocked" or "bloqueado" => "bg-danger",
+                        _ => "bg-light text-dark border"
+                    };
+
+                    var priorityClass = ticket.Priority?.ToLower() switch
+                    {
+                        "high" or "alta" => "bg-danger",
+                        "medium" or "media" => "bg-warning text-dark",
+                        "low" or "baja" => "bg-info text-dark",
+                        _ => "bg-light text-dark border"
+                    };
+
+                    <tr onclick="window.location.href='/Ticket/Detail?id=@ticket.Id'"
+                        style="cursor:pointer">
+
+                        <td class="fw-bold">
+                            @ticket.Id
+                        </td>
+
+                        <td>
+                            @ticket.Title
+                        </td>
+
+                        <td>
+                            @(ticket.Description ?? "Sin descripción")
+                        </td>
+
+                        <td class="text-center">
+                            <span class="badge @statusClass">
+                                @ticket.Status
+                            </span>
+                        </td>
+
+                        <td class="text-center">
+                            <span class="badge @priorityClass">
+                                @ticket.Priority
+                            </span>
+                        </td>
+
+                        <td>
+                            @ticket.CreatedAt.ToString("dd/MM/yyyy")
+                        </td>
+
+                    </tr>
+                }
+            }
+
+        </tbody>
+
+    </table>
+</div>
