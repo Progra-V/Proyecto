@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Proyecto.Models;
 using System.Diagnostics;
-using Proyecto.Models;
 
 namespace Proyecto.Controllers
 {
