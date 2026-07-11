@@ -15,17 +15,20 @@ namespace Proyecto.Models
         [Column("nombre")]
         public string Nombre { get; set; } = string.Empty;
 
+        [Column("apellido")]
+        public string Apellido { get; set; } = string.Empty;
+
         [Column("email")]
         public string Email { get; set; } = string.Empty;
 
         [Column("foto_url")]
         public string? FotoUrl { get; set; }
 
-        [Column("rol_id")]
-        public int RolId { get; set; }
+        [Column("rol")]
+        public int Rol { get; set; }
 
-        [Column("bloqueado")]
-        public bool Bloqueado { get; set; }
+        [Column("activo")]
+        public bool Activo { get; set; }
 
         [Column("fecha_creacion")]
         public DateTime FechaCreacion { get; set; }

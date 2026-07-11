@@ -13,9 +13,17 @@ namespace Proyecto.Controllers
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
                 return RedirectToAction("Index", "Login");
 
-            ViewData["CustomNavMenu"] = NavigationService.GetMenuPages(2);
+            var userJson = HttpContext.Session.GetString("user");
 
-            var tickets = await TicketService.getAll();
+            if (string.IsNullOrEmpty(userJson))
+                return RedirectToAction("Index", "Login");
+
+            Proyecto.Models.User currentUser =
+                JsonConvert.DeserializeObject<Proyecto.Models.User>(userJson);
+
+            ViewData["CustomNavMenu"] = NavigationService.GetMenuPages(currentUser.Rol);
+
+            var tickets = await TicketService.GetAll();
 
             return View(tickets);
         }
@@ -29,7 +37,7 @@ namespace Proyecto.Controllers
             Session? session = JsonConvert.DeserializeObject<Session>(
                 HttpContext.Session.GetString("session"));
 
-            Ticket? detail = await TicketService.getTicketById(id);
+            Ticket? detail = await TicketService.GetByTicketId(id);
 
             if (detail == null)
                 return NotFound();
@@ -57,7 +65,7 @@ namespace Proyecto.Controllers
                 CreatedAt = DateTime.Now
             };
 
-            await TicketService.postComment(comment);
+            await TicketService.CreateComment(comment);
 
             return Redirect("Detail?id=" + ticketId);
         }
@@ -68,7 +76,7 @@ namespace Proyecto.Controllers
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
                 return RedirectToAction("Index", "Login");
 
-            await TicketService.deleteComment(commentId);
+            await TicketService.DeleteComment(commentId);
 
             return Redirect("Detail?id=" + ticketId);
         }

@@ -99,15 +99,14 @@ namespace Proyecto.Controllers
             if (!IsAdmin())
                 return RedirectToAction("Index", "Ticket");
 
-
             var user = await UserService.GetById(id);
 
             if (user == null)
                 return NotFound();
 
-            await UserService.Edit(user);
+            await UserService.ChangeStatus(user);
 
             return RedirectToAction("Index");
         }
     }
-}
+    }

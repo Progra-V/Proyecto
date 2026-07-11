@@ -9,19 +9,20 @@ namespace Proyecto.Services
             if (userRole == 1)
             {
                 return new List<NavigationPages>
-                {
-                    new NavigationPages { Title="Tickets", Controller="Ticket", Action="Index"},
-                    new NavigationPages { Title="Logout", Controller="Login", Action="Logout"}
-                };
+        {
+            new NavigationPages { Title="Tickets", Controller="Ticket", Action="Index"},
+            new NavigationPages { Title="Usuarios", Controller="User", Action="Index"},
+            new NavigationPages { Title="Logout", Controller="Login", Action="Logout"}
+        };
             }
 
-            if (userRole == 2)
+            if (userRole == 2 || userRole == 3)
             {
                 return new List<NavigationPages>
-                {
-                    new NavigationPages { Title="Tickets", Controller="Ticket", Action="Index"},
-                    new NavigationPages { Title="Logout", Controller="Login", Action="Logout"}
-                };
+        {
+            new NavigationPages { Title="Tickets", Controller="Ticket", Action="Index"},
+            new NavigationPages { Title="Logout", Controller="Login", Action="Logout"}
+        };
             }
 
             return new List<NavigationPages>();

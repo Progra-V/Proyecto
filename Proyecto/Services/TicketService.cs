@@ -6,7 +6,7 @@ namespace Proyecto.Services
 {
     public static class TicketService
     {
-        public static async Task<List<Ticket>> getAll()
+        public static async Task<List<Ticket>> GetAll()
         {
             Client client = SupabClient.getSupabaseClient();
 
@@ -16,7 +16,7 @@ namespace Proyecto.Services
             return result.Models;
         }
 
-        public static async Task<Ticket> getTicketById(int id)
+        public static async Task<Ticket> GetByTicketId(int id)
         {
             Client client = SupabClient.getSupabaseClient();
 
@@ -31,7 +31,7 @@ namespace Proyecto.Services
             return result.Model;
         }
 
-        public static async Task postComment(Comment comment)
+        public static async Task CreateComment(Comment comment)
         {
             Client client = SupabClient.getSupabaseClient();
 
@@ -40,7 +40,7 @@ namespace Proyecto.Services
             await client.From<Comment>().Insert(comment);
         }
 
-        public static async Task deleteComment(int commentId)
+        public static async Task DeleteComment(int commentId)
         {
             Client client = SupabClient.getSupabaseClient();
 

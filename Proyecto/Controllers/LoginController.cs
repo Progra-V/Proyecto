@@ -42,9 +42,9 @@ namespace Proyecto.Controllers
                     return View("Index", user);
                 }
 
-                if (testUser.Bloqueado)
+                if (!testUser.Activo)
                 {
-                    ViewBag.LoginMessage = "El usuario se encuentra bloqueado.";
+                    ViewBag.LoginMessage = "El usuario no se encuentra activo.";
                     return View("Index", user);
                 }
 
@@ -53,6 +53,10 @@ namespace Proyecto.Controllers
                     "session",
                     JsonConvert.SerializeObject(session)
                 );
+                HttpContext.Session.SetString(
+    "user",
+    JsonConvert.SerializeObject(testUser)
+);
 
                 return RedirectToAction("Index", "Ticket");
             }
