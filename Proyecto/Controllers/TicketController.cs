@@ -28,7 +28,6 @@ namespace Proyecto.Controllers
             return View(tickets);
         }
 
-
         public async Task<IActionResult> Detail(int id)
         {
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
@@ -46,7 +45,6 @@ namespace Proyecto.Controllers
 
             return View(detail);
         }
-
 
         [HttpPost]
         public async Task<IActionResult> PostComment(string ticketId, string commentText)
@@ -70,7 +68,6 @@ namespace Proyecto.Controllers
             return Redirect("Detail?id=" + ticketId);
         }
 
-
         public async Task<IActionResult> DeleteComment(string ticketId, int commentId)
         {
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
@@ -79,6 +76,17 @@ namespace Proyecto.Controllers
             await TicketService.DeleteComment(commentId);
 
             return Redirect("Detail?id=" + ticketId);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangeStatus(int ticketId, string newStatus)
+        {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
+                return RedirectToAction("Index", "Login");
+
+            await TicketService.UpdateStatus(ticketId, newStatus);
+
+            return RedirectToAction("Detail", new { id = ticketId });
         }
     }
 }

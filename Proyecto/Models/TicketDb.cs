@@ -1,11 +1,10 @@
 ﻿using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
-using System.Text.Json.Serialization;
 
 namespace Proyecto.Models
 {
     [Table("tickets")]
-    public class Ticket : BaseModel
+    public class TicketDb : BaseModel
     {
         [PrimaryKey("id", false)]
         public long Id { get; set; }
@@ -32,37 +31,12 @@ namespace Proyecto.Models
         public string? AssignedTo { get; set; }
 
         [Column("created_at")]
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; }
 
         [Column("updated_at")]
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; }
 
         [Column("due_date")]
         public DateTime? DueDate { get; set; }
-
-        [JsonIgnore]
-        public List<Comment>? Comments { get; set; }
-
-        [JsonIgnore]
-        public string? ActiveSessionUserId { get; set; }
-    }
-
-    [Table("comments")]
-    public class Comment : BaseModel
-    {
-        [PrimaryKey("id", false)]
-        public long Id { get; set; }
-
-        [Column("ticket_id")]
-        public long TicketId { get; set; }
-
-        [Column("comment_text")]
-        public string? CommentText { get; set; }
-
-        [Column("created_by")]
-        public string? CreatedBy { get; set; }
-
-        [Column("created_at")]
-        public DateTime CreatedAt { get; set; }
     }
 }
