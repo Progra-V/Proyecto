@@ -1,0 +1,14 @@
+﻿@using Proyecto.Services
+
+@{
+    var navList = ViewData["CustomNavMenu"] as List<NavigationPages> ?? new List<NavigationPages>();
+}
+
+<ul class="navbar-nav flex-grow-1">
+    @foreach (var @item in navList)
+    {
+        <li class ="nav-item">
+            <a class="nav-link text-dark" asp-area="" asp-controller="@item.Controller" asp-action="@item.Action">@item.Title</a>
+        </li>
+    }
+</ul>

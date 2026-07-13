@@ -1,0 +1,55 @@
+﻿@model UserModel
+
+@{
+    ViewData["Title"] = "Login Page";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+
+        <div class="card mx-auto" style="width:18rem">
+
+            <div class="card-header">
+                Login
+            </div>
+
+            <form asp-action="ValidateLogin" asp-controller="Login" method="post">
+
+                <partial name="_LoginMessage" model="ViewBag.LoginMessage" />
+
+                <div class="card-body">
+
+                    <div class="form-floating mb-3">
+                        <input name="Email"
+                               type="email"
+                               class="form-control"
+                               id="floatingInput">
+                        <label for="floatingInput">
+                            Email
+                        </label>
+                    </div>
+
+                    <div class="form-floating">
+                        <input name="Pwd"
+                               type="password"
+                               class="form-control"
+                               id="floatingPassword">
+                        <label for="floatingPassword">
+                            Password
+                        </label>
+                    </div>
+
+                </div>
+
+                <div class="card-footer">
+                    <button class="btn btn-primary w-100" type="submit">
+                        Login
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+</div>
