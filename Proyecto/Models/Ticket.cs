@@ -21,6 +21,11 @@ namespace Proyecto.Models
         [Column("priority")]
         public string Priority { get; set; } = "Media";
 
+        [Column("department_id")]
+        public int? DepartmentId { get; set; }
+
+        public string? DepartmentName { get; set; }
+
         [Column("ticket_type")]
         public string TicketType { get; set; } = "Task";
 

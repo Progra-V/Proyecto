@@ -11,11 +11,33 @@ namespace Proyecto.Services
 
             await client.InitializeAsync();
 
-            var result = await client
+            var tickets = (await client
                 .From<Ticket>()
-                .Get();
+                .Get()).Models;
 
-            return result.Models;
+
+            var departments = (await client
+                .From<Department>()
+                .Get()).Models;
+
+
+            foreach (var ticket in tickets)
+            {
+                if (ticket.DepartmentId.HasValue)
+                {
+                    var department = departments
+                        .FirstOrDefault(x => x.Id == ticket.DepartmentId.Value);
+
+                    ticket.DepartmentName = department?.Nombre ?? "No encontrado";
+                }
+                else
+                {
+                    ticket.DepartmentName = "Sin departamento";
+                }
+            }
+
+
+            return tickets;
         }
 
 
