@@ -36,14 +36,24 @@ namespace Proyecto.Controllers
             Session? session = JsonConvert.DeserializeObject<Session>(
                 HttpContext.Session.GetString("session"));
 
-            Ticket? detail = await TicketService.GetByTicketId(id);
+            Ticket? ticket = await TicketService.GetByTicketId(id);
 
-            if (detail == null)
+            if (ticket == null)
                 return NotFound();
 
-            detail.ActiveSessionUserId = session.User.Id;
 
-            return View(detail);
+            List<Comment> comments = await CommentService.GetByTicketId(id);
+
+
+            TicketViewModels model = new TicketViewModels
+            {
+                Ticket = ticket,
+                Comments = comments,
+                ActiveSessionUserId = session.User.Id
+            };
+
+
+            return View(model);
         }
 
         [HttpPost]
@@ -63,7 +73,7 @@ namespace Proyecto.Controllers
                 CreatedAt = DateTime.Now
             };
 
-            await TicketService.CreateComment(comment);
+            await CommentService.Create(comment);
 
             return Redirect("Detail?id=" + ticketId);
         }
@@ -73,7 +83,7 @@ namespace Proyecto.Controllers
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
                 return RedirectToAction("Index", "Login");
 
-            await TicketService.DeleteComment(commentId);
+            await CommentService.Delete(commentId);
 
             return Redirect("Detail?id=" + ticketId);
         }

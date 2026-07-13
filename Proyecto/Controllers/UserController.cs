@@ -107,6 +107,10 @@ namespace Proyecto.Controllers
             if (user == null)
                 return NotFound();
 
+            // Evitar desactivar administradores
+            if (user.Rol == 1)
+                return RedirectToAction("Index");
+
             await UserService.ChangeStatus(user);
 
             return RedirectToAction("Index");

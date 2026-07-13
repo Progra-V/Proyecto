@@ -12,6 +12,7 @@ namespace Proyecto.Services
         {
             new NavigationPages { Title="Tickets", Controller="Ticket", Action="Index"},
             new NavigationPages { Title="Usuarios", Controller="User", Action="Index"},
+            new NavigationPages { Title="Departamentos", Controller="Department", Action="Index"},
             new NavigationPages { Title="Logout", Controller="Login", Action="Logout"}
         };
             }
