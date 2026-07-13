@@ -55,11 +55,14 @@ namespace Proyecto.Controllers
             if (!ModelState.IsValid)
                 return View(user);
 
+            user.SupabaseUserId = Guid.NewGuid();
+            user.FechaCreacion = DateTime.UtcNow;
+            user.Activo = true;
+
             await UserService.Create(user);
 
             return RedirectToAction("Index");
         }
-
 
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
