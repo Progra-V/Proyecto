@@ -55,11 +55,14 @@ namespace Proyecto.Controllers
             if (!ModelState.IsValid)
                 return View(user);
 
+            user.SupabaseUserId = Guid.NewGuid();
+            user.FechaCreacion = DateTime.UtcNow;
+            user.Activo = true;
+
             await UserService.Create(user);
 
             return RedirectToAction("Index");
         }
-
 
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
@@ -103,6 +106,10 @@ namespace Proyecto.Controllers
 
             if (user == null)
                 return NotFound();
+
+            // Evitar desactivar administradores
+            if (user.Rol == 1)
+                return RedirectToAction("Index");
 
             await UserService.ChangeStatus(user);
 

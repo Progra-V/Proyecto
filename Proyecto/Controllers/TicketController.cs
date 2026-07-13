@@ -28,7 +28,6 @@ namespace Proyecto.Controllers
             return View(tickets);
         }
 
-
         public async Task<IActionResult> Detail(int id)
         {
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
@@ -37,16 +36,25 @@ namespace Proyecto.Controllers
             Session? session = JsonConvert.DeserializeObject<Session>(
                 HttpContext.Session.GetString("session"));
 
-            Ticket? detail = await TicketService.GetByTicketId(id);
+            Ticket? ticket = await TicketService.GetByTicketId(id);
 
-            if (detail == null)
+            if (ticket == null)
                 return NotFound();
 
-            detail.ActiveSessionUserId = session.User.Id;
 
-            return View(detail);
+            List<Comment> comments = await CommentService.GetByTicketId(id);
+
+
+            TicketViewModels model = new TicketViewModels
+            {
+                Ticket = ticket,
+                Comments = comments,
+                ActiveSessionUserId = session.User.Id
+            };
+
+
+            return View(model);
         }
-
 
         [HttpPost]
         public async Task<IActionResult> PostComment(string ticketId, string commentText)
@@ -65,20 +73,30 @@ namespace Proyecto.Controllers
                 CreatedAt = DateTime.Now
             };
 
-            await TicketService.CreateComment(comment);
+            await CommentService.Create(comment);
 
             return Redirect("Detail?id=" + ticketId);
         }
-
 
         public async Task<IActionResult> DeleteComment(string ticketId, int commentId)
         {
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
                 return RedirectToAction("Index", "Login");
 
-            await TicketService.DeleteComment(commentId);
+            await CommentService.Delete(commentId);
 
             return Redirect("Detail?id=" + ticketId);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangeStatus(int ticketId, string newStatus)
+        {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
+                return RedirectToAction("Index", "Login");
+
+            await TicketService.UpdateStatus(ticketId, newStatus);
+
+            return RedirectToAction("Detail", new { id = ticketId });
         }
     }
 }
