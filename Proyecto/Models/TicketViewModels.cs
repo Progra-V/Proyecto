@@ -19,5 +19,7 @@ namespace Proyecto.Models
         public List<Comment> Comments { get; set; } = new();
 
         public string? ActiveSessionUserId { get; set; }
+
+        public string? DepartmentName { get; set; }
     }
 }

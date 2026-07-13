@@ -33,28 +33,52 @@ namespace Proyecto.Controllers
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
                 return RedirectToAction("Index", "Login");
 
+
             Session? session = JsonConvert.DeserializeObject<Session>(
                 HttpContext.Session.GetString("session"));
 
+
+            if (session?.User == null)
+                return RedirectToAction("Index", "Login");
+
+
             Ticket? ticket = await TicketService.GetByTicketId(id);
+
 
             if (ticket == null)
                 return NotFound();
 
 
+
             List<Comment> comments = await CommentService.GetByTicketId(id);
+
+
+
+            string departmentName = "Sin departamento";
+
+            if (ticket.DepartmentId.HasValue)
+            {
+                var department = await DepartmentService.GetById(
+                    ticket.DepartmentId.Value
+                );
+
+                departmentName = department?.Nombre ?? "Departamento no encontrado";
+            }
+
 
 
             TicketViewModels model = new TicketViewModels
             {
                 Ticket = ticket,
                 Comments = comments,
-                ActiveSessionUserId = session.User.Id
+                ActiveSessionUserId = session.User.Id,
+                DepartmentName = departmentName
             };
 
 
             return View(model);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> PostComment(string ticketId, string commentText)
