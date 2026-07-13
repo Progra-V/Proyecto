@@ -24,6 +24,9 @@ namespace Proyecto.Models
         [Column("ticket_type")]
         public string TicketType { get; set; } = "Task";
 
+        [Column("departamento_id")]
+        public int? DepartamentoId { get; set; }
+
         [Column("created_by")]
         public string? CreatedBy { get; set; }
 

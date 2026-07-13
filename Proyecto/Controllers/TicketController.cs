@@ -18,12 +18,22 @@ namespace Proyecto.Controllers
             if (string.IsNullOrEmpty(userJson))
                 return RedirectToAction("Index", "Login");
 
-            Proyecto.Models.User currentUser =
+            Proyecto.Models.User? currentUser =
                 JsonConvert.DeserializeObject<Proyecto.Models.User>(userJson);
+
+            if (currentUser == null)
+                return RedirectToAction("Index", "Login");
 
             ViewData["CustomNavMenu"] = NavigationService.GetMenuPages(currentUser.Rol);
 
             var tickets = await TicketService.GetAll();
+
+            var departments = await DepartmentService.GetAll();
+
+            ViewBag.Departments = departments.ToDictionary(
+                x => x.Id,
+                x => x.Nombre
+            );
 
             return View(tickets);
         }
@@ -37,10 +47,27 @@ namespace Proyecto.Controllers
             Session? session = JsonConvert.DeserializeObject<Session>(
                 HttpContext.Session.GetString("session"));
 
+            if (session?.User == null)
+                return RedirectToAction("Index", "Login");
+
             Ticket? detail = await TicketService.GetByTicketId(id);
 
             if (detail == null)
                 return NotFound();
+
+            if (detail.DepartamentoId.HasValue)
+            {
+                var department = await DepartmentService.GetById(
+                    detail.DepartamentoId.Value
+                );
+
+                ViewBag.DepartmentName =
+                    department?.Nombre ?? "Departamento no encontrado";
+            }
+            else
+            {
+                ViewBag.DepartmentName = "Sin departamento";
+            }
 
             detail.ActiveSessionUserId = session.User.Id;
 
@@ -56,6 +83,9 @@ namespace Proyecto.Controllers
 
             Session? session = JsonConvert.DeserializeObject<Session>(
                 HttpContext.Session.GetString("session"));
+
+            if (session?.User == null)
+                return RedirectToAction("Index", "Login");
 
             Comment comment = new Comment
             {

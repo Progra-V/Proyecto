@@ -60,28 +60,41 @@
 
             <div class="row g-4">
 
-                <div class="col-md-3">
+                <div class="col-md">
+                    <span class="text-muted small text-uppercase fw-semibold">
+                        Department
+                    </span>
+
+                    <p class="mb-0">
+                        @ViewBag.DepartmentName
+                    </p>
+                </div>
+
+                <div class="col-md">
                     <span class="text-muted small text-uppercase fw-semibold">
                         Created By
                     </span>
+
                     <p class="mb-0">
                         @(Model.CreatedBy ?? "System")
                     </p>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md">
                     <span class="text-muted small text-uppercase fw-semibold">
                         Assigned To
                     </span>
+
                     <p class="mb-0">
                         @(Model.AssignedTo ?? "Unassigned")
                     </p>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md">
                     <span class="text-muted small text-uppercase fw-semibold">
                         Due Date
                     </span>
+
                     <p class="mb-0">
                         @(Model.DueDate.HasValue
                             ? Model.DueDate.Value.ToString("dd MMM yyyy")
@@ -89,10 +102,11 @@
                     </p>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md">
                     <span class="text-muted small text-uppercase fw-semibold">
                         Updated
                     </span>
+
                     <p class="mb-0">
                         @Model.UpdatedAt.ToString("dd/MM/yyyy HH:mm")
                     </p>
