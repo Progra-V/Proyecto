@@ -6,12 +6,19 @@ namespace Proyecto.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        public IActionResult Ticket()
         {
             return View();
         }
 
         public IActionResult Privacy()
+        {
+            ViewData["Titulo"] = "Mi proyecto MVC";
+            ViewData["Año"] = 2026;
+            return View();
+        }
+
+        public IActionResult Settings()
         {
             return View();
         }
