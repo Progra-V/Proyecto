@@ -20,6 +20,7 @@ namespace Proyecto.Services
         }
 
 
+
         public static async Task<Department?> GetById(int id)
         {
             Client client = SupabClient.getSupabaseClient();
@@ -34,8 +35,7 @@ namespace Proyecto.Services
             return result.Model;
         }
 
-
-        public static async Task<Department?> GetByName(string nombre)
+        public static async Task<Department?> GetByCode(string code)
         {
             try
             {
@@ -45,7 +45,7 @@ namespace Proyecto.Services
 
                 var result = await client
                     .From<Department>()
-                    .Where(x => x.Nombre == nombre)
+                    .Where(x => x.Code == code)
                     .Single();
 
                 return result;
@@ -55,6 +55,29 @@ namespace Proyecto.Services
                 return null;
             }
         }
+
+
+        public static async Task<Department?> GetByName(string name)
+        {
+            try
+            {
+                Client client = SupabClient.getSupabaseClient();
+
+                await client.InitializeAsync();
+
+                var result = await client
+                    .From<Department>()
+                    .Where(x => x.Name == name)
+                    .Single();
+
+                return result;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
 
 
         public static async Task Create(Department department)
@@ -69,6 +92,7 @@ namespace Proyecto.Services
         }
 
 
+
         public static async Task Edit(Department department)
         {
             Client client = SupabClient.getSupabaseClient();
@@ -81,9 +105,10 @@ namespace Proyecto.Services
         }
 
 
+
         public static async Task ChangeStatus(Department department)
         {
-            department.Activo = !department.Activo;
+            department.IsActive = !department.IsActive;
 
             await Edit(department);
         }

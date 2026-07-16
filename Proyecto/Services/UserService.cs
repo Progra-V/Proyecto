@@ -83,7 +83,7 @@ namespace Proyecto.Services
 
         public static async Task ChangeStatus(User user)
         {
-            user.Activo = !user.Activo;
+            user.IsActive = !user.IsActive;
 
             await Edit(user);
         }

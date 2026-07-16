@@ -13,19 +13,26 @@ namespace Proyecto.Controllers
             return View();
         }
 
+
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
+
             return RedirectToAction("Index");
         }
+
 
         [HttpPost]
         public async Task<IActionResult> ValidateLogin(UserModel user)
         {
             try
             {
-                // Validar credenciales con Supabase Authentication
-                var session = await SupabaseAuthentication.SignIn(user.Email, user.Pwd);
+                // Login mediante Supabase Authentication
+                var session = await SupabaseAuthentication.SignIn(
+                    user.Email,
+                    user.Pwd
+                );
+
 
                 if (session == null)
                 {
@@ -33,36 +40,49 @@ namespace Proyecto.Controllers
                     return View("Index", user);
                 }
 
-                // Validar información adicional del usuario en la tabla Usuarios
-                var testUser = await UserService.GetByEmail(user.Email);
 
-                if (testUser == null)
+                // Buscar usuario dentro de la tabla users
+                var currentUser = await UserService.GetByEmail(user.Email);
+
+
+                if (currentUser == null)
                 {
-                    ViewBag.LoginMessage = "Usuario no encontrado.";
+                    ViewBag.LoginMessage = "Usuario no registrado en el sistema.";
                     return View("Index", user);
                 }
 
-                if (!testUser.Activo)
+
+                if (!currentUser.IsActive)
                 {
-                    ViewBag.LoginMessage = "El usuario no se encuentra activo.";
+                    ViewBag.LoginMessage = "El usuario se encuentra desactivado.";
                     return View("Index", user);
                 }
 
-                // Guardar sesión del usuario autenticado
+
+                // Guardar sesión de Supabase (autenticación)
                 HttpContext.Session.SetString(
                     "session",
                     JsonConvert.SerializeObject(session)
                 );
-                HttpContext.Session.SetString(
-    "user",
-    JsonConvert.SerializeObject(testUser)
-);
 
-                return RedirectToAction("Index", "Ticket");
+
+                // Guardar usuario interno de la aplicación
+                HttpContext.Session.SetString(
+                    "user",
+                    JsonConvert.SerializeObject(currentUser)
+                );
+
+
+                return RedirectToAction(
+                    "Index",
+                    "Ticket"
+                );
             }
             catch
             {
-                ViewBag.LoginMessage = "No fue posible comunicarse con el servidor.";
+                ViewBag.LoginMessage =
+                    "No fue posible comunicarse con el servidor.";
+
                 return View("Index", user);
             }
         }

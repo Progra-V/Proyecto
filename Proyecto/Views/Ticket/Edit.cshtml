@@ -1,0 +1,82 @@
+@model TicketViewModels
+
+@{
+    ViewData["Title"] = "Editar Ticket";
+}
+
+<a asp-action="Detail" asp-route-id="@Model.Ticket.Id" class="btn btn-outline-secondary btn-sm mb-3">
+    Volver al detalle
+</a>
+
+<div class="container" style="max-width:700px;">
+
+    <h1 class="h3 mb-4">Editar @Model.Ticket.TicketCode</h1>
+
+    <form asp-action="UpdateTicket" method="post">
+        <input type="hidden" name="ticketId" value="@Model.Ticket.Id" />
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Estado</label>
+            <select name="status" class="form-select">
+                @foreach (var s in new[] { "Pending", "In Review", "In Progress", "Cancelled", "Finished" })
+                {
+                    <option value="@s" selected="@(Model.Ticket.Status == s)">@s</option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Prioridad</label>
+            <select name="priority" class="form-select">
+                @foreach (var p in new[] { "Low", "Medium", "High" })
+                {
+                    <option value="@p" selected="@(Model.Ticket.Priority == p)">@p</option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Riesgo</label>
+            <select name="risk" class="form-select">
+                @foreach (var r in new[] { "Low", "Medium", "High" })
+                {
+                    <option value="@r" selected="@(Model.Ticket.Risk == r)">@r</option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Categoría</label>
+            <select name="category" class="form-select">
+                @foreach (var c in new[] { "Hardware", "Software", "Network", "Access", "Other" })
+                {
+                    <option value="@c" selected="@(Model.Ticket.Category == c)">@c</option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Departamento</label>
+            <select name="departmentId" class="form-select">
+                @foreach (var d in Model.Departments)
+                {
+                    <option value="@d.Id" selected="@(Model.Ticket.DepartmentId == d.Id)">@d.Name</option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Técnico asignado</label>
+            <select name="assignedTo" class="form-select">
+                <option value="">Sin asignar</option>
+                @foreach (var t in Model.Technicians)
+                {
+                    <option value="@t.Id" selected="@(Model.Ticket.AssignedTo == t.Id)">@t.FirstName @t.LastName</option>
+                }
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+    </form>
+
+</div>

@@ -1,4 +1,5 @@
-﻿using Supabase.Postgrest.Attributes;
+﻿using Newtonsoft.Json;
+using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
 
 namespace Proyecto.Models
@@ -13,12 +14,15 @@ namespace Proyecto.Models
         public long TicketId { get; set; }
 
         [Column("comment_text")]
-        public string? CommentText { get; set; }
+        public string CommentText { get; set; } = string.Empty;
 
         [Column("created_by")]
-        public string? CreatedBy { get; set; }
+        public int CreatedBy { get; set; }
 
         [Column("created_at")]
         public DateTime CreatedAt { get; set; }
+
+        [JsonIgnore]
+        public string? CreatedByName { get; set; }
     }
 }

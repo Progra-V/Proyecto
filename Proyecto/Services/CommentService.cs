@@ -5,7 +5,7 @@ namespace Proyecto.Services
 {
     public static class CommentService
     {
-        public static async Task<List<Comment>> GetByTicketId(int ticketId)
+        public static async Task<List<Comment>> GetByTicketId(long id)
         {
             Supabase.Client client = SupabClient.getSupabaseClient();
 
@@ -13,7 +13,7 @@ namespace Proyecto.Services
 
             var result = await client
                 .From<Comment>()
-                .Where(x => x.TicketId == ticketId)
+                .Where(x => x.TicketId == id)
                 .Get();
 
             return result.Models;
@@ -32,7 +32,7 @@ namespace Proyecto.Services
         }
 
 
-        public static async Task Delete(int commentId)
+        public static async Task Delete(long commentId)
         {
             Supabase.Client client = SupabClient.getSupabaseClient();
 

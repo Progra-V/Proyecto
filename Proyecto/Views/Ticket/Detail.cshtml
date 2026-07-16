@@ -1,15 +1,15 @@
-
 @model TicketViewModels
 
 @{
-    ViewData["Title"] = "Ticket Detail";
+    ViewData["Title"] = "Detalle del Ticket";
 
     string statusClass = Model.Ticket.Status?.ToLower() switch
     {
-        "open" or "abierto" or "pendiente" => "bg-success",
+        "pending" or "pendiente" => "bg-secondary",
+        "in review" or "en revisión" => "bg-info text-dark",
         "in progress" or "en progreso" => "bg-warning text-dark",
-        "closed" or "cerrado" or "finalizado" => "bg-secondary",
-        "blocked" or "bloqueado" or "cancelado" => "bg-danger",
+        "cancelled" or "cancelado" => "bg-dark",
+        "finished" or "finalizado" => "bg-success",
         _ => "bg-light text-dark border"
     };
 
@@ -17,346 +17,120 @@
     {
         "high" or "alta" => "bg-danger",
         "medium" or "media" => "bg-warning text-dark",
-        "low" or "baja" => "bg-info text-dark",
+        "low" or "baja" => "bg-success",
         _ => "bg-light text-dark border"
     };
 }
 
-<a asp-action="Index"
-   class="btn btn-outline-secondary btn-sm float-end">
-    Back to Tickets
-</a>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Volver a Tickets</a>
+    <a asp-action="Edit" asp-route-id="@Model.Ticket.Id" class="btn btn-primary btn-sm">Editar</a>
+</div>
 
-
-<div class="container py-5" style="max-width:900px;">
+<div class="container py-4" style="max-width:900px;">
 
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
-
         <div>
-            <div class="d-flex align-items-center gap-2 mb-1">
-
-                <span class="badge bg-secondary text-uppercase small">
-                    @Model.Ticket.TicketType
-                </span>
-
-                <span class="text-muted fw-bold">
-                    #@Model.Ticket.Id
-                </span>
-
-            </div>
-
-            <h1 class="h2 text-dark mb-0 fw-bold">
-                @Model.Ticket.Title
-            </h1>
-
+            <span class="text-muted fw-bold">@Model.Ticket.TicketCode</span>
+            <h1 class="h2 text-dark mb-0 fw-bold">@Model.Ticket.Title</h1>
         </div>
-
 
         <div class="d-flex gap-2">
-
-            <span class="badge @statusClass px-3 py-2 fs-6">
-                @Model.Ticket.Status
-            </span>
-
-            <span class="badge @priorityClass px-3 py-2 fs-6">
-                @Model.Ticket.Priority
-            </span>
-
+            <span class="badge @statusClass px-3 py-2 fs-6">@Model.Ticket.Status</span>
+            <span class="badge @priorityClass px-3 py-2 fs-6">@Model.Ticket.Priority</span>
         </div>
-
     </div>
 
-
-
     <div class="card shadow-sm border-0 mb-4">
-
         <div class="card-body p-4">
 
-            <h5 class="text-muted small text-uppercase fw-bold mb-2">
-                Description
-            </h5>
-
-
-            <div class="p-3 bg-light rounded-3 border-start border-primary border-3"
-                 style="white-space:pre-line;">
-
-                @(string.IsNullOrEmpty(Model.Ticket.Description)
-                    ? "No description provided for this ticket."
-                    : Model.Ticket.Description)
-
+            <h5 class="text-muted small text-uppercase fw-bold mb-2">Descripción</h5>
+            <div class="p-3 bg-light rounded-3 border-start border-primary border-3" style="white-space:pre-line;">
+                @(string.IsNullOrEmpty(Model.Ticket.Description) ? "Sin descripción." : Model.Ticket.Description)
             </div>
 
+            @if (!string.IsNullOrEmpty(Model.Ticket.Justification))
+            {
+                <h5 class="text-muted small text-uppercase fw-bold mt-4 mb-2">Justificación</h5>
+                <div class="p-3 bg-light rounded-3" style="white-space:pre-line;">
+                    @Model.Ticket.Justification
+                </div>
+            }
 
             <hr class="my-4">
 
-
             <div class="row g-4">
-
                 <div class="col-md-3">
-
-                    <span class="text-muted small text-uppercase fw-semibold">
-                        Created By
-                    </span>
-
-                    <p class="mb-0">
-                        @(Model.Ticket.CreatedBy ?? "System")
-                    </p>
-
+                    <span class="text-muted small text-uppercase fw-semibold">Riesgo</span>
+                    <p class="mb-0">@(Model.Ticket.Risk ?? "Sin definir")</p>
                 </div>
-
-
                 <div class="col-md-3">
-
-                    <span class="text-muted small text-uppercase fw-semibold">
-                        Assigned To
-                    </span>
-
-                    <p class="mb-0">
-                        @(Model.Ticket.AssignedTo ?? "Unassigned")
-                    </p>
-
+                    <span class="text-muted small text-uppercase fw-semibold">Categoría</span>
+                    <p class="mb-0">@(Model.Ticket.Category ?? "Sin definir")</p>
                 </div>
-
                 <div class="col-md-3">
-
-    <span class="text-muted small text-uppercase fw-semibold">
-        Department
-    </span>
-
-    <p class="mb-0">
-        @(Model.DepartmentName ?? "Sin departamento")
-    </p>
-
-</div>
-
-
-                <div class="col-md-3">
-
-                    <span class="text-muted small text-uppercase fw-semibold">
-                        Due Date
-                    </span>
-
-                    <p class="mb-0">
-
-                        @(Model.Ticket.DueDate.HasValue
-                            ? Model.Ticket.DueDate.Value.ToString("dd MMM yyyy")
-                            : "No due date")
-
-                    </p>
-
+                    <span class="text-muted small text-uppercase fw-semibold">Departamento</span>
+                    <p class="mb-0">@(Model.DepartmentName ?? "Sin departamento")</p>
                 </div>
-
-
                 <div class="col-md-3">
-
-                    <span class="text-muted small text-uppercase fw-semibold">
-                        Updated
-                    </span>
-
+                    <span class="text-muted small text-uppercase fw-semibold">Fecha límite</span>
                     <p class="mb-0">
-                        @Model.Ticket.UpdatedAt.ToString("dd/MM/yyyy HH:mm")
+                        @(Model.Ticket.DueDate.HasValue ? Model.Ticket.DueDate.Value.ToString("dd/MM/yyyy") : "Sin fecha")
                     </p>
-
                 </div>
-
+                <div class="col-md-3">
+                    <span class="text-muted small text-uppercase fw-semibold">Solicitante</span>
+                    <p class="mb-0">@(Model.Ticket.CreatedByName ?? "Desconocido")</p>
+                </div>
+                <div class="col-md-3">
+                    <span class="text-muted small text-uppercase fw-semibold">Técnico asignado</span>
+                    <p class="mb-0">@(Model.Ticket.AssignedToName ?? "Sin asignar")</p>
+                </div>
             </div>
 
-
         </div>
-
 
         <div class="card-footer bg-light border-0 px-4 py-3">
-
-            <span class="text-muted small">
-                Created on @Model.Ticket.CreatedAt.ToString("dd MMMM yyyy HH:mm")
-            </span>
-
+            <span class="text-muted small">Creado: @Model.Ticket.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+            <span class="text-muted small ms-3">Actualizado: @Model.Ticket.UpdatedAt.ToString("dd/MM/yyyy HH:mm")</span>
         </div>
-
-
     </div>
-
-
-
-
-    <!-- CAMBIAR ESTADO -->
-
-    <div class="card shadow-sm border-0 mb-4">
-
-        <div class="card-header bg-white">
-
-            <h5 class="mb-0 fw-bold">
-                Change Status
-            </h5>
-
-        </div>
-
-
-        <div class="card-body">
-
-            <form asp-action="ChangeStatus" method="post">
-
-
-                <input type="hidden"
-                       name="ticketId"
-                       value="@Model.Ticket.Id" />
-
-
-
-                <select name="newStatus" class="form-select mb-3">
-
-
-                    <option value="Pendiente"
-                            selected="@(Model.Ticket.Status == "Pendiente")">
-                        Pendiente
-                    </option>
-
-
-                    <option value="En Revisión"
-                            selected="@(Model.Ticket.Status == "En Revisión")">
-                        En Revisión
-                    </option>
-
-
-                    <option value="En Progreso"
-                            selected="@(Model.Ticket.Status == "En Progreso")">
-                        En Progreso
-                    </option>
-
-
-                    <option value="Finalizado"
-                            selected="@(Model.Ticket.Status == "Finalizado")">
-                        Finalizado
-                    </option>
-
-
-                    <option value="Cancelado"
-                            selected="@(Model.Ticket.Status == "Cancelado")">
-                        Cancelado
-                    </option>
-
-
-                </select>
-
-
-
-                <button type="submit"
-                        class="btn btn-primary">
-                    Cambiar Estado
-                </button>
-
-
-            </form>
-
-        </div>
-
-    </div>
-
-
-
-
-    <!-- COMENTARIOS -->
-
 
     <div class="card shadow-sm border-0">
-
-
         <div class="card-header bg-white">
-
-            <h5 class="mb-0 fw-bold">
-
-                Comments (@(Model.Comments?.Count ?? 0))
-
-            </h5>
-
+            <h5 class="mb-0 fw-bold">Comentarios (@(Model.Comments?.Count ?? 0))</h5>
         </div>
-
-
-
         <div class="card-body">
-
 
             @if (Model.Comments != null && Model.Comments.Any())
             {
-
                 foreach (var comment in Model.Comments)
                 {
-
                     <div class="mb-3 p-3 bg-light rounded border">
-
-
                         <div class="d-flex justify-content-between">
-
-                            <strong>
-                                @(comment.CreatedBy ?? "Anonymous")
-                            </strong>
-
-
-                            <small class="text-muted">
-                                @comment.CreatedAt.ToString("dd MMM yyyy HH:mm")
-                            </small>
-
+                            <strong>@(comment.CreatedByName ?? "Anónimo")</strong>
+                            <small class="text-muted">@comment.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
                         </div>
-
-
-
-                        <p class="mb-0 mt-2">
-
-                            @(comment.CommentText ?? "No content")
-
-                        </p>
-
-
+                        <p class="mb-0 mt-2">@(comment.CommentText ?? "")</p>
 
                         @if (comment.CreatedBy == Model.ActiveSessionUserId)
                         {
-
-                            <a href="/Ticket/DeleteComment?ticketId=@comment.TicketId&commentId=@comment.Id">
-                                Delete
-                            </a>
-
+                            <a asp-action="DeleteComment"
+                               asp-route-ticketId="@Model.Ticket.Id"
+                               asp-route-commentId="@comment.Id"
+                               class="small text-danger">Eliminar</a>
                         }
-
-
                     </div>
-
                 }
-
             }
 
-
-
-            <form action="PostComment" method="post">
-
-
-                <input name="ticketId"
-                       type="hidden"
-                       value="@Model.Ticket.Id" />
-
-
-
-                <textarea name="commentText"
-                          class="form-control mb-2"
-                          rows="3"
-                          placeholder="Write your comment here..."></textarea>
-
-
-
-                <button type="submit"
-                        class="btn btn-primary btn-sm">
-
-                    Post Comment
-
-                </button>
-
-
+            <form asp-action="PostComment" method="post">
+                <input name="ticketId" type="hidden" value="@Model.Ticket.Id" />
+                <textarea name="commentText" class="form-control mb-2" rows="3" placeholder="Escribe tu comentario..."></textarea>
+                <button type="submit" class="btn btn-primary btn-sm">Comentar</button>
             </form>
 
-
         </div>
-
-
     </div>
-
 
 </div>

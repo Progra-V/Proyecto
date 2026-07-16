@@ -1,11 +1,12 @@
 @model List<Proyecto.Models.Ticket>
 
 <div class="table-responsive shadow-sm rounded-3">
+
     <table class="table table-hover table-striped align-middle mb-0 bg-white">
 
         <thead class="table-dark text-uppercase">
             <tr>
-                <th>ID</th>
+                <th>Código</th>
                 <th>Título</th>
                 <th>Departamento</th>
                 <th class="text-center">Estado</th>
@@ -13,6 +14,7 @@
                 <th>Fecha de creación</th>
             </tr>
         </thead>
+
 
         <tbody>
 
@@ -28,30 +30,34 @@
             {
                 foreach (var ticket in Model)
                 {
+
                     var statusClass = ticket.Status?.ToLower() switch
                     {
-                        "pendiente" => "bg-primary",
-                        "en revisión" => "bg-info text-dark",
-                        "en progreso" => "bg-warning text-dark",
-                        "finalizado" => "bg-success",
-                        "cancelado" => "bg-danger",
+                        "pending" => "bg-primary",
+                        "in review" => "bg-info text-dark",
+                        "in progress" => "bg-warning text-dark",
+                        "completed" => "bg-success",
+                        "cancelled" => "bg-danger",
                         _ => "bg-light text-dark border"
                     };
 
+
                     var priorityClass = ticket.Priority?.ToLower() switch
                     {
-                        "high" or "alta" => "bg-danger",
-                        "medium" or "media" => "bg-warning text-dark",
-                        "low" or "baja" => "bg-info text-dark",
+                        "high" => "bg-danger",
+                        "medium" => "bg-warning text-dark",
+                        "low" => "bg-info text-dark",
                         _ => "bg-light text-dark border"
                     };
+
 
 
                     <tr onclick="window.location.href='/Ticket/Detail?id=@ticket.Id'"
                         style="cursor:pointer">
 
+
                         <td class="fw-bold">
-                            @ticket.Id
+                            @ticket.TicketCode
                         </td>
 
 
@@ -61,27 +67,32 @@
 
 
                         <td>
-    @(ticket.DepartmentName ?? "Sin departamento")
-</td>
-
-
-                        <td class="text-center">
-                            <span class="badge @statusClass">
-                                @ticket.Status
-                            </span>
+                            @(ticket.DepartmentName ?? "Sin departamento")
                         </td>
 
 
                         <td class="text-center">
+
+                            <span class="badge @statusClass">
+                                @ticket.Status
+                            </span>
+
+                        </td>
+
+
+                        <td class="text-center">
+
                             <span class="badge @priorityClass">
                                 @ticket.Priority
                             </span>
+
                         </td>
 
 
                         <td>
                             @ticket.CreatedAt.ToString("dd/MM/yyyy")
                         </td>
+
 
                     </tr>
                 }
@@ -90,4 +101,5 @@
         </tbody>
 
     </table>
+
 </div>

@@ -18,14 +18,11 @@
             </p>
         </div>
 
-        <div>
-            <a asp-controller="Department"
-               asp-action="Create"
-               class="btn btn-primary">
-
-                Nuevo departamento
-            </a>
-        </div>
+        <a asp-controller="Department"
+           asp-action="Create"
+           class="btn btn-primary">
+            Nuevo departamento
+        </a>
 
     </div>
 
@@ -38,19 +35,16 @@
 
             <button type="button"
                     class="btn-close"
-                    data-bs-dismiss="alert"
-                    aria-label="Cerrar">
+                    data-bs-dismiss="alert">
             </button>
 
         </div>
     }
 
     <div class="mb-4">
-
         <span class="badge bg-secondary px-3 py-2 fs-6">
-            Total de registros: @Model.Count
+            Total de registros: @(Model?.Count ?? 0)
         </span>
-
     </div>
 
     <div class="table-responsive shadow-sm rounded-3">
@@ -61,6 +55,7 @@
 
                 <tr>
                     <th>ID</th>
+                    <th>Código</th>
                     <th>Nombre</th>
                     <th>Descripción</th>
                     <th class="text-center">Estado</th>
@@ -72,22 +67,18 @@
 
             <tbody>
 
-                @if (!Model.Any())
+                @if (Model == null || !Model.Any())
                 {
                     <tr>
-
-                        <td colspan="6"
+                        <td colspan="7"
                             class="text-center py-4 text-muted">
-
                             No hay departamentos registrados.
-
                         </td>
-
                     </tr>
                 }
                 else
                 {
-                    @foreach (var department in Model)
+                    foreach (var department in Model)
                     {
                         <tr>
 
@@ -96,18 +87,24 @@
                             </td>
 
                             <td>
-                                @department.Nombre
+                                <span class="badge bg-primary">
+                                    @department.Code
+                                </span>
                             </td>
 
                             <td>
-                                @(string.IsNullOrWhiteSpace(department.Descripcion)
+                                @department.Name
+                            </td>
+
+                            <td>
+                                @(string.IsNullOrWhiteSpace(department.Description)
                                     ? "Sin descripción"
-                                    : department.Descripcion)
+                                    : department.Description)
                             </td>
 
                             <td class="text-center">
 
-                                @if (department.Activo)
+                                @if (department.IsActive)
                                 {
                                     <span class="badge bg-success">
                                         Activo
@@ -123,7 +120,7 @@
                             </td>
 
                             <td>
-                                @department.FechaCreacion.ToString("dd/MM/yyyy")
+                                @department.CreatedAt.ToString("dd/MM/yyyy")
                             </td>
 
                             <td class="text-center">
@@ -134,7 +131,6 @@
                                        asp-action="Edit"
                                        asp-route-id="@department.Id"
                                        class="btn btn-warning btn-sm">
-
                                         Editar
                                     </a>
 
@@ -145,22 +141,12 @@
 
                                         @Html.AntiForgeryToken()
 
-                                        @if (department.Activo)
-                                        {
-                                            <button type="submit"
-                                                    class="btn btn-outline-danger btn-sm">
+                                        <button type="submit"
+                                                class="btn btn-outline-@(department.IsActive ? "danger" : "success") btn-sm">
 
-                                                Desactivar
-                                            </button>
-                                        }
-                                        else
-                                        {
-                                            <button type="submit"
-                                                    class="btn btn-outline-success btn-sm">
+                                            @(department.IsActive ? "Desactivar" : "Activar")
 
-                                                Activar
-                                            </button>
-                                        }
+                                        </button>
 
                                     </form>
 
