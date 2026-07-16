@@ -1,4 +1,5 @@
-﻿using Supabase.Postgrest.Attributes;
+﻿using Newtonsoft.Json;
+using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
 
 namespace Proyecto.Models
@@ -20,5 +21,8 @@ namespace Proyecto.Models
 
         [Column("created_at")]
         public DateTime CreatedAt { get; set; }
+
+        [JsonIgnore]
+        public string? CreatedByName { get; set; }
     }
 }

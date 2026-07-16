@@ -51,8 +51,26 @@ namespace Proyecto.Controllers
             List<Department> departments =
                 await DepartmentService.GetAll();
 
-            List<User> technicians =
-                (await UserService.GetAll())
+            List<User> allUsers = await UserService.GetAll();
+
+            // resolver nombres de comentarios
+            foreach (var c in comments)
+            {
+                c.CreatedByName = allUsers.Where(u => u.Id == c.CreatedBy)
+                    .Select(u => $"{u.FirstName} {u.LastName}")
+                    .FirstOrDefault();
+            }
+
+            // resolver nombres del ticket (solicitante y técnico asignado)
+            var creador = allUsers.FirstOrDefault(u => u.Id == ticket.CreatedBy);
+            ticket.CreatedByName = creador != null ? $"{creador.FirstName} {creador.LastName}" : null;
+
+            var tecnico = ticket.AssignedTo.HasValue
+                ? allUsers.FirstOrDefault(u => u.Id == ticket.AssignedTo.Value)
+                : null;
+            ticket.AssignedToName = tecnico != null ? $"{tecnico.FirstName} {tecnico.LastName}" : null;
+
+            List<User> technicians = allUsers
                 .Where(x => x.RoleId == 2 && x.IsActive)
                 .ToList();
 
@@ -62,6 +80,33 @@ namespace Proyecto.Controllers
                 Comments = comments,
                 ActiveSessionUserId = currentUser.Id,
                 DepartmentName = ticket.DepartmentName,
+                Departments = departments,
+                Technicians = technicians
+            };
+
+            return View(model);
+        }
+
+
+        public async Task<IActionResult> Edit(long id)
+        {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
+                return RedirectToAction("Index", "Login");
+
+            Ticket? ticket = await TicketService.GetByTicketId(id);
+
+            if (ticket == null)
+                return NotFound();
+
+            List<Department> departments = await DepartmentService.GetAll();
+
+            List<User> technicians = (await UserService.GetAll())
+                .Where(x => x.RoleId == 2 && x.IsActive)
+                .ToList();
+
+            TicketViewModels model = new TicketViewModels
+            {
+                Ticket = ticket,
                 Departments = departments,
                 Technicians = technicians
             };
@@ -102,17 +147,14 @@ namespace Proyecto.Controllers
         }
 
 
-        public async Task<IActionResult> DeleteComment(
-            string ticketId,
-            long commentId)
+        public async Task<IActionResult> DeleteComment(string ticketId, long commentId)
         {
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
                 return RedirectToAction("Index", "Login");
 
-            return RedirectToAction(
-                "Detail",
-                new { id = ticketId }
-            );
+            await CommentService.Delete(commentId);
+
+            return RedirectToAction("Detail", new { id = ticketId });
         }
 
 
@@ -136,16 +178,15 @@ namespace Proyecto.Controllers
         }
 
 
-
         [HttpPost]
         public async Task<IActionResult> UpdateTicket(
-    long ticketId,
-    string status,
-    string priority,
-    string risk,
-    string category,
-    int departmentId,
-    int? assignedTo)
+            long ticketId,
+            string status,
+            string priority,
+            string risk,
+            string category,
+            int departmentId,
+            int? assignedTo)
         {
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
                 return RedirectToAction("Index", "Login");
@@ -166,5 +207,4 @@ namespace Proyecto.Controllers
             );
         }
     }
-    
 }

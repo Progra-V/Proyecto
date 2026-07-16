@@ -29,10 +29,10 @@ namespace Proyecto.Models
         public string? Risk { get; set; }
 
         [Column("status")]
-        public string Status { get; set; } = "Pending";
+        public string Status { get; set; } = "Pendiente";
 
         [Column("priority")]
-        public string Priority { get; set; } = "Medium";
+        public string Priority { get; set; } = "Media";
 
         [Column("department_id")]
         public int DepartmentId { get; set; }

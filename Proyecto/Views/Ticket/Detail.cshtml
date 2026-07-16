@@ -1,81 +1,136 @@
-<div class="card shadow-sm border-0 mb-4">
+@model TicketViewModels
 
-    <div class="card-body p-4">
+@{
+    ViewData["Title"] = "Detalle del Ticket";
 
-        <h5 class="text-muted small text-uppercase fw-bold mb-2">
-            Descripción
-        </h5>
+    string statusClass = Model.Ticket.Status?.ToLower() switch
+    {
+        "pending" or "pendiente" => "bg-secondary",
+        "in review" or "en revisión" => "bg-info text-dark",
+        "in progress" or "en progreso" => "bg-warning text-dark",
+        "cancelled" or "cancelado" => "bg-dark",
+        "finished" or "finalizado" => "bg-success",
+        _ => "bg-light text-dark border"
+    };
 
-        <div class="p-3 bg-light rounded-3 border-start border-primary border-3"
-             style="white-space:pre-line;">
+    string priorityClass = Model.Ticket.Priority?.ToLower() switch
+    {
+        "high" or "alta" => "bg-danger",
+        "medium" or "media" => "bg-warning text-dark",
+        "low" or "baja" => "bg-success",
+        _ => "bg-light text-dark border"
+    };
+}
 
-            @(string.IsNullOrEmpty(Model.Ticket.Description)
-                ? "Sin descripción."
-                : Model.Ticket.Description)
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Volver a Tickets</a>
+    <a asp-action="Edit" asp-route-id="@Model.Ticket.Id" class="btn btn-primary btn-sm">Editar</a>
+</div>
 
+<div class="container py-4" style="max-width:900px;">
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+        <div>
+            <span class="text-muted fw-bold">@Model.Ticket.TicketCode</span>
+            <h1 class="h2 text-dark mb-0 fw-bold">@Model.Ticket.Title</h1>
         </div>
 
-        <hr class="my-4">
-
-        <div class="row g-4">
-
-            <div class="col-md-3">
-                <span class="text-muted small text-uppercase fw-semibold">
-                    Solicitante
-                </span>
-
-                <p class="mb-0">
-                    @(Model.Ticket.CreatedByName ?? "Desconocido")
-                </p>
-            </div>
-
-
-            <div class="col-md-3">
-                <span class="text-muted small text-uppercase fw-semibold">
-                    Técnico asignado
-                </span>
-
-                <p class="mb-0">
-                    @(Model.Ticket.AssignedToName ?? "Sin asignar")
-                </p>
-            </div>
-
-
-            <div class="col-md-3">
-                <span class="text-muted small text-uppercase fw-semibold">
-                    Departamento
-                </span>
-
-                <p class="mb-0">
-                    @(Model.DepartmentName ?? "Sin departamento")
-                </p>
-            </div>
-
-
-            <div class="col-md-3">
-                <span class="text-muted small text-uppercase fw-semibold">
-                    Fecha límite
-                </span>
-
-                <p class="mb-0">
-                    @(Model.Ticket.DueDate == default(DateTime)
-                        ? "Sin fecha"
-                        : Model.Ticket.DueDate.ToString("dd/MM/yyyy"))
-                </p>
-            </div>
-
+        <div class="d-flex gap-2">
+            <span class="badge @statusClass px-3 py-2 fs-6">@Model.Ticket.Status</span>
+            <span class="badge @priorityClass px-3 py-2 fs-6">@Model.Ticket.Priority</span>
         </div>
-
     </div>
 
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body p-4">
 
-    <div class="card-footer bg-light border-0 px-4 py-3">
+            <h5 class="text-muted small text-uppercase fw-bold mb-2">Descripción</h5>
+            <div class="p-3 bg-light rounded-3 border-start border-primary border-3" style="white-space:pre-line;">
+                @(string.IsNullOrEmpty(Model.Ticket.Description) ? "Sin descripción." : Model.Ticket.Description)
+            </div>
 
-        <span class="text-muted small">
-            Creado:
-            @Model.Ticket.CreatedAt.ToString("dd/MM/yyyy HH:mm")
-        </span>
+            @if (!string.IsNullOrEmpty(Model.Ticket.Justification))
+            {
+                <h5 class="text-muted small text-uppercase fw-bold mt-4 mb-2">Justificación</h5>
+                <div class="p-3 bg-light rounded-3" style="white-space:pre-line;">
+                    @Model.Ticket.Justification
+                </div>
+            }
 
+            <hr class="my-4">
+
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <span class="text-muted small text-uppercase fw-semibold">Riesgo</span>
+                    <p class="mb-0">@(Model.Ticket.Risk ?? "Sin definir")</p>
+                </div>
+                <div class="col-md-3">
+                    <span class="text-muted small text-uppercase fw-semibold">Categoría</span>
+                    <p class="mb-0">@(Model.Ticket.Category ?? "Sin definir")</p>
+                </div>
+                <div class="col-md-3">
+                    <span class="text-muted small text-uppercase fw-semibold">Departamento</span>
+                    <p class="mb-0">@(Model.DepartmentName ?? "Sin departamento")</p>
+                </div>
+                <div class="col-md-3">
+                    <span class="text-muted small text-uppercase fw-semibold">Fecha límite</span>
+                    <p class="mb-0">
+                        @(Model.Ticket.DueDate.HasValue ? Model.Ticket.DueDate.Value.ToString("dd/MM/yyyy") : "Sin fecha")
+                    </p>
+                </div>
+                <div class="col-md-3">
+                    <span class="text-muted small text-uppercase fw-semibold">Solicitante</span>
+                    <p class="mb-0">@(Model.Ticket.CreatedByName ?? "Desconocido")</p>
+                </div>
+                <div class="col-md-3">
+                    <span class="text-muted small text-uppercase fw-semibold">Técnico asignado</span>
+                    <p class="mb-0">@(Model.Ticket.AssignedToName ?? "Sin asignar")</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card-footer bg-light border-0 px-4 py-3">
+            <span class="text-muted small">Creado: @Model.Ticket.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+            <span class="text-muted small ms-3">Actualizado: @Model.Ticket.UpdatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white">
+            <h5 class="mb-0 fw-bold">Comentarios (@(Model.Comments?.Count ?? 0))</h5>
+        </div>
+        <div class="card-body">
+
+            @if (Model.Comments != null && Model.Comments.Any())
+            {
+                foreach (var comment in Model.Comments)
+                {
+                    <div class="mb-3 p-3 bg-light rounded border">
+                        <div class="d-flex justify-content-between">
+                            <strong>@(comment.CreatedByName ?? "Anónimo")</strong>
+                            <small class="text-muted">@comment.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                        </div>
+                        <p class="mb-0 mt-2">@(comment.CommentText ?? "")</p>
+
+                        @if (comment.CreatedBy == Model.ActiveSessionUserId)
+                        {
+                            <a asp-action="DeleteComment"
+                               asp-route-ticketId="@Model.Ticket.Id"
+                               asp-route-commentId="@comment.Id"
+                               class="small text-danger">Eliminar</a>
+                        }
+                    </div>
+                }
+            }
+
+            <form asp-action="PostComment" method="post">
+                <input name="ticketId" type="hidden" value="@Model.Ticket.Id" />
+                <textarea name="commentText" class="form-control mb-2" rows="3" placeholder="Escribe tu comentario..."></textarea>
+                <button type="submit" class="btn btn-primary btn-sm">Comentar</button>
+            </form>
+
+        </div>
     </div>
 
 </div>

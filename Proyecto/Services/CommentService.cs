@@ -32,7 +32,7 @@ namespace Proyecto.Services
         }
 
 
-        public static async Task Delete(int commentId)
+        public static async Task Delete(long commentId)
         {
             Supabase.Client client = SupabClient.getSupabaseClient();
 
