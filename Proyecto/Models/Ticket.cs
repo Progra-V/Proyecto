@@ -1,5 +1,6 @@
 ﻿using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
+using System.Text.Json.Serialization;
 
 namespace Proyecto.Models
 {
@@ -9,31 +10,48 @@ namespace Proyecto.Models
         [PrimaryKey("id", false)]
         public long Id { get; set; }
 
+        [Column("ticket_code")]
+        public string TicketCode { get; set; } = string.Empty;
+
         [Column("title")]
         public string Title { get; set; } = string.Empty;
 
         [Column("description")]
         public string? Description { get; set; }
 
+        [Column("justification")]
+        public string? Justification { get; set; }
+
+        [Column("category")]
+        public string? Category { get; set; }
+
+        [Column("risk")]
+        public string? Risk { get; set; }
+
         [Column("status")]
-        public string Status { get; set; } = "Pendiente";
+        public string Status { get; set; } = "Pending";
 
         [Column("priority")]
-        public string Priority { get; set; } = "Media";
+        public string Priority { get; set; } = "Medium";
 
         [Column("department_id")]
-        public int? DepartmentId { get; set; }
+        public int DepartmentId { get; set; }
 
+        [JsonIgnore]
         public string? DepartmentName { get; set; }
 
-        [Column("ticket_type")]
-        public string TicketType { get; set; } = "Task";
+        [JsonIgnore]
+        public string? CreatedByName { get; set; }
+
+        [JsonIgnore]
+        public string? AssignedToName { get; set; }
+
 
         [Column("created_by")]
-        public string? CreatedBy { get; set; }
+        public int CreatedBy { get; set; }
 
         [Column("assigned_to")]
-        public string? AssignedTo { get; set; }
+        public int? AssignedTo { get; set; }
 
         [Column("created_at")]
         public DateTime CreatedAt { get; set; }

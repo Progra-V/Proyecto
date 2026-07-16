@@ -1,362 +1,175 @@
+<div class="card shadow-sm border-0 mb-4">
 
-@model TicketViewModels
-
-@{
-    ViewData["Title"] = "Ticket Detail";
-
-    string statusClass = Model.Ticket.Status?.ToLower() switch
-    {
-        "open" or "abierto" or "pendiente" => "bg-success",
-        "in progress" or "en progreso" => "bg-warning text-dark",
-        "closed" or "cerrado" or "finalizado" => "bg-secondary",
-        "blocked" or "bloqueado" or "cancelado" => "bg-danger",
-        _ => "bg-light text-dark border"
-    };
-
-    string priorityClass = Model.Ticket.Priority?.ToLower() switch
-    {
-        "high" or "alta" => "bg-danger",
-        "medium" or "media" => "bg-warning text-dark",
-        "low" or "baja" => "bg-info text-dark",
-        _ => "bg-light text-dark border"
-    };
-}
-
-<a asp-action="Index"
-   class="btn btn-outline-secondary btn-sm float-end">
-    Back to Tickets
-</a>
-
-
-<div class="container py-5" style="max-width:900px;">
-
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
-
-        <div>
-            <div class="d-flex align-items-center gap-2 mb-1">
-
-                <span class="badge bg-secondary text-uppercase small">
-                    @Model.Ticket.TicketType
-                </span>
-
-                <span class="text-muted fw-bold">
-                    #@Model.Ticket.Id
-                </span>
-
-            </div>
-
-            <h1 class="h2 text-dark mb-0 fw-bold">
-                @Model.Ticket.Title
-            </h1>
-
-        </div>
-
-
-        <div class="d-flex gap-2">
-
-            <span class="badge @statusClass px-3 py-2 fs-6">
-                @Model.Ticket.Status
-            </span>
-
-            <span class="badge @priorityClass px-3 py-2 fs-6">
-                @Model.Ticket.Priority
-            </span>
-
-        </div>
-
+    <div class="card-header bg-white">
+        <h5 class="mb-0 fw-bold">
+            Actualizar Ticket
+        </h5>
     </div>
 
+    <div class="card-body">
 
+        <form asp-action="UpdateTicket" method="post">
 
-    <div class="card shadow-sm border-0 mb-4">
+            <input type="hidden"
+                   name="ticketId"
+                   value="@Model.Ticket.Id" />
 
-        <div class="card-body p-4">
+            <div class="row g-3">
 
-            <h5 class="text-muted small text-uppercase fw-bold mb-2">
-                Description
-            </h5>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">
+                        Estado
+                    </label>
 
+                    <select name="status" class="form-select">
+                        <option value="Pending" selected="@(Model.Ticket.Status == "Pending")">
+                            Pendiente
+                        </option>
 
-            <div class="p-3 bg-light rounded-3 border-start border-primary border-3"
-                 style="white-space:pre-line;">
+                        <option value="In Review" selected="@(Model.Ticket.Status == "In Review")">
+                            En Revisión
+                        </option>
 
-                @(string.IsNullOrEmpty(Model.Ticket.Description)
-                    ? "No description provided for this ticket."
-                    : Model.Ticket.Description)
+                        <option value="In Progress" selected="@(Model.Ticket.Status == "In Progress")">
+                            En Progreso
+                        </option>
 
-            </div>
+                        <option value="Completed" selected="@(Model.Ticket.Status == "Completed")">
+                            Finalizado
+                        </option>
 
-
-            <hr class="my-4">
-
-
-            <div class="row g-4">
-
-                <div class="col-md-3">
-
-                    <span class="text-muted small text-uppercase fw-semibold">
-                        Created By
-                    </span>
-
-                    <p class="mb-0">
-                        @(Model.Ticket.CreatedBy ?? "System")
-                    </p>
-
+                        <option value="Cancelled" selected="@(Model.Ticket.Status == "Cancelled")">
+                            Cancelado
+                        </option>
+                    </select>
                 </div>
 
 
-                <div class="col-md-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">
+                        Prioridad
+                    </label>
 
-                    <span class="text-muted small text-uppercase fw-semibold">
-                        Assigned To
-                    </span>
+                    <select name="priority" class="form-select">
 
-                    <p class="mb-0">
-                        @(Model.Ticket.AssignedTo ?? "Unassigned")
-                    </p>
+                        <option value="High" selected="@(Model.Ticket.Priority == "High")">
+                            Alta
+                        </option>
 
-                </div>
+                        <option value="Medium" selected="@(Model.Ticket.Priority == "Medium")">
+                            Media
+                        </option>
 
-                <div class="col-md-3">
+                        <option value="Low" selected="@(Model.Ticket.Priority == "Low")">
+                            Baja
+                        </option>
 
-    <span class="text-muted small text-uppercase fw-semibold">
-        Department
-    </span>
-
-    <p class="mb-0">
-        @(Model.DepartmentName ?? "Sin departamento")
-    </p>
-
-</div>
-
-
-                <div class="col-md-3">
-
-                    <span class="text-muted small text-uppercase fw-semibold">
-                        Due Date
-                    </span>
-
-                    <p class="mb-0">
-
-                        @(Model.Ticket.DueDate.HasValue
-                            ? Model.Ticket.DueDate.Value.ToString("dd MMM yyyy")
-                            : "No due date")
-
-                    </p>
-
+                    </select>
                 </div>
 
 
-                <div class="col-md-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">
+                        Riesgo
+                    </label>
 
-                    <span class="text-muted small text-uppercase fw-semibold">
-                        Updated
-                    </span>
+                    <select name="risk" class="form-select">
 
-                    <p class="mb-0">
-                        @Model.Ticket.UpdatedAt.ToString("dd/MM/yyyy HH:mm")
-                    </p>
+                        <option value="High" selected="@(Model.Ticket.Risk == "High")">
+                            Alto
+                        </option>
 
+                        <option value="Medium" selected="@(Model.Ticket.Risk == "Medium")">
+                            Medio
+                        </option>
+
+                        <option value="Low" selected="@(Model.Ticket.Risk == "Low")">
+                            Bajo
+                        </option>
+
+                    </select>
                 </div>
 
-            </div>
 
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">
+                        Categoría
+                    </label>
 
-        </div>
+                    <select name="category" class="form-select">
 
+                        <option value="Hardware" selected="@(Model.Ticket.Category == "Hardware")">
+                            Hardware
+                        </option>
 
-        <div class="card-footer bg-light border-0 px-4 py-3">
+                        <option value="Software" selected="@(Model.Ticket.Category == "Software")">
+                            Software
+                        </option>
 
-            <span class="text-muted small">
-                Created on @Model.Ticket.CreatedAt.ToString("dd MMMM yyyy HH:mm")
-            </span>
+                        <option value="Security" selected="@(Model.Ticket.Category == "Security")">
+                            Seguridad
+                        </option>
 
-        </div>
+                    </select>
+                </div>
 
 
-    </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">
+                        Departamento
+                    </label>
 
+                    <select name="departmentId" class="form-select">
 
-
-
-    <!-- CAMBIAR ESTADO -->
-
-    <div class="card shadow-sm border-0 mb-4">
-
-        <div class="card-header bg-white">
-
-            <h5 class="mb-0 fw-bold">
-                Change Status
-            </h5>
-
-        </div>
-
-
-        <div class="card-body">
-
-            <form asp-action="ChangeStatus" method="post">
-
-
-                <input type="hidden"
-                       name="ticketId"
-                       value="@Model.Ticket.Id" />
-
-
-
-                <select name="newStatus" class="form-select mb-3">
-
-
-                    <option value="Pendiente"
-                            selected="@(Model.Ticket.Status == "Pendiente")">
-                        Pendiente
-                    </option>
-
-
-                    <option value="En Revisión"
-                            selected="@(Model.Ticket.Status == "En Revisión")">
-                        En Revisión
-                    </option>
-
-
-                    <option value="En Progreso"
-                            selected="@(Model.Ticket.Status == "En Progreso")">
-                        En Progreso
-                    </option>
-
-
-                    <option value="Finalizado"
-                            selected="@(Model.Ticket.Status == "Finalizado")">
-                        Finalizado
-                    </option>
-
-
-                    <option value="Cancelado"
-                            selected="@(Model.Ticket.Status == "Cancelado")">
-                        Cancelado
-                    </option>
-
-
-                </select>
-
-
-
-                <button type="submit"
-                        class="btn btn-primary">
-                    Cambiar Estado
-                </button>
-
-
-            </form>
-
-        </div>
-
-    </div>
-
-
-
-
-    <!-- COMENTARIOS -->
-
-
-    <div class="card shadow-sm border-0">
-
-
-        <div class="card-header bg-white">
-
-            <h5 class="mb-0 fw-bold">
-
-                Comments (@(Model.Comments?.Count ?? 0))
-
-            </h5>
-
-        </div>
-
-
-
-        <div class="card-body">
-
-
-            @if (Model.Comments != null && Model.Comments.Any())
-            {
-
-                foreach (var comment in Model.Comments)
-                {
-
-                    <div class="mb-3 p-3 bg-light rounded border">
-
-
-                        <div class="d-flex justify-content-between">
-
-                            <strong>
-                                @(comment.CreatedBy ?? "Anonymous")
-                            </strong>
-
-
-                            <small class="text-muted">
-                                @comment.CreatedAt.ToString("dd MMM yyyy HH:mm")
-                            </small>
-
-                        </div>
-
-
-
-                        <p class="mb-0 mt-2">
-
-                            @(comment.CommentText ?? "No content")
-
-                        </p>
-
-
-
-                        @if (comment.CreatedBy == Model.ActiveSessionUserId)
+                        @if (Model.Departments != null)
                         {
-
-                            <a href="/Ticket/DeleteComment?ticketId=@comment.TicketId&commentId=@comment.Id">
-                                Delete
-                            </a>
-
+                            foreach (var department in Model.Departments)
+                            {
+                                <option value="@department.Id"
+                                        selected="@(department.Id == Model.Ticket.DepartmentId)">
+                                    @department.Name
+                                </option>
+                            }
                         }
 
-
-                    </div>
-
-                }
-
-            }
+                    </select>
+                </div>
 
 
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">
+                        Técnico asignado
+                    </label>
 
-            <form action="PostComment" method="post">
+                    <select name="assignedTo" class="form-select">
 
+                        <option value="">
+                            Sin asignar
+                        </option>
 
-                <input name="ticketId"
-                       type="hidden"
-                       value="@Model.Ticket.Id" />
+                        @if (Model.Technicians != null)
+                        {
+                            foreach (var user in Model.Technicians)
+                            {
+                                <option value="@user.Id"
+                                        selected="@(user.Id == Model.Ticket.AssignedTo)">
+                                    @user.FirstName @user.LastName
+                                </option>
+                            }
+                        }
 
+                    </select>
+                </div>
 
+            </div>
 
-                <textarea name="commentText"
-                          class="form-control mb-2"
-                          rows="3"
-                          placeholder="Write your comment here..."></textarea>
+            <button type="submit"
+                    class="btn btn-primary mt-4">
+                Guardar cambios
+            </button>
 
-
-
-                <button type="submit"
-                        class="btn btn-primary btn-sm">
-
-                    Post Comment
-
-                </button>
-
-
-            </form>
-
-
-        </div>
-
+        </form>
 
     </div>
-
 
 </div>
