@@ -7,9 +7,7 @@ namespace Proyecto.Services
     {
         public static async Task<List<Comment>> GetByTicketId(long id)
         {
-            Supabase.Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
+            Supabase.Client client = await SupabClient.GetSupabaseClientAsync();
 
             var result = await client
                 .From<Comment>()
@@ -22,9 +20,7 @@ namespace Proyecto.Services
 
         public static async Task Create(Comment comment)
         {
-            Supabase.Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
+            Supabase.Client client = await SupabClient.GetSupabaseClientAsync();
 
             await client
                 .From<Comment>()
@@ -34,9 +30,7 @@ namespace Proyecto.Services
 
         public static async Task Delete(long commentId)
         {
-            Supabase.Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
+            Supabase.Client client = await SupabClient.GetSupabaseClientAsync();
 
             await client
                 .From<Comment>()

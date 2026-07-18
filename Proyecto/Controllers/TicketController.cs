@@ -86,6 +86,61 @@ namespace Proyecto.Controllers
 
             return View(model);
         }
+        public async Task<IActionResult> Create()
+        {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
+                return RedirectToAction("Index", "Login");
+
+            List<Department> departments = await DepartmentService.GetAll();
+
+            TicketViewModels model = new TicketViewModels
+            {
+                Ticket = new Ticket(),
+                Departments = departments
+            };
+
+            return View(model);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(TicketViewModels model)
+        {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
+                return RedirectToAction("Index", "Login");
+
+            var userJson = HttpContext.Session.GetString("user");
+
+            if (string.IsNullOrEmpty(userJson))
+                return RedirectToAction("Index", "Login");
+
+            User currentUser = JsonConvert.DeserializeObject<User>(userJson)!;
+
+            model.Ticket.Title = model.Ticket.Title?.Trim() ?? string.Empty;
+            model.Ticket.Description = model.Ticket.Description?.Trim();
+            model.Ticket.Justification = model.Ticket.Justification?.Trim();
+
+            if (string.IsNullOrEmpty(model.Ticket.Title))
+            {
+                ModelState.AddModelError(nameof(model.Ticket.Title), "El asunto es obligatorio.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                model.Departments = await DepartmentService.GetAll();
+                return View(model);
+            }
+
+            model.Ticket.CreatedBy = currentUser.Id;
+            model.Ticket.Status = "Pendiente";
+
+            var created = await TicketService.CreateTicket(model.Ticket);
+
+            TempData["SuccessMessage"] = "El ticket fue creado correctamente.";
+
+            return RedirectToAction("Detail", new { id = created.Id });
+        }
 
 
         public async Task<IActionResult> Edit(long id)

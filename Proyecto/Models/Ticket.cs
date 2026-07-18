@@ -1,6 +1,6 @@
-﻿using Supabase.Postgrest.Attributes;
+﻿using Newtonsoft.Json;
+using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
-using System.Text.Json.Serialization;
 
 namespace Proyecto.Models
 {
@@ -62,4 +62,5 @@ namespace Proyecto.Models
         [Column("due_date")]
         public DateTime? DueDate { get; set; }
     }
+
 }

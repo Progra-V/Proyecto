@@ -18,7 +18,7 @@
         <div class="mb-3">
             <label class="form-label fw-semibold">Estado</label>
             <select name="status" class="form-select">
-                @foreach (var s in new[] { "Pending", "In Review", "In Progress", "Cancelled", "Finished" })
+                @foreach (var s in new[] { "Pendiente", "En Revisión", "En Progreso", "Cancelado", "Finalizado" })
                 {
                     <option value="@s" selected="@(Model.Ticket.Status == s)">@s</option>
                 }
@@ -28,7 +28,7 @@
         <div class="mb-3">
             <label class="form-label fw-semibold">Prioridad</label>
             <select name="priority" class="form-select">
-                @foreach (var p in new[] { "Low", "Medium", "High" })
+                @foreach (var p in new[] { "Baja", "Media", "Alta" })
                 {
                     <option value="@p" selected="@(Model.Ticket.Priority == p)">@p</option>
                 }
@@ -38,7 +38,7 @@
         <div class="mb-3">
             <label class="form-label fw-semibold">Riesgo</label>
             <select name="risk" class="form-select">
-                @foreach (var r in new[] { "Low", "Medium", "High" })
+                @foreach (var r in new[] { "Bajo", "Medio", "Alto" })
                 {
                     <option value="@r" selected="@(Model.Ticket.Risk == r)">@r</option>
                 }
@@ -48,7 +48,7 @@
         <div class="mb-3">
             <label class="form-label fw-semibold">Categoría</label>
             <select name="category" class="form-select">
-                @foreach (var c in new[] { "Hardware", "Software", "Network", "Access", "Other" })
+                @foreach (var c in new[] { "Hardware", "Software", "Red", "Accesos", "Otro" })
                 {
                     <option value="@c" selected="@(Model.Ticket.Category == c)">@c</option>
                 }
