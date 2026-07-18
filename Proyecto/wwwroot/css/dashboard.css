@@ -109,6 +109,10 @@
 
 .dashboard-success {
     border-top: 5px solid #198754;
+
+}
+.dashboard-danger {
+    border-top: 5px solid #dc3545;
 }
 
 .dashboard-card .card-body {
@@ -120,6 +124,26 @@
     font-size: 34px;
     margin-bottom: 18px;
     color: #6c757d;
+}
+
+.dashboard-primary .dashboard-card-icon {
+    color: #0d6efd;
+}
+
+.dashboard-warning .dashboard-card-icon {
+    color: #ffc107;
+}
+
+.dashboard-info .dashboard-card-icon {
+    color: #0dcaf0;
+}
+
+.dashboard-success .dashboard-card-icon {
+    color: #198754;
+}
+
+.dashboard-danger .dashboard-card-icon {
+    color: #dc3545;
 }
 
 .dashboard-number {

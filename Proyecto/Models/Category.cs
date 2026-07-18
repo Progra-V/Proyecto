@@ -1,30 +1,40 @@
-﻿using Supabase.Postgrest.Attributes;
+﻿using System.ComponentModel.DataAnnotations;
+using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
+
 
 namespace Proyecto.Models
 {
-    [Table("categorias")]
+    [Table("categories")]
     public class Category : BaseModel
     {
         [PrimaryKey("id", false)]
         public long Id { get; set; }
 
-        [Column("departamento_id")]
+        [Required(ErrorMessage = "Debe seleccionar un departamento.")]
+        [Column("department_id")]
         public long DepartmentId { get; set; }
 
-        [Column("nombre")]
+
+        [Required(ErrorMessage = "El nombre es obligatorio.")]
+        [StringLength(100, ErrorMessage = "El nombre no puede superar los 100 caracteres.")]
+        [Display(Name = "Nombre")]
+        [Column("name")]
         public string Name { get; set; } = string.Empty;
 
-        [Column("descripcion")]
+        [StringLength(500, ErrorMessage = "La descripción no puede superar los 500 caracteres.")]
+        [Display(Name = "Descripción")]
+        [Column("description")]
         public string? Description { get; set; }
 
-        [Column("activo")]
+        [Column("is_active")]
         public bool IsActive { get; set; }
 
-        [Column("fecha_creacion")]
+        [Column("created_at")]
         public DateTime CreatedAt { get; set; }
 
-        [Column("fecha_actualizacion")]
+        [Column("updated_at")]
         public DateTime? UpdatedAt { get; set; }
+
     }
 }

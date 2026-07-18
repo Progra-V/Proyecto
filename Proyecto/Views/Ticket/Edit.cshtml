@@ -1,0 +1,210 @@
+@model TicketViewModels
+
+@{
+    ViewData["Title"] = "Editar Ticket";
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<a asp-action="Detail"
+   asp-route-id="@Model.Ticket.Id"
+   class="btn btn-outline-secondary btn-sm mb-3">
+    Volver al detalle
+</a>
+
+<div class="container" style="max-width:700px;">
+
+    <h1 class="h3 mb-4">
+        Editar @Model.Ticket.TicketCode
+    </h1>
+
+    <form asp-action="UpdateTicket" method="post">
+
+        <input type="hidden"
+               name="ticketId"
+               value="@Model.Ticket.Id" />
+
+        <div class="mb-3">
+
+            <label class="form-label fw-semibold">
+                Estado
+            </label>
+
+            <select name="status" class="form-select">
+
+                <option value="Pending"
+                        selected="@(Model.Ticket.Status == "Pending")">
+                    Pendiente
+                </option>
+
+                <option value="In Review"
+                        selected="@(Model.Ticket.Status == "In Review")">
+                    En Revisión
+                </option>
+
+                <option value="In Progress"
+                        selected="@(Model.Ticket.Status == "In Progress")">
+                    En Progreso
+                </option>
+
+                <option value="Completed"
+                        selected="@(Model.Ticket.Status == "Completed")">
+                    Finalizado
+                </option>
+
+                <option value="Cancelled"
+                        selected="@(Model.Ticket.Status == "Cancelled")">
+                    Cancelado
+                </option>
+
+            </select>
+
+        </div>
+
+        <div class="mb-3">
+
+            <label class="form-label fw-semibold">
+                Prioridad
+            </label>
+
+            <select name="priority" class="form-select">
+
+                <option value="Low"
+                        selected="@(Model.Ticket.Priority == "Low")">
+                    Baja
+                </option>
+
+                <option value="Medium"
+                        selected="@(Model.Ticket.Priority == "Medium")">
+                    Media
+                </option>
+
+                <option value="High"
+                        selected="@(Model.Ticket.Priority == "High")">
+                    Alta
+                </option>
+
+            </select>
+
+        </div>
+
+        <div class="mb-3">
+
+            <label class="form-label fw-semibold">
+                Riesgo
+            </label>
+
+            <select name="risk" class="form-select">
+
+                <option value="Low"
+                        selected="@(Model.Ticket.Risk == "Low")">
+                    Bajo
+                </option>
+
+                <option value="Medium"
+                        selected="@(Model.Ticket.Risk == "Medium")">
+                    Medio
+                </option>
+
+                <option value="High"
+                        selected="@(Model.Ticket.Risk == "High")">
+                    Alto
+                </option>
+
+            </select>
+
+        </div>
+
+        <div class="mb-3">
+
+            <label class="form-label fw-semibold">
+                Categoría
+            </label>
+
+            <select name="category" class="form-select">
+
+                @foreach (var c in new[]
+                {
+                    "Hardware",
+                    "Software",
+                    "Network",
+                    "Access",
+                    "Other"
+                })
+                {
+                    <option value="@c"
+                            selected="@(Model.Ticket.Category == c)">
+                        @c
+                    </option>
+                }
+
+            </select>
+
+        </div>
+
+        <div class="mb-3">
+
+            <label class="form-label fw-semibold">
+                Departamento
+            </label>
+
+            <select name="departmentId" class="form-select">
+
+                @foreach (var d in Model.Departments)
+                {
+                    <option value="@d.Id"
+                            selected="@(Model.Ticket.DepartmentId == d.Id)">
+                        @d.Name
+                    </option>
+                }
+
+            </select>
+
+        </div>
+
+        <div class="mb-4">
+
+            <label class="form-label fw-semibold">
+                Técnico asignado
+            </label>
+
+            <select name="assignedTo" class="form-select">
+
+                <option value="">
+                    Sin asignar
+                </option>
+
+                @foreach (var t in Model.Technicians)
+                {
+                    <option value="@t.Id"
+                            selected="@(Model.Ticket.AssignedTo == t.Id)">
+                        @t.FirstName @t.LastName
+                    </option>
+                }
+
+            </select>
+
+        </div>
+
+        <button type="submit"
+                class="btn btn-primary">
+            Guardar cambios
+        </button>
+
+    </form>
+
+</div>

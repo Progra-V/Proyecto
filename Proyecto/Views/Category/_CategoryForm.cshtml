@@ -8,11 +8,13 @@
 
             <div class="col-md-6 mb-3">
 
-                <label asp-for="Name" class="form-label"></label>
+                <label asp-for="Name" class="form-label">
+                    Nombre
+                </label>
 
                 <input asp-for="Name"
                        class="form-control"
-                       placeholder="Category name" />
+                       placeholder="Ingrese el nombre de la categoría" />
 
                 <span asp-validation-for="Name"
                       class="text-danger"></span>
@@ -21,15 +23,22 @@
 
             <div class="col-md-6 mb-3">
 
-                <label asp-for="DepartmentId" class="form-label">
+                <label asp-for="DepartmentId"
+                       class="form-label">
 
-                    Department
+                    Departamento
 
                 </label>
 
-                <input asp-for="DepartmentId"
-                       class="form-control"
-                       placeholder="Department Id" />
+                <select asp-for="DepartmentId"
+                        asp-items="ViewBag.Departments"
+                        class="form-select">
+
+                    <option value="">
+                        Seleccione un departamento
+                    </option>
+
+                </select>
 
                 <span asp-validation-for="DepartmentId"
                       class="text-danger"></span>
@@ -41,12 +50,16 @@
         <div class="mb-3">
 
             <label asp-for="Description"
-                   class="form-label"></label>
+                   class="form-label">
+
+                Descripción
+
+            </label>
 
             <textarea asp-for="Description"
                       rows="4"
                       class="form-control"
-                      placeholder="Category description"></textarea>
+                      placeholder="Ingrese una descripción para la categoría"></textarea>
 
             <span asp-validation-for="Description"
                   class="text-danger"></span>
@@ -58,7 +71,7 @@
             <a asp-action="Index"
                class="btn btn-outline-secondary me-2">
 
-                Cancel
+                Cancelar
 
             </a>
 
@@ -67,7 +80,7 @@
 
                 <i class="bi bi-check-circle me-2"></i>
 
-                Save
+                Guardar
 
             </button>
 

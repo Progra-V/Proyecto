@@ -1,4 +1,5 @@
 ﻿using Proyecto.Models;
+using Proyecto.Models.ViewModels;
 using Proyecto.SupabaseClient;
 using Supabase;
 
@@ -7,30 +8,80 @@ namespace Proyecto.Services
     public static class CategoryService
     {
         // Obtiene todas las categorías.
-        public static async Task<List<Category>> getAll()
+        public static async Task<List<CategoryViewModel>> getAll()
         {
             Client client = SupabClient.getSupabaseClient();
 
             await client.InitializeAsync();
 
-            var result = await client.From<Category>().Get();
+            var categories = (await client
+                .From<Category>()
+                .Get()).Models;
 
-            return result.Models;
+            var departments = (await client
+                .From<Department>()
+                .Get()).Models;
+
+            var result = new List<CategoryViewModel>();
+
+            foreach (var category in categories)
+            {
+                var department = departments
+                    .FirstOrDefault(x => x.Id == category.DepartmentId);
+
+                result.Add(new CategoryViewModel
+                {
+                    Id = category.Id,
+                    DepartmentId = category.DepartmentId,
+                    DepartmentName = department?.Name ?? "No encontrado",
+                    Name = category.Name,
+                    Description = category.Description,
+                    IsActive = category.IsActive,
+                    CreatedAt = category.CreatedAt,
+                    UpdatedAt = category.UpdatedAt
+                });
+            }
+
+            return result;
         }
 
         // Obtiene las categorías activas.
-        public static async Task<List<Category>> getActive()
+        public static async Task<List<CategoryViewModel>> getActive()
         {
             Client client = SupabClient.getSupabaseClient();
 
             await client.InitializeAsync();
 
-            var result = await client
+            var categories = (await client
                 .From<Category>()
                 .Where(x => x.IsActive == true)
-                .Get();
+                .Get()).Models;
 
-            return result.Models;
+            var departments = (await client
+                .From<Department>()
+                .Get()).Models;
+
+            var result = new List<CategoryViewModel>();
+
+            foreach (var category in categories)
+            {
+                var department = departments
+                    .FirstOrDefault(x => x.Id == category.DepartmentId);
+
+                result.Add(new CategoryViewModel
+                {
+                    Id = category.Id,
+                    DepartmentId = category.DepartmentId,
+                    DepartmentName = department?.Name ?? "No encontrado",
+                    Name = category.Name,
+                    Description = category.Description,
+                    IsActive = category.IsActive,
+                    CreatedAt = category.CreatedAt,
+                    UpdatedAt = category.UpdatedAt
+                });
+            }
+
+            return result;
         }
 
         // Obtiene una categoría por su identificador.
@@ -40,12 +91,21 @@ namespace Proyecto.Services
 
             await client.InitializeAsync();
 
-            var result = await client
+            var category = (await client
                 .From<Category>()
                 .Where(x => x.Id == id)
-                .Get();
+                .Get()).Model;
 
-            return result.Model;
+            if (category == null)
+                return null;
+
+            var department = (await client
+                .From<Department>()
+                .Where(x => x.Id == category.DepartmentId)
+                .Get()).Model;
+
+
+            return category;
         }
 
         // Obtiene las categorías de un departamento.
@@ -55,13 +115,20 @@ namespace Proyecto.Services
 
             await client.InitializeAsync();
 
-            var result = await client
+            var categories = (await client
                 .From<Category>()
                 .Where(x => x.DepartmentId == departmentId)
                 .Where(x => x.IsActive == true)
-                .Get();
+                .Get()).Models;
 
-            return result.Models;
+            var department = (await client
+                .From<Department>()
+                .Where(x => x.Id == departmentId)
+                .Get()).Model;
+
+  
+
+            return categories;
         }
 
         // Crea una categoría.

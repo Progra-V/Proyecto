@@ -3,7 +3,7 @@ using Supabase.Postgrest.Models;
 
 namespace Proyecto.Models
 {
-    [Table("usuarios")]
+    [Table("users")]
     public class User : BaseModel
     {
         [PrimaryKey("id")]
@@ -12,22 +12,25 @@ namespace Proyecto.Models
         [Column("supabase_user_id")]
         public Guid SupabaseUserId { get; set; }
 
-        [Column("nombre")]
-        public string Nombre { get; set; } = string.Empty;
+        [Column("first_name")]
+        public string FirstName { get; set; } = string.Empty;
+
+        [Column("last_name")]
+        public string LastName { get; set; } = string.Empty;
 
         [Column("email")]
         public string Email { get; set; } = string.Empty;
 
-        [Column("foto_url")]
-        public string? FotoUrl { get; set; }
+        [Column("photo_url")]
+        public string? PhotoUrl { get; set; }
 
-        [Column("rol_id")]
-        public int RolId { get; set; }
+        [Column("role_id")]
+        public int RoleId { get; set; }
 
-        [Column("bloqueado")]
-        public bool Bloqueado { get; set; }
+        [Column("is_active")]
+        public bool IsActive { get; set; }
 
-        [Column("fecha_creacion")]
-        public DateTime FechaCreacion { get; set; }
+        [Column("created_at")]
+        public DateTime CreatedAt { get; set; }
     }
 }

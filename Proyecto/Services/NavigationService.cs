@@ -7,13 +7,15 @@ namespace Proyecto.Services
         public static List<NavigationPages> GetMenuPages(int userRole)
         {
             // Employee
-            if (userRole == 1)
+            if (userRole == 3)
             {
                 return new List<NavigationPages>
                 {
+                    // PRINCIPAL
+
                     new NavigationPages
                     {
-                        Section = "Main",
+                        Section = "Principal",
                         Title = "Dashboard",
                         Controller = "Dashboard",
                         Action = "Index",
@@ -22,17 +24,23 @@ namespace Proyecto.Services
 
                     new NavigationPages
                     {
-                        Section = "Main",
+                        Section = "Principal",
                         Title = "Tickets",
                         Controller = "Ticket",
                         Action = "Index",
                         Icon = "bi-ticket-perforated"
                     },
 
+                    // CATÁLOGOS ( sin acceso a los catalogos )
+
+              
+
+                    // CUENTA
+
                     new NavigationPages
                     {
-                        Section = "Account",
-                        Title = "My Profile",
+                        Section = "Cuenta",
+                        Title = "Mi Perfil",
                         Controller = "Profile",
                         Action = "Index",
                         Icon = "bi-person-circle"
@@ -40,8 +48,8 @@ namespace Proyecto.Services
 
                     new NavigationPages
                     {
-                        Section = "Account",
-                        Title = "Logout",
+                        Section = "Cuenta",
+                        Title = "Cerrar sesión",
                         Controller = "Login",
                         Action = "Logout",
                         Icon = "bi-box-arrow-right"
@@ -49,16 +57,16 @@ namespace Proyecto.Services
                 };
             }
 
-            // Support Technician
-            if (userRole == 2)
+            // Support Technician / Administrator
+            if (userRole == 2 )
             {
                 return new List<NavigationPages>
                 {
-                    // MAIN
+                    // PRINCIPAL
 
                     new NavigationPages
                     {
-                        Section = "Main",
+                        Section = "Principal",
                         Title = "Dashboard",
                         Controller = "Dashboard",
                         Action = "Index",
@@ -67,19 +75,19 @@ namespace Proyecto.Services
 
                     new NavigationPages
                     {
-                        Section = "Main",
+                        Section = "Principal",
                         Title = "Tickets",
                         Controller = "Ticket",
                         Action = "Index",
                         Icon = "bi-ticket-perforated"
                     },
 
-                    // CATALOGS
+                    // CATÁLOGOS
 
                     new NavigationPages
                     {
-                        Section = "Catalogs",
-                        Title = "Categories",
+                        Section = "Catálogos",
+                        Title = "Categorías",
                         Controller = "Category",
                         Action = "Index",
                         Icon = "bi-tags"
@@ -87,17 +95,17 @@ namespace Proyecto.Services
 
                     new NavigationPages
                     {
-                        Section = "Catalogs",
-                        Title = "Systems",
-                        Controller = "System",
+                        Section = "Catálogos",
+                        Title = "Departamentos",
+                        Controller = "Department",
                         Action = "Index",
-                        Icon = "bi-pc-display"
+                        Icon = "bi-building"
                     },
 
                     new NavigationPages
                     {
-                        Section = "Catalogs",
-                        Title = "Priorities",
+                        Section = "Catálogos",
+                        Title = "Prioridades",
                         Controller = "Priority",
                         Action = "Index",
                         Icon = "bi-flag"
@@ -105,8 +113,8 @@ namespace Proyecto.Services
 
                     new NavigationPages
                     {
-                        Section = "Catalogs",
-                        Title = "Risks",
+                        Section = "Catálogos",
+                        Title = "Riesgos",
                         Controller = "Risk",
                         Action = "Index",
                         Icon = "bi-exclamation-triangle"
@@ -114,30 +122,19 @@ namespace Proyecto.Services
 
                     new NavigationPages
                     {
-                        Section = "Catalogs",
-                        Title = "Status",
+                        Section = "Catálogos",
+                        Title = "Estados",
                         Controller = "Status",
                         Action = "Index",
                         Icon = "bi-list-check"
                     },
 
-                    // ADMINISTRATION
+                    // CUENTA
 
                     new NavigationPages
                     {
-                        Section = "Administration",
-                        Title = "Users",
-                        Controller = "User",
-                        Action = "Index",
-                        Icon = "bi-people"
-                    },
-
-                    // ACCOUNT
-
-                    new NavigationPages
-                    {
-                        Section = "Account",
-                        Title = "My Profile",
+                        Section = "Cuenta",
+                        Title = "Mi Perfil",
                         Controller = "Profile",
                         Action = "Index",
                         Icon = "bi-person-circle"
@@ -145,14 +142,120 @@ namespace Proyecto.Services
 
                     new NavigationPages
                     {
-                        Section = "Account",
-                        Title = "Logout",
+                        Section = "Cuenta",
+                        Title = "Cerrar sesión",
                         Controller = "Login",
                         Action = "Logout",
                         Icon = "bi-box-arrow-right"
                     }
                 };
             }
+            // Support Technician / Administrator
+            if (userRole == 1)
+            {
+                return new List<NavigationPages>
+                {
+                    // PRINCIPAL
+
+                    new NavigationPages
+                    {
+                        Section = "Principal",
+                        Title = "Dashboard",
+                        Controller = "Dashboard",
+                        Action = "Index",
+                        Icon = "bi-speedometer2"
+                    },
+
+                    new NavigationPages
+                    {
+                        Section = "Principal",
+                        Title = "Tickets",
+                        Controller = "Ticket",
+                        Action = "Index",
+                        Icon = "bi-ticket-perforated"
+                    },
+
+                    // CATÁLOGOS
+
+                    new NavigationPages
+                    {
+                        Section = "Catálogos",
+                        Title = "Categorías",
+                        Controller = "Category",
+                        Action = "Index",
+                        Icon = "bi-tags"
+                    },
+
+                    new NavigationPages
+                    {
+                        Section = "Catálogos",
+                        Title = "Departamentos",
+                        Controller = "Department",
+                        Action = "Index",
+                        Icon = "bi-building"
+                    },
+
+                    new NavigationPages
+                    {
+                        Section = "Catálogos",
+                        Title = "Prioridades",
+                        Controller = "Priority",
+                        Action = "Index",
+                        Icon = "bi-flag"
+                    },
+
+                    new NavigationPages
+                    {
+                        Section = "Catálogos",
+                        Title = "Riesgos",
+                        Controller = "Risk",
+                        Action = "Index",
+                        Icon = "bi-exclamation-triangle"
+                    },
+
+                    new NavigationPages
+                    {
+                        Section = "Catálogos",
+                        Title = "Estados",
+                        Controller = "Status",
+                        Action = "Index",
+                        Icon = "bi-list-check"
+                    },
+
+                    // ADMINISTRACIÓN
+
+                    new NavigationPages
+                    {
+                        Section = "Administración",
+                        Title = "Usuarios",
+                        Controller = "User",
+                        Action = "Index",
+                        Icon = "bi-people"
+                    },
+
+                    // CUENTA
+
+                    new NavigationPages
+                    {
+                        Section = "Cuenta",
+                        Title = "Mi Perfil",
+                        Controller = "Profile",
+                        Action = "Index",
+                        Icon = "bi-person-circle"
+                    },
+
+                    new NavigationPages
+                    {
+                        Section = "Cuenta",
+                        Title = "Cerrar sesión",
+                        Controller = "Login",
+                        Action = "Logout",
+                        Icon = "bi-box-arrow-right"
+                    }
+                };
+            }
+
+
 
             return new List<NavigationPages>();
         }
