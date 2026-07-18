@@ -31,7 +31,7 @@ namespace Proyecto.Controllers
             ViewData["Title"] = "Categories";
             ViewData["CustomNavMenu"] = NavigationService.GetMenuPages(GetCurrentRole());
 
-            var categories = await CategoryService.getAll();
+            var categories = await CategoryService.GetAll();
 
             return View(categories);
         }
@@ -73,7 +73,7 @@ namespace Proyecto.Controllers
             if (!ModelState.IsValid)
                 return View(category);
 
-            if (await CategoryService.exists(category.Name, category.DepartmentId))
+            if (await CategoryService.Exists(category.Name, category.DepartmentId))
             {
                 ModelState.AddModelError(
                     "Name",
@@ -82,7 +82,7 @@ namespace Proyecto.Controllers
                 return View(category);
             }
 
-            await CategoryService.create(category);
+            await CategoryService.Create(category);
 
             return RedirectToAction(nameof(Index));
         }
@@ -95,7 +95,7 @@ namespace Proyecto.Controllers
             ViewData["Title"] = "Editar categoría";
             ViewData["CustomNavMenu"] = NavigationService.GetMenuPages(GetCurrentRole());
 
-            var category = await CategoryService.getById(id);
+            var category = await CategoryService.GetById(id);
 
             if (category == null)
                 return NotFound();
@@ -129,7 +129,7 @@ namespace Proyecto.Controllers
             if (!ModelState.IsValid)
                 return View(category);
 
-            await CategoryService.update(category);
+            await CategoryService.Update(category);
 
             return RedirectToAction(nameof(Index));
         }
@@ -140,7 +140,7 @@ namespace Proyecto.Controllers
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
                 return RedirectToAction("Index", "Login");
 
-            await CategoryService.disable(id);
+            await CategoryService.Disable(id);
 
             return RedirectToAction(nameof(Index));
         }

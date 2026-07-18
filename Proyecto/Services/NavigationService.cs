@@ -57,7 +57,7 @@ namespace Proyecto.Services
                 };
             }
 
-            // Support Technician / Administrator
+            // Support Technician
             if (userRole == 2 )
             {
                 return new List<NavigationPages>
@@ -150,7 +150,7 @@ namespace Proyecto.Services
                     }
                 };
             }
-            // Support Technician / Administrator
+            // Administrator
             if (userRole == 1)
             {
                 return new List<NavigationPages>

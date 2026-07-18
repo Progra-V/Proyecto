@@ -8,7 +8,7 @@ namespace Proyecto.Services
     public static class CategoryService
     {
         // Obtiene todas las categorías.
-        public static async Task<List<CategoryViewModel>> getAll()
+        public static async Task<List<CategoryViewModel>> GetAll()
         {
             Client client = SupabClient.getSupabaseClient();
 
@@ -46,7 +46,7 @@ namespace Proyecto.Services
         }
 
         // Obtiene las categorías activas.
-        public static async Task<List<CategoryViewModel>> getActive()
+        public static async Task<List<CategoryViewModel>> GetActive()
         {
             Client client = SupabClient.getSupabaseClient();
 
@@ -85,7 +85,7 @@ namespace Proyecto.Services
         }
 
         // Obtiene una categoría por su identificador.
-        public static async Task<Category?> getById(long id)
+        public static async Task<Category?> GetById(long id)
         {
             Client client = SupabClient.getSupabaseClient();
 
@@ -109,7 +109,7 @@ namespace Proyecto.Services
         }
 
         // Obtiene las categorías de un departamento.
-        public static async Task<List<Category>> getByDepartment(long departmentId)
+        public static async Task<List<CategoryViewModel>> GetByDepartment(long departmentId)
         {
             Client client = SupabClient.getSupabaseClient();
 
@@ -126,13 +126,28 @@ namespace Proyecto.Services
                 .Where(x => x.Id == departmentId)
                 .Get()).Model;
 
-  
+            List<CategoryViewModel> result = new();
 
-            return categories;
+            foreach (var category in categories)
+            {
+                result.Add(new CategoryViewModel
+                {
+                    Id = category.Id,
+                    DepartmentId = category.DepartmentId,
+                    DepartmentName = department?.Name ?? "No encontrado",
+                    Name = category.Name,
+                    Description = category.Description,
+                    IsActive = category.IsActive,
+                    CreatedAt = category.CreatedAt,
+                    UpdatedAt = category.UpdatedAt
+                });
+            }
+
+            return result;
         }
 
         // Crea una categoría.
-        public static async Task create(Category category)
+        public static async Task Create(Category category)
         {
             Client client = SupabClient.getSupabaseClient();
 
@@ -146,7 +161,7 @@ namespace Proyecto.Services
         }
 
         // Actualiza una categoría.
-        public static async Task update(Category category)
+        public static async Task Update(Category category)
         {
             Client client = SupabClient.getSupabaseClient();
 
@@ -158,9 +173,9 @@ namespace Proyecto.Services
         }
 
         // Desactiva una categoría.
-        public static async Task disable(long id)
+        public static async Task Disable(long id)
         {
-            var category = await getById(id);
+            var category = await GetById(id);
 
             if (category == null)
                 return;
@@ -176,7 +191,7 @@ namespace Proyecto.Services
         }
 
         // Verifica si una categoría ya existe.
-        public static async Task<bool> exists(string name, long departmentId)
+        public static async Task<bool> Exists(string name, long departmentId)
         {
             Client client = SupabClient.getSupabaseClient();
 

@@ -112,5 +112,33 @@ namespace Proyecto.Services
 
             await Edit(department);
         }
+
+        //Generacion del codigo para el ticket, se genera con el codigo del departamento y el numero de ticket siguiente
+        public static async Task<string> GenerateNextTicketCode(int departmentId)
+        {
+            Client client = SupabClient.getSupabaseClient();
+
+            await client.InitializeAsync();
+
+            var department = (await client
+                .From<Department>()
+                .Where(x => x.Id == departmentId)
+                .Get()).Model;
+
+            if (department == null)
+                throw new InvalidOperationException("El departamento no existe.");
+
+            string ticketCode =
+                $"{department.Code}-{department.NextTicketNumber:D4}";
+
+            department.NextTicketNumber++;
+
+            await client
+                .From<Department>()
+                .Update(department);
+
+            return ticketCode;
+        }
+
     }
 }

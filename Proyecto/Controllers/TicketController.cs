@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Proyecto.Models;
+using Proyecto.Models.ViewModels;
 using Proyecto.Services;
 
 namespace Proyecto.Controllers
@@ -51,28 +52,47 @@ namespace Proyecto.Controllers
             List<Department> departments =
                 await DepartmentService.GetAll();
 
-            List<User> allUsers = await UserService.GetAll();
+            List<User> allUsers =
+                await UserService.GetAll();
 
-            // resolver nombres de comentarios
+            // Resolver nombres de comentarios
             foreach (var c in comments)
             {
-                c.CreatedByName = allUsers.Where(u => u.Id == c.CreatedBy)
+                c.CreatedByName = allUsers
+                    .Where(u => u.Id == c.CreatedBy)
                     .Select(u => $"{u.FirstName} {u.LastName}")
                     .FirstOrDefault();
             }
 
-            // resolver nombres del ticket (solicitante y técnico asignado)
+            // Resolver nombres del ticket
             var creador = allUsers.FirstOrDefault(u => u.Id == ticket.CreatedBy);
-            ticket.CreatedByName = creador != null ? $"{creador.FirstName} {creador.LastName}" : null;
 
-            var tecnico = ticket.AssignedTo.HasValue
+            ticket.CreatedByName =
+                creador != null
+                    ? $"{creador.FirstName} {creador.LastName}"
+                    : null;
+
+            var asignado = ticket.AssignedTo.HasValue
                 ? allUsers.FirstOrDefault(u => u.Id == ticket.AssignedTo.Value)
                 : null;
-            ticket.AssignedToName = tecnico != null ? $"{tecnico.FirstName} {tecnico.LastName}" : null;
 
-            List<User> technicians = allUsers
-                .Where(x => x.RoleId == 2 && x.IsActive)
-                .ToList();
+            ticket.AssignedToName =
+                asignado != null
+                    ? $"{asignado.FirstName} {asignado.LastName}"
+                    : null;
+
+            ticket.DepartmentName =
+                departments
+                .FirstOrDefault(x => x.Id == ticket.DepartmentId)
+                ?.Name;
+
+            List<CategoryViewModel> categories =
+                await CategoryService.GetAll();
+
+            ticket.CategoryName =
+                categories
+                .FirstOrDefault(x => x.Id == ticket.CategoryId)
+                ?.Name;
 
             TicketViewModels model = new TicketViewModels
             {
@@ -81,7 +101,9 @@ namespace Proyecto.Controllers
                 ActiveSessionUserId = currentUser.Id,
                 DepartmentName = ticket.DepartmentName,
                 Departments = departments,
-                Technicians = technicians
+                Categories = categories,
+                CurrentUser = currentUser,
+                AssignableUsers = await UserService.GetAssignableUsers(currentUser)
             };
 
             return View(model);
@@ -93,25 +115,98 @@ namespace Proyecto.Controllers
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
                 return RedirectToAction("Index", "Login");
 
+            var userJson = HttpContext.Session.GetString("user");
+
+            if (string.IsNullOrEmpty(userJson))
+                return RedirectToAction("Index", "Login");
+
+            User currentUser = JsonConvert.DeserializeObject<User>(userJson)!;
+
             Ticket? ticket = await TicketService.GetByTicketId(id);
 
             if (ticket == null)
                 return NotFound();
 
-            List<Department> departments = await DepartmentService.GetAll();
+            List<Department> departments =
+                await DepartmentService.GetAll();
 
-            List<User> technicians = (await UserService.GetAll())
-                .Where(x => x.RoleId == 2 && x.IsActive)
-                .ToList();
+            List<CategoryViewModel> categories =
+                await CategoryService.GetByDepartment(ticket.DepartmentId);
 
             TicketViewModels model = new TicketViewModels
             {
                 Ticket = ticket,
                 Departments = departments,
-                Technicians = technicians
+                Categories = categories,
+                CurrentUser = currentUser,
+                AssignableUsers = await UserService.GetAssignableUsers(currentUser)
             };
 
             return View(model);
+        }
+
+        public async Task<IActionResult> Create()
+        {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
+                return RedirectToAction("Index", "Login");
+
+            var userJson = HttpContext.Session.GetString("user");
+
+            if (string.IsNullOrEmpty(userJson))
+                return RedirectToAction("Index", "Login");
+
+            User currentUser = JsonConvert.DeserializeObject<User>(userJson)!;
+
+            TicketViewModels model = new TicketViewModels
+            {
+                CurrentUser = currentUser,
+                Departments = await DepartmentService.GetAll(),
+                Categories = new List<CategoryViewModel>(),
+                AssignableUsers = await UserService.GetAssignableUsers(currentUser)
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(Ticket ticket)
+        {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
+                return RedirectToAction("Index", "Login");
+
+            var userJson = HttpContext.Session.GetString("user");
+
+            User currentUser =
+                JsonConvert.DeserializeObject<User>(userJson!)!;
+
+            ticket.CreatedBy = currentUser.Id;
+
+            try
+            {
+                await TicketService.Create(ticket, currentUser);
+
+                TempData["Success"] =
+                    "El ticket fue creado correctamente.";
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                throw;
+
+                TicketViewModels model = new TicketViewModels
+                {
+                    Ticket = ticket,
+                    Departments = await DepartmentService.GetAll(),
+                    Categories = ticket.DepartmentId > 0
+                        ? await CategoryService.GetByDepartment(ticket.DepartmentId)
+                        : new List<CategoryViewModel>(),
+                    CurrentUser = currentUser,
+                    AssignableUsers = await UserService.GetAssignableUsers(currentUser)
+                };
+
+                return View(model);
+            }
         }
 
 
@@ -188,16 +283,24 @@ namespace Proyecto.Controllers
 
         [HttpPost]
         public async Task<IActionResult> UpdateTicket(
-    long ticketId,
-    string status,
-    string priority,
-    string risk,
-    string category,
-    int departmentId,
-    int? assignedTo)
+            long ticketId,
+            string status,
+            string priority,
+            string risk,
+            long categoryId,
+            int departmentId,
+            int? assignedTo,
+            DateTime? dueDate)
         {
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
                 return RedirectToAction("Index", "Login");
+
+            var userJson = HttpContext.Session.GetString("user");
+
+            if (string.IsNullOrEmpty(userJson))
+                return RedirectToAction("Index", "Login");
+
+            User currentUser = JsonConvert.DeserializeObject<User>(userJson)!;
 
             try
             {
@@ -206,9 +309,10 @@ namespace Proyecto.Controllers
                     status,
                     priority,
                     risk,
-                    category,
+                    categoryId,
                     departmentId,
-                    assignedTo
+                    assignedTo,
+                    currentUser
                 );
 
                 TempData["Success"] = "El ticket se actualizó correctamente.";
@@ -227,6 +331,21 @@ namespace Proyecto.Controllers
                     new { id = ticketId }
                 );
             }
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetCategories(int departmentId)
+        {
+            var categories = await CategoryService.GetByDepartment(departmentId);
+
+            var result = categories.Select(c => new
+            {
+                id = c.Id,
+                name = c.Name
+            });
+
+            return Json(result);
         }
     }
 }

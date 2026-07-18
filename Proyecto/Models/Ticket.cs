@@ -1,6 +1,6 @@
 ﻿using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace Proyecto.Models
 {
@@ -22,17 +22,17 @@ namespace Proyecto.Models
         [Column("justification")]
         public string? Justification { get; set; }
 
-        [Column("category")]
-        public string? Category { get; set; }
+        [Column("category_id")]
+        public long CategoryId { get; set; }
 
         [Column("risk")]
         public string? Risk { get; set; }
 
         [Column("status")]
-        public string Status { get; set; } = "Pendiente";
+        public string Status { get; set; } = "Pending";
 
         [Column("priority")]
-        public string Priority { get; set; } = "Media";
+        public string Priority { get; set; } = "Medium";
 
         [Column("department_id")]
         public int DepartmentId { get; set; }
@@ -45,6 +45,9 @@ namespace Proyecto.Models
 
         [JsonIgnore]
         public string? AssignedToName { get; set; }
+
+        [JsonIgnore]
+        public string? CategoryName { get; set; }
 
 
         [Column("created_by")]

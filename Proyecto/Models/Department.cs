@@ -29,5 +29,8 @@ namespace Proyecto.Models
 
         [Column("created_at")]
         public DateTime CreatedAt { get; set; }
+
+        [Column("next_ticket_number")]
+        public int NextTicketNumber { get; set; }
     }
 }
