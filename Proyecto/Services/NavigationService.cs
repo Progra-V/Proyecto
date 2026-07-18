@@ -102,32 +102,6 @@ namespace Proyecto.Services
                         Icon = "bi-building"
                     },
 
-                    new NavigationPages
-                    {
-                        Section = "Catálogos",
-                        Title = "Prioridades",
-                        Controller = "Priority",
-                        Action = "Index",
-                        Icon = "bi-flag"
-                    },
-
-                    new NavigationPages
-                    {
-                        Section = "Catálogos",
-                        Title = "Riesgos",
-                        Controller = "Risk",
-                        Action = "Index",
-                        Icon = "bi-exclamation-triangle"
-                    },
-
-                    new NavigationPages
-                    {
-                        Section = "Catálogos",
-                        Title = "Estados",
-                        Controller = "Status",
-                        Action = "Index",
-                        Icon = "bi-list-check"
-                    },
 
                     // CUENTA
 
@@ -195,32 +169,6 @@ namespace Proyecto.Services
                         Icon = "bi-building"
                     },
 
-                    new NavigationPages
-                    {
-                        Section = "Catálogos",
-                        Title = "Prioridades",
-                        Controller = "Priority",
-                        Action = "Index",
-                        Icon = "bi-flag"
-                    },
-
-                    new NavigationPages
-                    {
-                        Section = "Catálogos",
-                        Title = "Riesgos",
-                        Controller = "Risk",
-                        Action = "Index",
-                        Icon = "bi-exclamation-triangle"
-                    },
-
-                    new NavigationPages
-                    {
-                        Section = "Catálogos",
-                        Title = "Estados",
-                        Controller = "Status",
-                        Action = "Index",
-                        Icon = "bi-list-check"
-                    },
 
                     // ADMINISTRACIÓN
 
