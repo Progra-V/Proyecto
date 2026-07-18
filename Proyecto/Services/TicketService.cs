@@ -35,9 +35,7 @@ namespace Proyecto.Services
         private const int EmployeeRole = 3;
         public static async Task<List<Ticket>> GetAll()
         {
-            Supabase.Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
+            Supabase.Client client = await SupabClient.GetSupabaseClientAsync();
 
             var tickets = (await client
                 .From<Ticket>()
@@ -47,39 +45,25 @@ namespace Proyecto.Services
                 .From<Department>()
                 .Get()).Models;
 
-            var categories = (await client
-                .From<Category>()
-                .Get()).Models;
-
             var users = (await client
                 .From<User>()
                 .Get()).Models;
 
             foreach (var ticket in tickets)
             {
-                // Departamento
                 var department = departments
                     .FirstOrDefault(x => x.Id == ticket.DepartmentId);
 
                 ticket.DepartmentName =
-                    department?.Name ?? "Not found";
+                    department?.Name ?? "No encontrado";
 
-                // Categoría
-                var category = categories
-                    .FirstOrDefault(x => x.Id == ticket.CategoryId);
-
-                ticket.CategoryName =
-                    category?.Name ?? "Not found";
-
-                // Usuario creador
                 var creator = users
                     .FirstOrDefault(x => x.Id == ticket.CreatedBy);
 
                 ticket.CreatedByName = creator != null
                     ? $"{creator.FirstName} {creator.LastName}"
-                    : "Unknown";
+                    : "Desconocido";
 
-                // Usuario asignado
                 if (ticket.AssignedTo.HasValue)
                 {
                     var assignedUser = users
@@ -87,11 +71,11 @@ namespace Proyecto.Services
 
                     ticket.AssignedToName = assignedUser != null
                         ? $"{assignedUser.FirstName} {assignedUser.LastName}"
-                        : "Unassigned";
+                        : "No asignado";
                 }
                 else
                 {
-                    ticket.AssignedToName = "Unassigned";
+                    ticket.AssignedToName = "No asignado";
                 }
             }
 
@@ -103,52 +87,21 @@ namespace Proyecto.Services
             string status,
             string priority,
             string risk,
-            long categoryId,
+            string category,
             int departmentId,
-            int? assignedTo,
-            User currentUser)
+            int? assignedTo)
         {
-            Supabase.Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
-
-            var ticket = (await client
-                .From<Ticket>()
-                .Where(x => x.Id == ticketId)
-                .Get()).Model;
-
-            if (ticket == null)
-                throw new InvalidOperationException("El ticket no existe.");
-
-            ValidateStatus(status);
-            ValidateStatusChange(ticket.Status, status);
-            ValidatePriority(priority);
-            ValidateRisk(risk);
-
-            if (!await ValidateCategoryDepartment(categoryId, departmentId))
-            {
-                throw new InvalidOperationException(
-                    "La categoría seleccionada no pertenece al departamento.");
-            }
-
-            ticket.Status = status;
-            ticket.Priority = priority;
-            ticket.Risk = risk;
-            ticket.CategoryId = categoryId;
-            ticket.DepartmentId = departmentId;
-            ticket.AssignedTo = assignedTo;
-
-            await ApplyAssignmentRules(ticket, currentUser);
+            Supabase.Client client = await SupabClient.GetSupabaseClientAsync();
 
             TicketUpdate update = new TicketUpdate
             {
-                Id = ticket.Id,
-                Status = ticket.Status,
-                Priority = ticket.Priority,
-                Risk = ticket.Risk,
-                CategoryId = ticket.CategoryId,
-                DepartmentId = ticket.DepartmentId,
-                AssignedTo = ticket.AssignedTo,
+                Id = ticketId,
+                Status = status,
+                Priority = priority,
+                Risk = risk,
+                Category = category,
+                DepartmentId = departmentId,
+                AssignedTo = assignedTo,
                 UpdatedAt = DateTime.UtcNow
             };
 
@@ -157,51 +110,9 @@ namespace Proyecto.Services
                 .Update(update);
         }
 
-        private static void ValidateStatus(string status)
-        {
-            if (!StatusCatalog.Contains(status))
-                throw new InvalidOperationException("Estado inválido.");
-        }
-
-        private static void ValidatePriority(string priority)
-        {
-            if (!PriorityCatalog.Contains(priority))
-                throw new InvalidOperationException("Prioridad inválida.");
-        }
-
-        private static void ValidateRisk(string risk)
-        {
-            if (!RiskCatalog.Contains(risk))
-                throw new InvalidOperationException("Riesgo inválido.");
-        }
-
-        // Valida que la categoría pertenezca al departamento.
-        private static async Task<bool> ValidateCategoryDepartment(
-            long categoryId,
-            int departmentId)
-        {
-            Supabase.Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
-
-            var category = (await client
-                .From<Category>()
-                .Where(x => x.Id == categoryId)
-                .Get()).Model;
-
-            if (category == null)
-                return false;
-
-            return category.DepartmentId == departmentId;
-        }
-
-
-
         public static async Task<Ticket?> GetByTicketId(long id)
         {
-            Supabase.Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
+            Supabase.Client client = await SupabClient.GetSupabaseClientAsync();
 
             var result = await client
                 .From<Ticket>()
@@ -211,85 +122,99 @@ namespace Proyecto.Services
             return result.Model;
         }
 
-        public static async Task Create(
-            Ticket ticket,
-            User currentUser)
+        public static async Task Create(Ticket ticket)
         {
-            Supabase.Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
-
-            ValidatePriority(ticket.Priority);
-            ValidateRisk(ticket.Risk);
-
-            if (!await ValidateCategoryDepartment(
-                ticket.CategoryId,
-                ticket.DepartmentId))
-            {
-                throw new InvalidOperationException(
-                    "La categoría seleccionada no pertenece al departamento.");
-            }
-
-            await ApplyAssignmentRules(ticket, currentUser);
-
-            ticket.TicketCode =
-                await DepartmentService.GenerateNextTicketCode(
-                    ticket.DepartmentId);
-
-            ticket.Status = "Pending";
-            ticket.CreatedAt = DateTime.UtcNow;
-            ticket.UpdatedAt = DateTime.UtcNow;
-
-            var insertTicket = new Ticket
-            {
-                TicketCode = ticket.TicketCode,
-                Title = ticket.Title,
-                Description = ticket.Description,
-                Justification = ticket.Justification,
-                CategoryId = ticket.CategoryId,
-                DepartmentId = ticket.DepartmentId,
-                Priority = ticket.Priority,
-                Risk = ticket.Risk,
-                Status = ticket.Status,
-                CreatedBy = ticket.CreatedBy,
-                AssignedTo = ticket.AssignedTo,
-                CreatedAt = ticket.CreatedAt,
-                UpdatedAt = ticket.UpdatedAt,
-                DueDate = ticket.DueDate
-            };
+            Supabase.Client client = await SupabClient.GetSupabaseClientAsync();
 
             await client
                 .From<Ticket>()
                 .Insert(insertTicket);
         }
 
-
-
-        public static async Task UpdateStatus(
-            long ticketId,
-            string newStatus)
+        public static async Task UpdateStatus(long ticketId, string newStatus)
         {
-            Supabase.Client client = SupabClient.getSupabaseClient();
+            Supabase.Client client = await SupabClient.GetSupabaseClientAsync();
 
-            await client.InitializeAsync();
-
-            var ticket = (await client
-                .From<Ticket>()
-                .Where(x => x.Id == ticketId)
-                .Get()).Model;
-
-            if (ticket == null)
-                throw new InvalidOperationException("El ticket no existe.");
-
-            ValidateStatus(newStatus);
-            ValidateStatusChange(ticket.Status, newStatus);
-
-            ticket.Status = newStatus;
-            ticket.UpdatedAt = DateTime.UtcNow;
+            TicketStatusUpdate update = new TicketStatusUpdate
+            {
+                Id = ticketId,
+                Status = newStatus,
+                UpdatedAt = DateTime.UtcNow
+            };
 
             await client
+                .From<TicketStatusUpdate>()
+                .Where(x => x.Id == ticketId)
+                .Update(update);
+        }
+
+        public static async Task<string> GenerateTicketCode(int departmentId)
+        {
+            Supabase.Client client = await SupabClient.GetSupabaseClientAsync();
+
+            var department = (await client
+                .From<Department>()
+                .Where(x => x.Id == departmentId)
+                .Get()).Model;
+
+            if (department == null)
+                throw new InvalidOperationException("Departamento no encontrado.");
+
+            var ticketsInDepartment = (await client
                 .From<Ticket>()
-                .Update(ticket);
+                .Where(x => x.DepartmentId == departmentId)
+                .Get()).Models;
+
+            int nextNumber = 1;
+
+            if (ticketsInDepartment.Count > 0)
+            {
+                var numbers = ticketsInDepartment
+                    .Select(t =>
+                    {
+                        var parts = t.TicketCode.Split('-');
+                        return parts.Length == 2 && int.TryParse(parts[1], out int n) ? n : 0;
+                    })
+                    .ToList();
+
+                nextNumber = numbers.Max() + 1;
+            }
+
+            return $"{department.Code}-{nextNumber:D4}";
+        }
+
+        public static async Task<int?> AssignTechnician()
+        {
+            Supabase.Client client = await SupabClient.GetSupabaseClientAsync();
+
+            var technicians = (await client
+                .From<User>()
+                .Where(x => x.RoleId == 2)
+                .Where(x => x.IsActive == true)
+                .Get()).Models;
+
+            if (technicians.Count == 0)
+                return null;
+
+            var activeTickets = (await client
+                .From<Ticket>()
+                .Get()).Models
+                .Where(t => t.Status == "Pendiente" || t.Status == "En Revisión" || t.Status == "En Progreso")
+                .ToList();
+
+            var loads = technicians.Select(tech => new
+            {
+                Technician = tech,
+                ActiveCount = activeTickets.Count(t => t.AssignedTo == tech.Id)
+            }).ToList();
+
+            int minCount = loads.Min(x => x.ActiveCount);
+            var candidates = loads.Where(x => x.ActiveCount == minCount).ToList();
+
+            var random = new Random();
+            var chosen = candidates[random.Next(candidates.Count)];
+
+            return chosen.Technician.Id;
         }
         private static void ValidateStatusChange(
     string currentStatus,
@@ -298,77 +223,20 @@ namespace Proyecto.Services
             if (currentStatus == newStatus)
                 return;
 
-            if (currentStatus == "Pending")
-            {
-                if (newStatus == "In Progress" ||
-                    newStatus == "Completed")
-                {
-                    throw new InvalidOperationException(
-                        "No puede pasar de Pending a ese estado sin pasar primero por In Review.");
-                }
-            }
-
-            if (currentStatus == "Completed" &&
-                newStatus == "Cancelled")
-            {
-                throw new InvalidOperationException(
-                    "Un ticket Completed no puede cambiarse a Cancelled.");
-            }
-
-            if (currentStatus == "Cancelled" &&
-                newStatus == "Completed")
-            {
-                throw new InvalidOperationException(
-                    "Un ticket Cancelled no puede cambiarse a Completed.");
-            }
-        }
-
-        private static async Task ApplyAssignmentRules(
-            Ticket ticket,
-            User currentUser)
+        public static async Task<Ticket> CreateTicket(Ticket ticket)
         {
-            // Un empleado nunca puede asignar tickets.
-            if (currentUser.RoleId == EmployeeRole)
-            {
-                ticket.AssignedTo = null;
-                return;
-            }
+            ticket.TicketCode = await GenerateTicketCode(ticket.DepartmentId);
+            ticket.AssignedTo = await AssignTechnician();
+            ticket.CreatedAt = DateTime.UtcNow;
+            ticket.UpdatedAt = DateTime.UtcNow;
 
-            // Si no se asignó a nadie, no hay nada que validar.
-            if (!ticket.AssignedTo.HasValue)
-                return;
+            Supabase.Client client = await SupabClient.GetSupabaseClientAsync();
 
-            User? assignedUser =
-                await UserService.GetById(ticket.AssignedTo.Value);
+            var result = await client
+                .From<Ticket>()
+                .Insert(ticket);
 
-            if (assignedUser == null)
-            {
-                throw new InvalidOperationException(
-                    "El usuario asignado no existe.");
-            }
-
-            // Un técnico solo puede asignar a técnicos.
-            if (currentUser.RoleId == TechnicianRole)
-            {
-                if (assignedUser.RoleId != TechnicianRole)
-                {
-                    throw new InvalidOperationException(
-                        "Solo puede asignar tickets a técnicos.");
-                }
-
-                return;
-            }
-
-            // Un administrador puede asignar a técnicos y administradores.
-            if (currentUser.RoleId == AdminRole)
-            {
-                if (assignedUser.RoleId != TechnicianRole &&
-                    assignedUser.RoleId != AdminRole)
-                {
-                    throw new InvalidOperationException(
-                        "Solo puede asignar tickets a técnicos o administradores.");
-                }
-            }
+            return result.Models.First();
         }
     }
 }

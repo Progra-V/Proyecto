@@ -17,9 +17,7 @@ namespace Proyecto.Services
         {
             try
             {
-                Client client = SupabClient.getSupabaseClient();
-
-                await client.InitializeAsync();
+                Client client = await SupabClient.GetSupabaseClientAsync();
 
                 var result = await client
                     .From<User>()
@@ -37,9 +35,7 @@ namespace Proyecto.Services
 
         public static async Task<List<User>> GetAll()
         {
-            Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
+            Client client = await SupabClient.GetSupabaseClientAsync();
 
             var result = await client
                 .From<User>()
@@ -51,9 +47,7 @@ namespace Proyecto.Services
 
         public static async Task<User?> GetById(int id)
         {
-            Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
+            Client client = await SupabClient.GetSupabaseClientAsync();
 
             var result = await client
                 .From<User>()
@@ -66,9 +60,7 @@ namespace Proyecto.Services
 
         public static async Task Create(User user)
         {
-            Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
+            Client client = await SupabClient.GetSupabaseClientAsync();
 
             await client
                 .From<User>()
@@ -78,9 +70,7 @@ namespace Proyecto.Services
 
         public static async Task Edit(User user)
         {
-            Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
+            Client client = await SupabClient.GetSupabaseClientAsync();
 
             await client
                 .From<User>()

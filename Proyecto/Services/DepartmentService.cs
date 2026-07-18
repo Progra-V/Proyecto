@@ -8,9 +8,7 @@ namespace Proyecto.Services
     {
         public static async Task<List<Department>> GetAll()
         {
-            Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
+            Client client = await SupabClient.GetSupabaseClientAsync();
 
             var result = await client
                 .From<Department>()
@@ -23,9 +21,7 @@ namespace Proyecto.Services
 
         public static async Task<Department?> GetById(int id)
         {
-            Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
+            Client client = await SupabClient.GetSupabaseClientAsync();
 
             var result = await client
                 .From<Department>()
@@ -39,9 +35,7 @@ namespace Proyecto.Services
         {
             try
             {
-                Client client = SupabClient.getSupabaseClient();
-
-                await client.InitializeAsync();
+                Client client = await SupabClient.GetSupabaseClientAsync();
 
                 var result = await client
                     .From<Department>()
@@ -61,9 +55,7 @@ namespace Proyecto.Services
         {
             try
             {
-                Client client = SupabClient.getSupabaseClient();
-
-                await client.InitializeAsync();
+                Client client = await SupabClient.GetSupabaseClientAsync();
 
                 var result = await client
                     .From<Department>()
@@ -82,9 +74,7 @@ namespace Proyecto.Services
 
         public static async Task Create(Department department)
         {
-            Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
+            Client client = await SupabClient.GetSupabaseClientAsync();
 
             await client
                 .From<Department>()
@@ -95,9 +85,7 @@ namespace Proyecto.Services
 
         public static async Task Edit(Department department)
         {
-            Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
+            Client client = await SupabClient.GetSupabaseClientAsync();
 
             await client
                 .From<Department>()
