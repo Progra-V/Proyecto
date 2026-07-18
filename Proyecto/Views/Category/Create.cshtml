@@ -1,0 +1,39 @@
+﻿@model Proyecto.Models.Category
+
+@{
+    ViewData["Title"] = "New Category";
+}
+
+<div class="container-fluid">
+
+    <div class="category-header mb-4">
+
+        <h2 class="fw-bold">
+
+            New Category
+
+        </h2>
+
+        <p class="text-muted">
+
+            Create a new ticket category.
+
+        </p>
+
+    </div>
+
+    <form asp-action="Create"
+          method="post">
+
+        <partial name="_CategoryForm"
+                 model="Model" />
+
+    </form>
+
+</div>
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+}

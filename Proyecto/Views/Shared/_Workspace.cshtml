@@ -1,0 +1,120 @@
+﻿<div class="card shadow-sm border-0 h-100">
+
+    <div class="card-header bg-white">
+
+        <h5 class="mb-0 fw-semibold">
+
+            Workspace
+
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="d-grid gap-3">
+
+            <a asp-controller="Ticket"
+               asp-action="Create"
+               class="workspace-item">
+
+                <div class="workspace-icon bg-primary">
+
+                    <i class="bi bi-plus-circle"></i>
+
+                </div>
+
+                <div>
+
+                    <strong>Create Ticket</strong>
+
+                    <div class="text-muted small">
+
+                        Register a new support request
+
+                    </div>
+
+                </div>
+
+            </a>
+
+
+            <a asp-controller="Ticket"
+               asp-action="Index"
+               class="workspace-item">
+
+                <div class="workspace-icon bg-success">
+
+                    <i class="bi bi-search"></i>
+
+                </div>
+
+                <div>
+
+                    <strong>Search Tickets</strong>
+
+                    <div class="text-muted small">
+
+                        Browse existing tickets
+
+                    </div>
+
+                </div>
+
+            </a>
+
+
+            <a asp-controller="Profile"
+               asp-action="Index"
+               class="workspace-item">
+
+                <div class="workspace-icon bg-warning">
+
+                    <i class="bi bi-person"></i>
+
+                </div>
+
+                <div>
+
+                    <strong>My Profile</strong>
+
+                    <div class="text-muted small">
+
+                        Update your account
+
+                    </div>
+
+                </div>
+
+            </a>
+
+
+            <a asp-controller="Settings"
+               asp-action="Index"
+               class="workspace-item">
+
+                <div class="workspace-icon bg-secondary">
+
+                    <i class="bi bi-gear"></i>
+
+                </div>
+
+                <div>
+
+                    <strong>Settings</strong>
+
+                    <div class="text-muted small">
+
+                        Application preferences
+
+                    </div>
+
+                </div>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>

@@ -54,7 +54,7 @@ namespace Proyecto.Controllers
                     JsonConvert.SerializeObject(session)
                 );
 
-                return RedirectToAction("Index", "Ticket");
+                return RedirectToAction("Index", "Dashboard");
             }
             catch
             {

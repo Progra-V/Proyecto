@@ -1,0 +1,116 @@
+﻿/* ===========================================
+   CATEGORY MODULE
+===========================================*/
+
+/* Encabezado */
+
+.category-header h2 {
+    font-weight: 700;
+}
+
+.category-header p {
+    color: #6c757d;
+}
+
+
+/* Tarjetas */
+
+.card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.05);
+}
+
+
+/* Tabla */
+
+.table {
+    margin-bottom: 0;
+}
+
+    .table thead {
+        background: #f8f9fa;
+    }
+
+        .table thead th {
+            border: none;
+            font-weight: 600;
+            color: #495057;
+            padding: 16px;
+        }
+
+    .table tbody td {
+        padding: 16px;
+        vertical-align: middle;
+    }
+
+.table-hover tbody tr {
+    transition: .2s;
+}
+
+    .table-hover tbody tr:hover {
+        background: #f8f9fa;
+    }
+
+
+/* Badges */
+
+.badge {
+    padding: .55rem .9rem;
+    font-size: .75rem;
+    border-radius: 50rem;
+}
+
+
+/* Botones */
+
+.btn {
+    border-radius: 10px;
+}
+
+.btn-sm {
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* Formulario */
+
+.form-control,
+.form-select {
+    border-radius: 10px;
+    min-height: 45px;
+}
+
+    .form-control:focus,
+    .form-select:focus {
+        box-shadow: none;
+        border-color: #0d6efd;
+    }
+
+
+/* TextArea */
+
+textarea.form-control {
+    min-height: 120px;
+}
+
+
+/* Card del formulario */
+
+.card-body {
+    padding: 2rem;
+}
+
+
+/* Responsive */
+
+@media(max-width:768px) {
+
+    .table {
+        font-size: .9rem;
+    }
+}
