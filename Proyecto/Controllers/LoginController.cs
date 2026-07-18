@@ -21,7 +21,6 @@ namespace Proyecto.Controllers
             return RedirectToAction("Index");
         }
 
-
         [HttpPost]
         public async Task<IActionResult> ValidateLogin(UserModel user)
         {
@@ -33,17 +32,14 @@ namespace Proyecto.Controllers
                     user.Pwd
                 );
 
-
                 if (session == null)
                 {
                     ViewBag.LoginMessage = "Correo o contraseña incorrectos.";
                     return View("Index", user);
                 }
 
-
                 // Buscar usuario dentro de la tabla users
                 var currentUser = await UserService.GetByEmail(user.Email);
-
 
                 if (currentUser == null)
                 {
@@ -51,13 +47,11 @@ namespace Proyecto.Controllers
                     return View("Index", user);
                 }
 
-
                 if (!currentUser.IsActive)
                 {
                     ViewBag.LoginMessage = "El usuario se encuentra desactivado.";
                     return View("Index", user);
                 }
-
 
                 // Guardar sesión de Supabase (autenticación)
                 HttpContext.Session.SetString(
@@ -65,13 +59,11 @@ namespace Proyecto.Controllers
                     JsonConvert.SerializeObject(session)
                 );
 
-
                 // Guardar usuario interno de la aplicación
                 HttpContext.Session.SetString(
                     "user",
                     JsonConvert.SerializeObject(currentUser)
                 );
-
 
                 return RedirectToAction(
                     "Index",

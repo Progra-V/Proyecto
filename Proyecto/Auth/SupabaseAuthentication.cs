@@ -9,9 +9,7 @@ namespace Proyecto.Auth
         {
             try
             {
-                Client client = SupabClient.getSupabaseClient();
-
-                await client.InitializeAsync();
+                Client client = await SupabClient.GetSupabaseClientAsync();
 
                 var session = await client.Auth.SignIn(txtEmail, txtPwd);
 

@@ -12,9 +12,30 @@ namespace Proyecto.SupabaseClient
         private static readonly string url = _config["Supabase:Url"]!;
         private static readonly string key = _config["Supabase:Key"]!;
 
-        public static Client getSupabaseClient()
+        private static Client? _client;
+        private static readonly SemaphoreSlim _lock = new(1, 1);
+
+        public static async Task<Client> GetSupabaseClientAsync()
         {
-            return new Client(url, key);
+            if (_client != null)
+                return _client;
+
+            await _lock.WaitAsync();
+            try
+            {
+                if (_client == null)
+                {
+                    var options = new SupabaseOptions { AutoConnectRealtime = false };
+                    _client = new Client(url, key, options);
+                    await _client.InitializeAsync();
+                }
+            }
+            finally
+            {
+                _lock.Release();
+            }
+
+            return _client;
         }
     }
 }
