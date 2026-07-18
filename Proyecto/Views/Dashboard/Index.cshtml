@@ -1,0 +1,30 @@
+﻿@model Proyecto.ViewModels.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container-fluid">
+
+    <partial name="_DashboardHeader" />
+
+    <partial name="_DashboardCards" model="Model" />
+
+    <div class="row mt-4">
+
+        <div class="col-lg-8">
+
+            <partial name="_RecentTickets"
+                     model="Model.RecentTickets" />
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <partial name="_Workspace" />
+
+        </div>
+
+    </div>
+
+</div>

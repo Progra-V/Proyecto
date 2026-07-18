@@ -2,10 +2,17 @@
 using Proyecto.Models;
 using Proyecto.SupabaseClient;
 
+
+
 namespace Proyecto.Services
 {
     public static class UserService
     {
+
+
+        private const int AdminRole = 1;
+        private const int TechnicianRole = 2;
+        private const int EmployeeRole = 3;
         public static async Task<User?> GetByEmail(string email)
         {
             try
@@ -83,9 +90,40 @@ namespace Proyecto.Services
 
         public static async Task ChangeStatus(User user)
         {
-            user.Activo = !user.Activo;
+            user.IsActive = !user.IsActive;
 
             await Edit(user);
+        }
+
+
+        public static async Task<List<User>> GetAssignableUsers(User currentUser)
+        {
+            Client client = SupabClient.getSupabaseClient();
+
+            await client.InitializeAsync();
+
+            var result = await client
+                .From<User>()
+                .Where(x => x.IsActive == true)
+                .Get();
+
+            List<User> users = result.Models;
+
+            if (currentUser.RoleId == EmployeeRole)
+            {
+                return new List<User>();
+            }
+
+            if (currentUser.RoleId == TechnicianRole)
+            {
+                return users
+                    .Where(x => x.RoleId == TechnicianRole)
+                    .ToList();
+            }
+
+            return users
+                .Where(x => x.RoleId == AdminRole || x.RoleId == TechnicianRole)
+                .ToList();
         }
     }
 }

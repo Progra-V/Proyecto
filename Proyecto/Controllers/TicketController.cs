@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Proyecto.Models;
-using Proyecto.Services;
 using Newtonsoft.Json;
-using Supabase.Gotrue;
+using Proyecto.Models;
+using Proyecto.Models.ViewModels;
+using Proyecto.Services;
 
 namespace Proyecto.Controllers
 {
@@ -18,75 +18,334 @@ namespace Proyecto.Controllers
             if (string.IsNullOrEmpty(userJson))
                 return RedirectToAction("Index", "Login");
 
-            Proyecto.Models.User currentUser =
-                JsonConvert.DeserializeObject<Proyecto.Models.User>(userJson);
+            User currentUser = JsonConvert.DeserializeObject<User>(userJson)!;
 
-            ViewData["CustomNavMenu"] = NavigationService.GetMenuPages(currentUser.Rol);
+            ViewData["CustomNavMenu"] =
+                NavigationService.GetMenuPages(currentUser.RoleId);
 
             var tickets = await TicketService.GetAll();
 
             return View(tickets);
         }
 
-        public async Task<IActionResult> Detail(int id)
+
+        public async Task<IActionResult> Detail(long id)
         {
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
                 return RedirectToAction("Index", "Login");
 
-            Session? session = JsonConvert.DeserializeObject<Session>(
-                HttpContext.Session.GetString("session"));
+            var userJson = HttpContext.Session.GetString("user");
 
-            Ticket? detail = await TicketService.GetByTicketId(id);
+            if (string.IsNullOrEmpty(userJson))
+                return RedirectToAction("Index", "Login");
 
-            if (detail == null)
+            User currentUser = JsonConvert.DeserializeObject<User>(userJson)!;
+
+            Ticket? ticket = await TicketService.GetByTicketId(id);
+
+            if (ticket == null)
                 return NotFound();
 
-            detail.ActiveSessionUserId = session.User.Id;
+            List<Comment> comments =
+                await CommentService.GetByTicketId(id);
 
-            return View(detail);
+            List<Department> departments =
+                await DepartmentService.GetAll();
+
+            List<User> allUsers =
+                await UserService.GetAll();
+
+            // Resolver nombres de comentarios
+            foreach (var c in comments)
+            {
+                c.CreatedByName = allUsers
+                    .Where(u => u.Id == c.CreatedBy)
+                    .Select(u => $"{u.FirstName} {u.LastName}")
+                    .FirstOrDefault();
+            }
+
+            // Resolver nombres del ticket
+            var creador = allUsers.FirstOrDefault(u => u.Id == ticket.CreatedBy);
+
+            ticket.CreatedByName =
+                creador != null
+                    ? $"{creador.FirstName} {creador.LastName}"
+                    : null;
+
+            var asignado = ticket.AssignedTo.HasValue
+                ? allUsers.FirstOrDefault(u => u.Id == ticket.AssignedTo.Value)
+                : null;
+
+            ticket.AssignedToName =
+                asignado != null
+                    ? $"{asignado.FirstName} {asignado.LastName}"
+                    : null;
+
+            ticket.DepartmentName =
+                departments
+                .FirstOrDefault(x => x.Id == ticket.DepartmentId)
+                ?.Name;
+
+            List<CategoryViewModel> categories =
+                await CategoryService.GetAll();
+
+            ticket.CategoryName =
+                categories
+                .FirstOrDefault(x => x.Id == ticket.CategoryId)
+                ?.Name;
+
+            TicketViewModels model = new TicketViewModels
+            {
+                Ticket = ticket,
+                Comments = comments,
+                ActiveSessionUserId = currentUser.Id,
+                DepartmentName = ticket.DepartmentName,
+                Departments = departments,
+                Categories = categories,
+                CurrentUser = currentUser,
+                AssignableUsers = await UserService.GetAssignableUsers(currentUser)
+            };
+
+            return View(model);
+        }
+
+
+        public async Task<IActionResult> Edit(long id)
+        {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
+                return RedirectToAction("Index", "Login");
+
+            var userJson = HttpContext.Session.GetString("user");
+
+            if (string.IsNullOrEmpty(userJson))
+                return RedirectToAction("Index", "Login");
+
+            User currentUser = JsonConvert.DeserializeObject<User>(userJson)!;
+
+            Ticket? ticket = await TicketService.GetByTicketId(id);
+
+            if (ticket == null)
+                return NotFound();
+
+            List<Department> departments =
+                await DepartmentService.GetAll();
+
+            List<CategoryViewModel> categories =
+                await CategoryService.GetByDepartment(ticket.DepartmentId);
+
+            TicketViewModels model = new TicketViewModels
+            {
+                Ticket = ticket,
+                Departments = departments,
+                Categories = categories,
+                CurrentUser = currentUser,
+                AssignableUsers = await UserService.GetAssignableUsers(currentUser)
+            };
+
+            return View(model);
+        }
+
+        public async Task<IActionResult> Create()
+        {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
+                return RedirectToAction("Index", "Login");
+
+            var userJson = HttpContext.Session.GetString("user");
+
+            if (string.IsNullOrEmpty(userJson))
+                return RedirectToAction("Index", "Login");
+
+            User currentUser = JsonConvert.DeserializeObject<User>(userJson)!;
+
+            TicketViewModels model = new TicketViewModels
+            {
+                CurrentUser = currentUser,
+                Departments = await DepartmentService.GetAll(),
+                Categories = new List<CategoryViewModel>(),
+                AssignableUsers = await UserService.GetAssignableUsers(currentUser)
+            };
+
+            return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostComment(string ticketId, string commentText)
+        public async Task<IActionResult> Create(Ticket ticket)
         {
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
                 return RedirectToAction("Index", "Login");
 
-            Session? session = JsonConvert.DeserializeObject<Session>(
-                HttpContext.Session.GetString("session"));
+            var userJson = HttpContext.Session.GetString("user");
+
+            User currentUser =
+                JsonConvert.DeserializeObject<User>(userJson!)!;
+
+            ticket.CreatedBy = currentUser.Id;
+
+            try
+            {
+                await TicketService.Create(ticket, currentUser);
+
+                TempData["Success"] =
+                    "El ticket fue creado correctamente.";
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                throw;
+
+                TicketViewModels model = new TicketViewModels
+                {
+                    Ticket = ticket,
+                    Departments = await DepartmentService.GetAll(),
+                    Categories = ticket.DepartmentId > 0
+                        ? await CategoryService.GetByDepartment(ticket.DepartmentId)
+                        : new List<CategoryViewModel>(),
+                    CurrentUser = currentUser,
+                    AssignableUsers = await UserService.GetAssignableUsers(currentUser)
+                };
+
+                return View(model);
+            }
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> PostComment(
+            string ticketId,
+            string commentText)
+        {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
+                return RedirectToAction("Index", "Login");
+
+            var userJson = HttpContext.Session.GetString("user");
+
+            if (string.IsNullOrEmpty(userJson))
+                return RedirectToAction("Index", "Login");
+
+            User currentUser = JsonConvert.DeserializeObject<User>(userJson)!;
 
             Comment comment = new Comment
             {
+                TicketId = Convert.ToInt64(ticketId),
                 CommentText = commentText,
-                TicketId = Convert.ToInt32(ticketId),
-                CreatedBy = session.User.Id,
-                CreatedAt = DateTime.Now
+                CreatedBy = currentUser.Id,
+                CreatedAt = DateTime.UtcNow
             };
 
-            await TicketService.CreateComment(comment);
+            await CommentService.Create(comment);
 
-            return Redirect("Detail?id=" + ticketId);
+            return RedirectToAction(
+                "Detail",
+                new { id = ticketId }
+            );
         }
 
-        public async Task<IActionResult> DeleteComment(string ticketId, int commentId)
+
+        public async Task<IActionResult> DeleteComment(string ticketId, long commentId)
         {
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
                 return RedirectToAction("Index", "Login");
 
-            await TicketService.DeleteComment(commentId);
+            await CommentService.Delete(commentId);
 
-            return Redirect("Detail?id=" + ticketId);
+            return RedirectToAction("Detail", new { id = ticketId });
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ChangeStatus(
+        long ticketId,
+        string newStatus)
+        {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
+                return RedirectToAction("Index", "Login");
+
+            try
+            {
+                await TicketService.UpdateStatus(
+                    ticketId,
+                    newStatus
+                );
+
+                TempData["Success"] = "El estado del ticket se actualizó correctamente.";
+            }
+            catch (InvalidOperationException ex)
+            {
+                TempData["Error"] = ex.Message;
+            }
+
+            return RedirectToAction(
+                "Detail",
+                new { id = ticketId }
+            );
         }
 
         [HttpPost]
-        public async Task<IActionResult> ChangeStatus(int ticketId, string newStatus)
+        public async Task<IActionResult> UpdateTicket(
+            long ticketId,
+            string status,
+            string priority,
+            string risk,
+            long categoryId,
+            int departmentId,
+            int? assignedTo,
+            DateTime? dueDate)
         {
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
                 return RedirectToAction("Index", "Login");
 
-            await TicketService.UpdateStatus(ticketId, newStatus);
+            var userJson = HttpContext.Session.GetString("user");
 
-            return RedirectToAction("Detail", new { id = ticketId });
+            if (string.IsNullOrEmpty(userJson))
+                return RedirectToAction("Index", "Login");
+
+            User currentUser = JsonConvert.DeserializeObject<User>(userJson)!;
+
+            try
+            {
+                await TicketService.UpdateTicket(
+                    ticketId,
+                    status,
+                    priority,
+                    risk,
+                    categoryId,
+                    departmentId,
+                    assignedTo,
+                    currentUser
+                );
+
+                TempData["Success"] = "El ticket se actualizó correctamente.";
+
+                return RedirectToAction(
+                    "Detail",
+                    new { id = ticketId }
+                );
+            }
+            catch (InvalidOperationException ex)
+            {
+                TempData["Error"] = ex.Message;
+
+                return RedirectToAction(
+                    "Edit",
+                    new { id = ticketId }
+                );
+            }
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetCategories(int departmentId)
+        {
+            var categories = await CategoryService.GetByDepartment(departmentId);
+
+            var result = categories.Select(c => new
+            {
+                id = c.Id,
+                name = c.Name
+            });
+
+            return Json(result);
         }
     }
 }

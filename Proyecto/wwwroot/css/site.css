@@ -1,31 +1,356 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+    color: var(--bs-secondary-color);
+    text-align: end;
 }
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+    text-align: start;
+}
+
+/* ============================= */
+/* Sidebar */
+/* ============================= */
+
+.sidebar {
+    width: 260px;
+    min-height: 100vh;
+    background: #172B4D;
+    color: white;
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
+.sidebar-header {
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+}
+
+/* ==========================================
+   SIDEBAR
+========================================== */
+
+.sidebar {
+    width: 260px;
+    min-height: 100vh;
+    background: #172B4D;
+    color: white;
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
+.sidebar-header {
+    padding: 25px 20px;
+    border-bottom: 1px solid rgba(255,255,255,.15);
+}
+
+.sidebar-menu {
+    padding: 20px 15px;
+}
+
+.menu-section {
+    margin-bottom: 20px;
+}
+
+.menu-title {
+    color: #8FA6C9;
+    font-size: .75rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-left: 10px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.sidebar-link {
+    color: #D7E3F4;
+    border-radius: 10px;
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    transition: .2s;
+    font-weight: 500;
+}
+
+    .sidebar-link:hover {
+        background: #24446D;
+        color: white;
+    }
+
+    .sidebar-link.active {
+        background: #0D6EFD;
+        color: white;
+        font-weight: 600;
+    }
+
+    .sidebar-link i {
+        font-size: 18px;
+        width: 24px;
+    }
+
+
+/* ============================= */
+/* Main Content */
+/* ============================= */
+
+.main-content {
+    margin-left: 260px;
+    width: calc(100% - 260px);
+    min-height: 100vh;
+    background: #F4F5F7;
+}
+
+
+/* ============================= */
+/* Top Navbar */
+/* ============================= */
+
+.top-navbar {
+    height: 70px;
+    background: white;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+}
+
+
+/* ============================= */
+/* Cards */
+/* ============================= */
+
+.dashboard-card {
+    border: none;
+    border-radius: 12px;
+    transition: .25s;
+}
+
+    .dashboard-card:hover {
+        transform: translateY(-4px);
+    }
+
+
+/* ============================= */
+/* Tables */
+/* ============================= */
+
+.table {
+    background: white;
+    border-radius: 12px;
+}
+
+/* ==========================================
+   Dashboard Cards
+========================================== */
+
+.dashboard-card {
+    border-radius: 16px;
+    transition: .25s ease;
+    background: white;
+}
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 .75rem 1.5rem rgba(0,0,0,.10) !important;
+    }
+
+.dashboard-icon {
+    width: 55px;
+    height: 55px;
+    border-radius: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 22px;
+}
+
+.dashboard-card hr {
+    margin: 18px 0 14px 0;
+    opacity: .15;
+}
+
+/* ==========================================
+   Workspace
+========================================== */
+
+.workspace-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    text-decoration: none;
+    color: inherit;
+    padding: 15px;
+    border-radius: 12px;
+    transition: .25s;
+    border: 1px solid #eef1f4;
+}
+
+    .workspace-item:hover {
+        background: #f8f9fa;
+        transform: translateX(4px);
+        text-decoration: none;
+        color: inherit;
+    }
+
+.workspace-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+/* ===========================================
+   DASHBOARD HEADER
+===========================================*/
+
+.dashboard-header{
+
+    background:#ffffff;
+
+    border-radius:16px;
+
+    padding:28px;
+
+    box-shadow:0 4px 12px rgba(0,0,0,.05);
+
+    border:1px solid #eef1f5;
+}
+
+.dashboard-date{
+
+    background:#f8f9fa;
+
+    padding:18px;
+
+    border-radius:14px;
+
+    display:inline-block;
+
+    min-width:170px;
+}
+
+
+/* ===========================================
+   DASHBOARD CARDS
+===========================================*/
+
+.dashboard-card{
+
+    border-radius:16px;
+
+    transition:.25s ease;
+
+    background:white;
+}
+
+.dashboard-card:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:0 .8rem 1.6rem rgba(0,0,0,.08)!important;
+}
+
+.dashboard-icon{
+
+    width:55px;
+
+    height:55px;
+
+    border-radius:14px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    color:white;
+
+    font-size:22px;
+}
+
+
+/* ===========================================
+   WORKSPACE
+===========================================*/
+
+.workspace-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:14px;
+
+    border-radius:12px;
+
+    border:1px solid #eef1f5;
+
+    text-decoration:none;
+
+    color:inherit;
+
+    transition:.2s;
+}
+
+.workspace-item:hover{
+
+    background:#f8f9fa;
+
+    transform:translateX(5px);
+
+    color:inherit;
+}
+
+.workspace-icon{
+
+    width:48px;
+
+    height:48px;
+
+    border-radius:12px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    color:white;
+
+    font-size:20px;
 }

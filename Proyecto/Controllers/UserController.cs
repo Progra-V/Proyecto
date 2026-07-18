@@ -16,7 +16,7 @@ namespace Proyecto.Controllers
 
             User currentUser = JsonConvert.DeserializeObject<User>(userJson);
 
-            return currentUser.Rol == 1;
+            return currentUser.RoleId == 1;
         }
 
 
@@ -56,8 +56,8 @@ namespace Proyecto.Controllers
                 return View(user);
 
             user.SupabaseUserId = Guid.NewGuid();
-            user.FechaCreacion = DateTime.UtcNow;
-            user.Activo = true;
+            user.CreatedAt = DateTime.UtcNow;
+            user.IsActive = true;
 
             await UserService.Create(user);
 
@@ -106,6 +106,10 @@ namespace Proyecto.Controllers
 
             if (user == null)
                 return NotFound();
+
+            // Evitar desactivar administradores
+            if (user.RoleId == 1)
+                return RedirectToAction("Index");
 
             await UserService.ChangeStatus(user);
 
