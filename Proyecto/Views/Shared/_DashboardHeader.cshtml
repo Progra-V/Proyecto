@@ -5,15 +5,15 @@
 
     if (hour < 12)
     {
-        greeting = "Buenos Dias";
+        greeting = "Buenos días";
     }
     else if (hour < 18)
     {
-        greeting = "Buenas Tardes";
+        greeting = "Buenas tardes";
     }
     else
     {
-        greeting = "Buenas Noches";
+        greeting = "Buenas noches";
     }
 }
 
@@ -31,14 +31,15 @@
 
             <h5 class="text-primary">
 
-                @greeting 👋
+                @greeting
 
             </h5>
 
             <p class="text-muted mb-0">
 
-                Bienvenido al HelpDesk Pro
-         
+                Bienvenido 
+
+                    @ViewData["UserName"]            
 
             </p>
 

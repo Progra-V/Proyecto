@@ -164,29 +164,6 @@ namespace Proyecto.Controllers
         }
 
 
-        public async Task<IActionResult> Create()
-        {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
-                return RedirectToAction("Index", "Login");
-
-            var userJson = HttpContext.Session.GetString("user");
-
-            if (string.IsNullOrEmpty(userJson))
-                return RedirectToAction("Index", "Login");
-
-            User currentUser = JsonConvert.DeserializeObject<User>(userJson)!;
-
-            TicketViewModels model = new TicketViewModels
-            {
-                Ticket = new Ticket(),
-                CurrentUser = currentUser,
-                Departments = await DepartmentService.GetAll(),
-                Categories = new List<CategoryViewModel>(),
-            };
-
-            return View(model);
-        }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -213,12 +190,7 @@ namespace Proyecto.Controllers
 
             if (!ModelState.IsValid)
             {
-                model.CurrentUser = currentUser;
                 model.Departments = await DepartmentService.GetAll();
-                model.Categories = model.Ticket.DepartmentId > 0
-                    ? await CategoryService.GetByDepartment(model.Ticket.DepartmentId)
-                    : new List<CategoryViewModel>();
-
                 return View(model);
             }
 
@@ -231,6 +203,33 @@ namespace Proyecto.Controllers
 
             return RedirectToAction("Detail", new { id = created.Id });
         }
+
+
+        public async Task<IActionResult> Create()
+        {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
+                return RedirectToAction("Index", "Login");
+
+            var userJson = HttpContext.Session.GetString("user");
+
+            if (string.IsNullOrEmpty(userJson))
+                return RedirectToAction("Index", "Login");
+
+            User currentUser = JsonConvert.DeserializeObject<User>(userJson)!;
+
+            TicketViewModels model = new TicketViewModels
+            {
+                Ticket = new Ticket(),
+                CurrentUser = currentUser,
+                Departments = await DepartmentService.GetAll(),
+                Categories = new List<CategoryViewModel>(),
+            };
+
+            return View(model);
+        }
+
+
+
 
 
         public async Task<IActionResult> Edit(long id)
