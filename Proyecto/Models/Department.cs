@@ -4,7 +4,7 @@ using Supabase.Postgrest.Models;
 
 namespace Proyecto.Models
 {
-    [Table("departamentos")]
+    [Table("departments")]
     public class Department : BaseModel
     {
         [PrimaryKey("id")]
@@ -12,17 +12,25 @@ namespace Proyecto.Models
 
         [Required(ErrorMessage = "El nombre es obligatorio.")]
         [StringLength(100)]
-        [Column("nombre")]
-        public string Nombre { get; set; } = string.Empty;
+        [Column("name")]
+        public string Name { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "El código es obligatorio.")]
+        [StringLength(10)]
+        [Column("code")]
+        public string Code { get; set; } = string.Empty;
 
         [StringLength(250)]
-        [Column("descripcion")]
-        public string? Descripcion { get; set; }
+        [Column("description")]
+        public string? Description { get; set; }
 
-        [Column("activo")]
-        public bool Activo { get; set; }
+        [Column("is_active")]
+        public bool IsActive { get; set; }
 
-        [Column("fecha_creacion")]
-        public DateTime FechaCreacion { get; set; }
+        [Column("created_at")]
+        public DateTime CreatedAt { get; set; }
+
+        [Column("next_ticket_number")]
+        public int NextTicketNumber { get; set; }
     }
 }

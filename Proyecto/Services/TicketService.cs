@@ -1,52 +1,231 @@
-﻿using Proyecto.Models;
+using Proyecto.Models;
 using Proyecto.SupabaseClient;
-using Supabase;
 
 namespace Proyecto.Services
+
 {
     public static class TicketService
     {
+
+        public static readonly List<string> StatusCatalog =
+[
+            "Pendiente",
+            "En Revisión",
+            "En Progreso",
+            "Cancelado",
+            "Finalizado"
+];
+
+        public static readonly List<string> PriorityCatalog =
+        [
+            "Alta",
+             "Media",
+            "Baja"
+        ];
+
+        public static readonly List<string> RiskCatalog =
+        [
+            "Bajo",
+            "Medio",
+            "Alto"
+        ];
+
+        private const int AdminRole = 3;
+        private const int TechnicianRole = 2;
+        private const int EmployeeRole = 1;
         public static async Task<List<Ticket>> GetAll()
         {
-            Client client = SupabClient.getSupabaseClient();
+            Supabase.Client client = await SupabClient.GetSupabaseClientAsync();
 
-            await client.InitializeAsync();
+            var tickets = (await client
+                .From<Ticket>()
+                .Get()).Models;
 
-            var result = await client.From<Ticket>().Get();
-            return result.Models;
+            var departments = (await client
+                .From<Department>()
+                .Get()).Models;
+
+            var users = (await client
+                .From<User>()
+                .Get()).Models;
+
+            foreach (var ticket in tickets)
+            {
+                var department = departments
+                    .FirstOrDefault(x => x.Id == ticket.DepartmentId);
+
+                ticket.DepartmentName =
+                    department?.Name ?? "No encontrado";
+
+                var creator = users
+                    .FirstOrDefault(x => x.Id == ticket.CreatedBy);
+
+                ticket.CreatedByName = creator != null
+                    ? $"{creator.FirstName} {creator.LastName}"
+                    : "Desconocido";
+
+                if (ticket.AssignedTo.HasValue)
+                {
+                    var assignedUser = users
+                        .FirstOrDefault(x => x.Id == ticket.AssignedTo.Value);
+
+                    ticket.AssignedToName = assignedUser != null
+                        ? $"{assignedUser.FirstName} {assignedUser.LastName}"
+                        : "No asignado";
+                }
+                else
+                {
+                    ticket.AssignedToName = "No asignado";
+                }
+            }
+
+            return tickets;
         }
 
-        public static async Task<Ticket> GetByTicketId(int id)
+        public static async Task UpdateTicket(
+    long ticketId,
+    string status,
+    string priority,
+    string risk,
+    long categoryId,
+    int departmentId,
+    int? assignedTo,
+    User currentUser)
         {
-            Client client = SupabClient.getSupabaseClient();
+            Supabase.Client client = await SupabClient.GetSupabaseClientAsync();
 
-            await client.InitializeAsync();
+            TicketUpdate update = new TicketUpdate
+            {
+                Id = ticketId,
+                Status = status,
+                Priority = priority,
+                Risk = risk,
+                CategoryId = categoryId,
+                DepartmentId = departmentId,
+                AssignedTo = assignedTo,
+                UpdatedAt = DateTime.UtcNow
+            };
 
-            var result = await client.From<Ticket>().Where(x => x.Id == id).Get();
+            await client
+                .From<TicketUpdate>()
+                .Update(update);
+        }
 
-            var comments = await client.From<Comment>().Where(x => x.TicketId == id).Get();
+        public static async Task<Ticket?> GetByTicketId(long id)
+        {
+            Supabase.Client client = await SupabClient.GetSupabaseClientAsync();
 
-            result.Model?.Comments = comments.Models;
+            var result = await client
+                .From<Ticket>()
+                .Where(x => x.Id == id)
+                .Get();
 
             return result.Model;
         }
 
-        public static async Task CreateComment(Comment comment)
+   
+
+        public static async Task UpdateStatus(long ticketId, string newStatus)
         {
-            Client client = SupabClient.getSupabaseClient();
+            Supabase.Client client = await SupabClient.GetSupabaseClientAsync();
 
-            await client.InitializeAsync();
+            TicketStatusUpdate update = new TicketStatusUpdate
+            {
+                Id = ticketId,
+                Status = newStatus,
+                UpdatedAt = DateTime.UtcNow
+            };
 
-            await client.From<Comment>().Insert(comment);
+            await client
+                .From<TicketStatusUpdate>()
+                .Where(x => x.Id == ticketId)
+                .Update(update);
         }
 
-        public static async Task DeleteComment(int commentId)
+        public static async Task<string> GenerateTicketCode(int departmentId)
         {
-            Client client = SupabClient.getSupabaseClient();
+            Supabase.Client client = await SupabClient.GetSupabaseClientAsync();
 
-            await client.InitializeAsync();
+            var department = (await client
+                .From<Department>()
+                .Where(x => x.Id == departmentId)
+                .Get()).Model;
 
-            await client.From<Comment>().Where(x => x.Id == commentId).Delete();
+            if (department == null)
+                throw new InvalidOperationException("Departamento no encontrado.");
+
+            var ticketsInDepartment = (await client
+                .From<Ticket>()
+                .Where(x => x.DepartmentId == departmentId)
+                .Get()).Models;
+
+            int nextNumber = 1;
+
+            if (ticketsInDepartment.Count > 0)
+            {
+                var numbers = ticketsInDepartment
+                    .Select(t =>
+                    {
+                        var parts = t.TicketCode.Split('-');
+                        return parts.Length == 2 && int.TryParse(parts[1], out int n) ? n : 0;
+                    })
+                    .ToList();
+
+                nextNumber = numbers.Max() + 1;
+            }
+
+            return $"{department.Code}-{nextNumber:D4}";
+        }
+
+        public static async Task<int?> AssignTechnician()
+        {
+            Supabase.Client client = await SupabClient.GetSupabaseClientAsync();
+
+            var technicians = (await client
+                .From<User>()
+                .Where(x => x.RoleId == 2)
+                .Where(x => x.IsActive == true)
+                .Get()).Models;
+
+            if (technicians.Count == 0)
+                return null;
+
+            var activeTickets = (await client
+                .From<Ticket>()
+                .Get()).Models
+                .Where(t => t.Status == "Pendiente" || t.Status == "En Revisión" || t.Status == "En Progreso")
+                .ToList();
+
+            var loads = technicians.Select(tech => new
+            {
+                Technician = tech,
+                ActiveCount = activeTickets.Count(t => t.AssignedTo == tech.Id)
+            }).ToList();
+
+            int minCount = loads.Min(x => x.ActiveCount);
+            var candidates = loads.Where(x => x.ActiveCount == minCount).ToList();
+
+            var random = new Random();
+            var chosen = candidates[random.Next(candidates.Count)];
+
+            return chosen.Technician.Id;
+        }
+    
+
+        public static async Task<Ticket> CreateTicket(Ticket ticket)
+        {
+            ticket.TicketCode = await GenerateTicketCode(ticket.DepartmentId);
+            ticket.AssignedTo = await AssignTechnician();
+            ticket.CreatedAt = DateTime.UtcNow;
+            ticket.UpdatedAt = DateTime.UtcNow;
+
+            Supabase.Client client = await SupabClient.GetSupabaseClientAsync();
+
+            var result = await client
+                .From<Ticket>()
+                .Insert(ticket);
+
+            return result.Models.First();
         }
     }
 }

@@ -2,17 +2,22 @@
 using Proyecto.Models;
 using Proyecto.SupabaseClient;
 
+
+
 namespace Proyecto.Services
 {
     public static class UserService
     {
+
+
+        private const int AdminRole = 1;
+        private const int TechnicianRole = 2;
+        private const int EmployeeRole = 3;
         public static async Task<User?> GetByEmail(string email)
         {
             try
             {
-                Client client = SupabClient.getSupabaseClient();
-
-                await client.InitializeAsync();
+                Client client = await SupabClient.GetSupabaseClientAsync();
 
                 var result = await client
                     .From<User>()
@@ -30,9 +35,7 @@ namespace Proyecto.Services
 
         public static async Task<List<User>> GetAll()
         {
-            Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
+            Client client = await SupabClient.GetSupabaseClientAsync();
 
             var result = await client
                 .From<User>()
@@ -44,9 +47,7 @@ namespace Proyecto.Services
 
         public static async Task<User?> GetById(int id)
         {
-            Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
+            Client client = await SupabClient.GetSupabaseClientAsync();
 
             var result = await client
                 .From<User>()
@@ -59,9 +60,7 @@ namespace Proyecto.Services
 
         public static async Task Create(User user)
         {
-            Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
+            Client client = await SupabClient.GetSupabaseClientAsync();
 
             await client
                 .From<User>()
@@ -71,9 +70,7 @@ namespace Proyecto.Services
 
         public static async Task Edit(User user)
         {
-            Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
+            Client client = await SupabClient.GetSupabaseClientAsync();
 
             await client
                 .From<User>()
@@ -83,9 +80,10 @@ namespace Proyecto.Services
 
         public static async Task ChangeStatus(User user)
         {
-            user.Activo = !user.Activo;
+            user.IsActive = !user.IsActive;
 
             await Edit(user);
         }
+
     }
 }

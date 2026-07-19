@@ -1,0 +1,76 @@
+﻿@{
+    string greeting;
+
+    int hour = DateTime.Now.Hour;
+
+    if (hour < 12)
+    {
+        greeting = "Buenos días";
+    }
+    else if (hour < 18)
+    {
+        greeting = "Buenas tardes";
+    }
+    else
+    {
+        greeting = "Buenas noches";
+    }
+}
+
+<div class="dashboard-header mb-4">
+
+    <div class="row align-items-center">
+
+        <div class="col-md-8">
+
+            <h2 class="fw-bold mb-2">
+
+                Dashboard
+
+            </h2>
+
+            <h5 class="text-primary">
+
+                @greeting
+
+            </h5>
+
+            <p class="text-muted mb-0">
+
+                Bienvenido 
+
+                    @ViewData["UserName"]            
+
+            </p>
+
+        </div>
+
+        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+
+            <div class="dashboard-date">
+
+                <small class="text-muted">
+
+                    Hoy
+
+                </small>
+
+                <h5 class="mb-0">
+
+                    @DateTime.Now.ToString("dddd")
+
+                </h5>
+
+                <span class="text-muted">
+
+                    @DateTime.Now.ToString("dd MMM yyyy")
+
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

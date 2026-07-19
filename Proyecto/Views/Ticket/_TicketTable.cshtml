@@ -1,19 +1,24 @@
 @model List<Proyecto.Models.Ticket>
 
-@{
-    var departments =
-        ViewBag.Departments as Dictionary<int, string>;
-}
+<div class="d-flex justify-content-end mb-3">
 
+    <a asp-action="Create"
+       class="btn btn-primary">
+
+        Crear Ticket
+
+    </a>
+
+</div>
 
 <div class="table-responsive shadow-sm rounded-3">
+
     <table class="table table-hover table-striped align-middle mb-0 bg-white">
 
         <thead class="table-dark text-uppercase">
             <tr>
-                <th>ID</th>
+                <th>Código</th>
                 <th>Título</th>
-                <th>Descripción</th>
                 <th>Departamento</th>
                 <th class="text-center">Estado</th>
                 <th class="text-center">Prioridad</th>
@@ -33,41 +38,49 @@
             }
             else
             {
-                @foreach (var ticket in Model)
+                foreach (var ticket in Model)
                 {
                     var statusClass = ticket.Status?.ToLower() switch
                     {
-                        "open" or "abierto" => "bg-success",
-                        "in progress" or "en progreso" => "bg-warning text-dark",
-                        "closed" or "cerrado" or "done" => "bg-secondary",
-                        "blocked" or "bloqueado" => "bg-danger",
+                        "pending" => "bg-primary",
+                        "in review" => "bg-info text-dark",
+                        "in progress" => "bg-warning text-dark",
+                        "completed" => "bg-success",
+                        "cancelled" => "bg-danger",
                         _ => "bg-light text-dark border"
                     };
 
                     var priorityClass = ticket.Priority?.ToLower() switch
                     {
-                        "high" or "alta" => "bg-danger",
-                        "medium" or "media" => "bg-warning text-dark",
-                        "low" or "baja" => "bg-info text-dark",
+                        "high" => "bg-danger",
+                        "medium" => "bg-warning text-dark",
+                        "low" => "bg-info text-dark",
                         _ => "bg-light text-dark border"
                     };
 
-                    string departmentName = "Sin departamento";
-
-                    if (ticket.DepartamentoId.HasValue &&
-                        departments != null &&
-                        departments.TryGetValue(
-                            ticket.DepartamentoId.Value,
-                            out var foundDepartmentName))
+                    string statusText = ticket.Status switch
                     {
-                        departmentName = foundDepartmentName;
-                    }
+                        "Pending" => "Pendiente",
+                        "In Review" => "En Revisión",
+                        "In Progress" => "En Progreso",
+                        "Completed" => "Finalizado",
+                        "Cancelled" => "Cancelado",
+                        _ => ticket.Status ?? "Sin estado"
+                    };
+
+                    string priorityText = ticket.Priority switch
+                    {
+                        "High" => "Alta",
+                        "Medium" => "Media",
+                        "Low" => "Baja",
+                        _ => ticket.Priority ?? "Sin prioridad"
+                    };
 
                     <tr onclick="window.location.href='/Ticket/Detail?id=@ticket.Id'"
                         style="cursor:pointer">
 
                         <td class="fw-bold">
-                            @ticket.Id
+                            @ticket.TicketCode
                         </td>
 
                         <td>
@@ -75,7 +88,7 @@
                         </td>
 
                         <td>
-                            @(ticket.Description ?? "Sin descripción")
+                            @(ticket.DepartmentName ?? "Sin departamento")
                         </td>
 
                         <td>
@@ -84,13 +97,13 @@
 
                         <td class="text-center">
                             <span class="badge @statusClass">
-                                @ticket.Status
+                                @statusText
                             </span>
                         </td>
 
                         <td class="text-center">
                             <span class="badge @priorityClass">
-                                @ticket.Priority
+                                @priorityText
                             </span>
                         </td>
 
@@ -105,4 +118,5 @@
         </tbody>
 
     </table>
+
 </div>

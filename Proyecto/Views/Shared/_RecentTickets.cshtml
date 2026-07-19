@@ -1,0 +1,135 @@
+﻿@model List<Proyecto.Models.Ticket>
+
+<div class="card shadow-sm border-0 h-100">
+
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+
+        <div>
+
+            <h5 class="mb-0 fw-semibold">
+                Actividad reciente
+            </h5>
+
+            <small class="text-muted">
+                Últimos tickets registrados
+            </small>
+
+        </div>
+
+        <a asp-controller="Ticket"
+           asp-action="Index"
+           class="btn btn-outline-primary btn-sm">
+
+            Ver todos
+
+        </a>
+
+    </div>
+
+    <div class="card-body p-0">
+
+        @if (!Model.Any())
+        {
+            <div class="text-center p-5">
+
+                <i class="bi bi-ticket-perforated display-4 text-secondary"></i>
+
+                <h5 class="mt-3">
+                    No hay actividad reciente
+                </h5>
+
+            </div>
+        }
+        else
+        {
+
+            @foreach (var ticket in Model.OrderByDescending(x => x.CreatedAt).Take(8))
+            {
+                string statusClass = ticket.Status switch
+                {
+                    "Pending" => "bg-warning text-dark",
+                    "In Review" => "bg-primary",
+                    "In Progress" => "bg-info text-dark",
+                    "Completed" => "bg-success",
+                    "Cancelled" => "bg-danger",
+                    _ => "bg-secondary"
+                };
+
+                string statusText = ticket.Status switch
+                {
+                    "Pending" => "Pendiente",
+                    "In Review" => "En Revisión",
+                    "In Progress" => "En Progreso",
+                    "Completed" => "Finalizado",
+                    "Cancelled" => "Cancelado",
+                    _ => ticket.Status
+                };
+
+                string priorityClass = ticket.Priority switch
+                {
+                    "High" => "bg-danger",
+                    "Medium" => "bg-warning text-dark",
+                    "Low" => "bg-success",
+                    _ => "bg-secondary"
+                };
+
+                string priorityText = ticket.Priority switch
+                {
+                    "High" => "Alta",
+                    "Medium" => "Media",
+                    "Low" => "Baja",
+                    _ => ticket.Priority
+                };
+
+                <div class="ticket-row">
+
+                    <div class="ticket-icon">
+                        <i class="bi bi-ticket-perforated-fill"></i>
+                    </div>
+
+                    <div class="ticket-content">
+
+                        <strong>
+                            @ticket.Title
+                        </strong>
+
+                        <div class="text-muted small">
+                            Ticket #@ticket.TicketCode
+                        </div>
+
+                        <div class="mt-2">
+
+                            <span class="badge @statusClass">
+                                @statusText
+                            </span>
+
+                            <span class="badge @priorityClass ms-2">
+                                @priorityText
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div>
+
+                        <a asp-controller="Ticket"
+                           asp-action="Detail"
+                           asp-route-id="@ticket.Id"
+                           class="btn btn-light">
+
+                            <i class="bi bi-arrow-right"></i>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            }
+
+        }
+
+    </div>
+
+</div>

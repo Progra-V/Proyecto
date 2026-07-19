@@ -1,115 +1,121 @@
-@model Ticket
+@model TicketViewModels
 
 @{
-    ViewData["Title"] = "Ticket Detail";
+    ViewData["Title"] = "Detalle del Ticket";
 
-    string statusClass = Model.Status?.ToLower() switch
+    string statusClass = Model.Ticket.Status?.ToLower() switch
     {
-        "open" or "abierto" => "bg-success",
-        "in progress" or "en progreso" => "bg-warning text-dark",
-        "closed" or "cerrado" or "done" => "bg-secondary",
-        "blocked" or "bloqueado" => "bg-danger",
+        "pending" => "bg-secondary",
+        "in review" => "bg-info text-dark",
+        "in progress" => "bg-warning text-dark",
+        "cancelled" => "bg-dark",
+        "completed" => "bg-success",
         _ => "bg-light text-dark border"
     };
 
-    string priorityClass = Model.Priority?.ToLower() switch
+    string priorityClass = Model.Ticket.Priority?.ToLower() switch
     {
-        "high" or "alta" => "bg-danger",
-        "medium" or "media" => "bg-warning text-dark",
-        "low" or "baja" => "bg-info text-dark",
+        "high" => "bg-danger",
+        "medium" => "bg-warning text-dark",
+        "low" => "bg-success",
         _ => "bg-light text-dark border"
+    };
+
+    string statusText = Model.Ticket.Status switch
+    {
+        "Pending" => "Pendiente",
+        "In Review" => "En Revisión",
+        "In Progress" => "En Progreso",
+        "Cancelled" => "Cancelado",
+        "Completed" => "Finalizado",
+        _ => Model.Ticket.Status
+    };
+
+    string priorityText = Model.Ticket.Priority switch
+    {
+        "High" => "Alta",
+        "Medium" => "Media",
+        "Low" => "Baja",
+        _ => Model.Ticket.Priority
     };
 }
-<a asp-action="Index"
-   class="btn btn-outline-secondary btn-sm float-end">
-    Back to Tickets
-</a>
 
-<div class="container py-5" style="max-width:900px;">
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Volver a Tickets</a>
+    <a asp-action="Edit" asp-route-id="@Model.Ticket.Id" class="btn btn-primary btn-sm">Editar</a>
+</div>
+
+<div class="container py-4" style="max-width:900px;">
 
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
         <div>
-            <div class="d-flex align-items-center gap-2 mb-1">
-                <span class="badge bg-secondary text-uppercase small">@Model.TicketType</span>
-                <span class="text-muted fw-bold">#@Model.Id</span>
-            </div>
-            <h1 class="h2 text-dark mb-0 fw-bold">@Model.Title</h1>
+            <span class="text-muted fw-bold">@Model.Ticket.TicketCode</span>
+            <h1 class="h2 text-dark mb-0 fw-bold">@Model.Ticket.Title</h1>
         </div>
 
         <div class="d-flex gap-2">
-            <span class="badge @statusClass px-3 py-2 fs-6">@Model.Status</span>
-            <span class="badge @priorityClass px-3 py-2 fs-6">@Model.Priority</span>
+            <span class="badge @statusClass px-3 py-2 fs-6">
+                @statusText
+            </span>
+
+            <span class="badge @priorityClass px-3 py-2 fs-6">
+                @priorityText
+            </span>
         </div>
     </div>
 
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body p-4">
 
-            <h5 class="text-muted small text-uppercase fw-bold mb-2">
-                Description
-            </h5>
-
-            <div class="p-3 bg-light rounded-3 border-start border-primary border-3"
-                 style="white-space:pre-line;">
-                @(string.IsNullOrEmpty(Model.Description)
-                    ? "No description provided for this ticket."
-                    : Model.Description)
+            <h5 class="text-muted small text-uppercase fw-bold mb-2">Descripción</h5>
+            <div class="p-3 bg-light rounded-3 border-start border-primary border-3" style="white-space:pre-line;">
+                @(string.IsNullOrEmpty(Model.Ticket.Description) ? "Sin descripción." : Model.Ticket.Description)
             </div>
+
+            @if (!string.IsNullOrEmpty(Model.Ticket.Justification))
+            {
+                <h5 class="text-muted small text-uppercase fw-bold mt-4 mb-2">Justificación</h5>
+                <div class="p-3 bg-light rounded-3" style="white-space:pre-line;">
+                    @Model.Ticket.Justification
+                </div>
+            }
 
             <hr class="my-4">
 
             <div class="row g-4">
 
-                <div class="col-md">
-                    <span class="text-muted small text-uppercase fw-semibold">
-                        Department
-                    </span>
+                <div class="col-md-3">
+                    <span class="text-muted small text-uppercase fw-semibold">Riesgo</span>
+                    <p class="mb-0">@(Model.Ticket.Risk ?? "Sin definir")</p>
+                </div>
 
+                <div class="col-md-3">
+                    <span class="text-muted small text-uppercase fw-semibold">Categoría</span>
+                    <<p class="mb-0">@(Model.Ticket.CategoryName ?? "Sin definir")</p>
+                </div>
+
+                <div class="col-md-3">
+                    <span class="text-muted small text-uppercase fw-semibold">Departamento</span>
+                    <p class="mb-0">@(Model.DepartmentName ?? "Sin departamento")</p>
+                </div>
+
+                <div class="col-md-3">
+                    <span class="text-muted small text-uppercase fw-semibold">Fecha límite</span>
                     <p class="mb-0">
-                        @ViewBag.DepartmentName
+                        @(Model.Ticket.DueDate.HasValue
+                            ? Model.Ticket.DueDate.Value.ToString("dd/MM/yyyy")
+                            : "Sin fecha")
                     </p>
                 </div>
 
-                <div class="col-md">
-                    <span class="text-muted small text-uppercase fw-semibold">
-                        Created By
-                    </span>
-
-                    <p class="mb-0">
-                        @(Model.CreatedBy ?? "System")
-                    </p>
+                <div class="col-md-3">
+                    <span class="text-muted small text-uppercase fw-semibold">Solicitante</span>
+                    <p class="mb-0">@(Model.Ticket.CreatedByName ?? "Desconocido")</p>
                 </div>
 
-                <div class="col-md">
-                    <span class="text-muted small text-uppercase fw-semibold">
-                        Assigned To
-                    </span>
-
-                    <p class="mb-0">
-                        @(Model.AssignedTo ?? "Unassigned")
-                    </p>
-                </div>
-
-                <div class="col-md">
-                    <span class="text-muted small text-uppercase fw-semibold">
-                        Due Date
-                    </span>
-
-                    <p class="mb-0">
-                        @(Model.DueDate.HasValue
-                            ? Model.DueDate.Value.ToString("dd MMM yyyy")
-                            : "No due date")
-                    </p>
-                </div>
-
-                <div class="col-md">
-                    <span class="text-muted small text-uppercase fw-semibold">
-                        Updated
-                    </span>
-
-                    <p class="mb-0">
-                        @Model.UpdatedAt.ToString("dd/MM/yyyy HH:mm")
-                    </p>
+                <div class="col-md-3">
+                    <span class="text-muted small text-uppercase fw-semibold">Técnico asignado</span>
+                    <p class="mb-0">@(Model.Ticket.AssignedToName ?? "Sin asignar")</p>
                 </div>
 
             </div>
@@ -118,19 +124,20 @@
 
         <div class="card-footer bg-light border-0 px-4 py-3">
             <span class="text-muted small">
-                Created on @Model.CreatedAt.ToString("dd MMMM yyyy HH:mm")
+                Creado: @Model.Ticket.CreatedAt.ToString("dd/MM/yyyy HH:mm")
             </span>
 
-            
+            <span class="text-muted small ms-3">
+                Actualizado: @Model.Ticket.UpdatedAt.ToString("dd/MM/yyyy HH:mm")
+            </span>
         </div>
     </div>
-
 
     <div class="card shadow-sm border-0">
 
         <div class="card-header bg-white">
             <h5 class="mb-0 fw-bold">
-                Comments (@(Model.Comments?.Count ?? 0))
+                Comentarios (@(Model.Comments?.Count ?? 0))
             </h5>
         </div>
 
@@ -143,23 +150,23 @@
                     <div class="mb-3 p-3 bg-light rounded border">
 
                         <div class="d-flex justify-content-between">
-                            <strong>
-                                @(comment.CreatedBy ?? "Anonymous")
-                            </strong>
-
+                            <strong>@(comment.CreatedByName ?? "Anónimo")</strong>
                             <small class="text-muted">
                                 @comment.CreatedAt.ToString("dd MMM yyyy HH:mm")
                             </small>
                         </div>
 
                         <p class="mb-0 mt-2">
-                            @(comment.CommentText ?? "No content")
+                            @(comment.CommentText ?? "")
                         </p>
 
                         @if (comment.CreatedBy == Model.ActiveSessionUserId)
                         {
-                            <a href="/Ticket/DeleteComment?ticketId=@comment.TicketId&commentId=@comment.Id">
-                                Delete
+                            <a asp-action="DeleteComment"
+                               asp-route-ticketId="@Model.Ticket.Id"
+                               asp-route-commentId="@comment.Id"
+                               class="small text-danger">
+                                Eliminar
                             </a>
                         }
 
@@ -167,21 +174,20 @@
                 }
             }
 
-
-            <form action="PostComment" method="post">
+            <form asp-action="PostComment" method="post">
 
                 <input name="ticketId"
                        type="hidden"
-                       value="@Model.Id" />
+                       value="@Model.Ticket.Id" />
 
                 <textarea name="commentText"
                           class="form-control mb-2"
                           rows="3"
-                          placeholder="Write your comment here..."></textarea>
+                          placeholder="Escribe tu comentario..."></textarea>
 
                 <button type="submit"
                         class="btn btn-primary btn-sm">
-                    Post Comment
+                    Comentar
                 </button>
 
             </form>

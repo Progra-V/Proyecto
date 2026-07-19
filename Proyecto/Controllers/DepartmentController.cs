@@ -5,8 +5,22 @@ using Proyecto.Services;
 
 namespace Proyecto.Controllers
 {
-    public class DepartmentController : Controller
+    public class DepartmentController : BaseController
     {
+
+
+        //Obtener Role del usuario actual desde la sesión
+        private int GetCurrentRole()
+        {
+            var userJson = HttpContext.Session.GetString("user");
+
+            if (string.IsNullOrEmpty(userJson))
+                return 3;
+
+            var user = JsonConvert.DeserializeObject<User>(userJson);
+
+            return user?.RoleId ?? 3;
+        }
         private bool IsAdmin()
         {
             var userJson = HttpContext.Session.GetString("user");
@@ -17,29 +31,26 @@ namespace Proyecto.Controllers
             User? currentUser =
                 JsonConvert.DeserializeObject<User>(userJson);
 
-            return currentUser != null && currentUser.Rol == 1;
+            return currentUser != null && currentUser.RoleId == 1;
         }
-
 
         public async Task<IActionResult> Index()
         {
             if (!IsAdmin())
             {
                 if (string.IsNullOrEmpty(
-                    HttpContext.Session.GetString("user")
-                ))
+                    HttpContext.Session.GetString("user")))
                 {
                     return RedirectToAction("Index", "Login");
                 }
-
                 return RedirectToAction("Index", "Ticket");
             }
 
-            var departments = await DepartmentService.GetAll();
+            var departments =
+                await DepartmentService.GetAll();
 
             return View(departments);
         }
-
 
         [HttpGet]
         public IActionResult Create()
@@ -49,7 +60,7 @@ namespace Proyecto.Controllers
 
             var department = new Department
             {
-                Activo = true
+                IsActive = true
             };
 
             return View(department);
@@ -58,45 +69,42 @@ namespace Proyecto.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            Department department
-        )
+        public async Task<IActionResult> Create(Department department)
         {
             if (!IsAdmin())
                 return RedirectToAction("Index", "Ticket");
 
-            department.Nombre =
-                department.Nombre?.Trim() ?? string.Empty;
-
-            department.Descripcion =
-                department.Descripcion?.Trim();
+            department.Name = department.Name?.Trim() ?? string.Empty;
+            department.Code = department.Code?.Trim().ToUpper() ?? string.Empty;
+            department.Description = department.Description?.Trim();
 
             if (!ModelState.IsValid)
                 return View(department);
 
-            var existingDepartment =
-                await DepartmentService.GetByName(
-                    department.Nombre
-                );
+            var existingDepartment = await DepartmentService.GetByName(department.Name);
 
             if (existingDepartment != null)
             {
-                ModelState.AddModelError(
-                    nameof(department.Nombre),
-                    "Ya existe un departamento con ese nombre."
-                );
-
+                ModelState.AddModelError(nameof(department.Name), "Ya existe un departamento con ese nombre.");
                 return View(department);
             }
 
+            var existingCode = await DepartmentService.GetByCode(department.Code);
+
+            if (existingCode != null)
+            {
+                ModelState.AddModelError(nameof(department.Code), "Ya existe un departamento con ese código.");
+                return View(department);
+            }
+
+            department.CreatedAt = DateTime.UtcNow;   // ← esta línea es la que faltaba
+
             await DepartmentService.Create(department);
 
-            TempData["SuccessMessage"] =
-                "El departamento fue creado correctamente.";
+            TempData["SuccessMessage"] = "El departamento fue creado correctamente.";
 
             return RedirectToAction(nameof(Index));
         }
-
 
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
@@ -113,68 +121,86 @@ namespace Proyecto.Controllers
             return View(department);
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
-            Department department
-        )
+            Department department)
         {
             if (!IsAdmin())
                 return RedirectToAction("Index", "Ticket");
 
-            department.Nombre =
-                department.Nombre?.Trim() ?? string.Empty;
+            department.Name =
+                department.Name?.Trim() ?? string.Empty;
 
-            department.Descripcion =
-                department.Descripcion?.Trim();
+            department.Code =
+                department.Code?.Trim().ToUpper() ?? string.Empty;
+
+            department.Description =
+                department.Description?.Trim();
 
             if (!ModelState.IsValid)
                 return View(department);
 
             var currentDepartment =
                 await DepartmentService.GetById(
-                    department.Id
-                );
+                    department.Id);
 
             if (currentDepartment == null)
                 return NotFound();
 
             var existingDepartment =
                 await DepartmentService.GetByName(
-                    department.Nombre
-                );
+                    department.Name);
 
             if (existingDepartment != null &&
                 existingDepartment.Id != department.Id)
             {
                 ModelState.AddModelError(
-                    nameof(department.Nombre),
+                    nameof(department.Name),
                     "Ya existe otro departamento con ese nombre."
                 );
 
                 return View(department);
             }
 
-            currentDepartment.Nombre =
-                department.Nombre;
+            var existingCode =
+                await DepartmentService.GetByCode(
+                    department.Code);
 
-            currentDepartment.Descripcion =
-                department.Descripcion;
+            if (existingCode != null &&
+                existingCode.Id != department.Id)
+            {
+                ModelState.AddModelError(
+                    nameof(department.Code),
+                    "Ya existe otro departamento con ese código."
+                );
 
-            currentDepartment.Activo =
-                department.Activo;
+                return View(department);
+            }
+
+            currentDepartment.Name =
+                department.Name;
+
+
+            currentDepartment.Code =
+                department.Code;
+
+
+            currentDepartment.Description =
+                department.Description;
+
+
+            currentDepartment.IsActive =
+                department.IsActive;
 
             await DepartmentService.Edit(
-                currentDepartment
-            );
+                currentDepartment);
 
             TempData["SuccessMessage"] =
                 "El departamento fue actualizado correctamente.";
 
             return RedirectToAction(nameof(Index));
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -190,11 +216,10 @@ namespace Proyecto.Controllers
                 return NotFound();
 
             await DepartmentService.ChangeStatus(
-                department
-            );
+                department);
 
             TempData["SuccessMessage"] =
-                department.Activo
+                department.IsActive
                     ? "El departamento fue activado correctamente."
                     : "El departamento fue desactivado correctamente.";
 

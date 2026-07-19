@@ -1,4 +1,5 @@
-﻿using Supabase.Postgrest.Attributes;
+﻿using Newtonsoft.Json;
+using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
 
 namespace Proyecto.Models
@@ -6,8 +7,11 @@ namespace Proyecto.Models
     [Table("tickets")]
     public class Ticket : BaseModel
     {
-        [PrimaryKey("id", false)] 
+        [PrimaryKey("id", false)]
         public long Id { get; set; }
+
+        [Column("ticket_code")]
+        public string TicketCode { get; set; } = string.Empty;
 
         [Column("title")]
         public string Title { get; set; } = string.Empty;
@@ -15,56 +19,53 @@ namespace Proyecto.Models
         [Column("description")]
         public string? Description { get; set; }
 
+        [Column("justification")]
+        public string? Justification { get; set; }
+
+        [Column("category_id")]
+        public long? CategoryId { get; set; }
+
+        [JsonIgnore]
+        public string? CategoryName { get; set; }
+
+        [Column("risk")]
+        public string? Risk { get; set; }
+
         [Column("status")]
-        public string Status { get; set; } = "Open";
+        public string Status { get; set; } = "Pending";
 
         [Column("priority")]
         public string Priority { get; set; } = "Medium";
 
-        [Column("ticket_type")]
-        public string TicketType { get; set; } = "Task";
+        [Column("department_id")]
+        public int DepartmentId { get; set; }
+
+        [JsonIgnore]
+        public string? DepartmentName { get; set; }
+
+        [JsonIgnore]
+        public string? CreatedByName { get; set; }
+
+        [JsonIgnore]
+        public string? AssignedToName { get; set; }
 
         [Column("departamento_id")]
         public int? DepartamentoId { get; set; }
 
         [Column("created_by")]
-        public string? CreatedBy { get; set; }
+        public int CreatedBy { get; set; }
 
         [Column("assigned_to")]
-        public string? AssignedTo { get; set; }
-
-        [Column("created_at")]
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-        [Column("updated_at")]
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
-        [Column("due_date")]
-        public DateTime? DueDate { get; set; }
-
-        public List<Comment>? Comments { get; set; }
-
-        public string ActiveSessionUserId { get; set; }
-    }
-
-    [Table("comments")]
-    public class Comment : BaseModel
-    {
-        [PrimaryKey("id", false)] // false indica que es auto-generado por la BD (Identity)
-        public long Id { get; set; }
-
-        [Column("ticket_id")]
-        public long TicketId { get; set; }
-
-        [Column("comment_text")]
-        public string? CommentText { get; set; }
-
-        [Column("created_by")]
-        public string? CreatedBy { get; set; } // O puedes usar Guid? si prefieres tipado estricto para el UUID
+        public int? AssignedTo { get; set; }
 
         [Column("created_at")]
         public DateTime CreatedAt { get; set; }
-    }
-}
 
-  
+        [Column("updated_at")]
+        public DateTime UpdatedAt { get; set; }
+
+        [Column("due_date")]
+        public DateTime? DueDate { get; set; }
+    }
+
+}

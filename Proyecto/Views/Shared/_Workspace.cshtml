@@ -1,0 +1,110 @@
+﻿<div class="card shadow-sm border-0 h-100">
+
+    <div class="card-header bg-white">
+
+        <h5 class="mb-0 fw-semibold">
+            Accesos rápidos
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="d-grid gap-3">
+
+            <a asp-controller="Ticket"
+               asp-action="Index"
+               class="workspace-item">
+
+                <div class="workspace-icon bg-primary">
+
+                    <i class="bi bi-ticket-perforated"></i>
+
+                </div>
+
+                <div>
+
+                    <strong>Tickets</strong>
+
+                    <div class="text-muted small">
+                        Consultar y administrar tickets
+                    </div>
+
+                </div>
+
+            </a>
+
+
+            <a asp-controller="Department"
+               asp-action="Index"
+               class="workspace-item">
+
+                <div class="workspace-icon bg-success">
+
+                    <i class="bi bi-building"></i>
+
+                </div>
+
+                <div>
+
+                    <strong>Departamentos</strong>
+
+                    <div class="text-muted small">
+                        Administrar departamentos
+                    </div>
+
+                </div>
+
+            </a>
+
+
+            <a asp-controller="Category"
+               asp-action="Index"
+               class="workspace-item">
+
+                <div class="workspace-icon bg-info">
+
+                    <i class="bi bi-tags"></i>
+
+                </div>
+
+                <div>
+
+                    <strong>Categorías</strong>
+
+                    <div class="text-muted small">
+                        Gestionar categorías de tickets
+                    </div>
+
+                </div>
+
+            </a>
+
+
+            <a asp-controller="Profile"
+               asp-action="Index"
+               class="workspace-item">
+
+                <div class="workspace-icon bg-warning">
+
+                    <i class="bi bi-person-circle"></i>
+
+                </div>
+
+                <div>
+
+                    <strong>Mi Perfil</strong>
+
+                    <div class="text-muted small">
+                        Ver información de la cuenta
+                    </div>
+
+                </div>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
