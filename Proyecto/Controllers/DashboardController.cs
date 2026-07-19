@@ -8,27 +8,34 @@ namespace Proyecto.Controllers
     public class DashboardController : BaseController
     {
 
-        //Obtener Role del usuario actual desde la sesión
-        private int GetCurrentRole()
+        private User? GetCurrentUser()
         {
             var userJson = HttpContext.Session.GetString("user");
 
             if (string.IsNullOrEmpty(userJson))
-                return 3;
+                return null;
 
-            var user = JsonConvert.DeserializeObject<User>(userJson);
-
-            return user?.RoleId ?? 3;
+            return JsonConvert.DeserializeObject<User>(userJson);
         }
+
+
         public async Task<IActionResult> Index()
         {
-            // Verifica si el usuario ha iniciado sesión
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
                 return RedirectToAction("Index", "Login");
 
+            var currentUser = GetCurrentUser();
+
+            if (currentUser == null)
+                return RedirectToAction("Index", "Login");
+
+
             ViewData["Title"] = "Dashboard";
 
-            // Obtiene toda la información del Dashboard desde el Service
+            ViewData["UserName"] =
+                $"{currentUser.FirstName} {currentUser.LastName}";
+
+
             var dashboard = await DashboardService.GetDashboardAsync();
 
             return View(dashboard);
