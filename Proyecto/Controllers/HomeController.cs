@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace Proyecto.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         public IActionResult Ticket()
         {

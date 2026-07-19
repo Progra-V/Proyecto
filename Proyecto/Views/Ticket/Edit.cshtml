@@ -1,19 +1,75 @@
-@model TicketViewModels
+@model Proyecto.Models.TicketViewModels
 
 @{
     ViewData["Title"] = "Editar Ticket";
+
+    const int EmployeeRole = 3;
 }
 
-<a asp-action="Detail" asp-route-id="@Model.Ticket.Id" class="btn btn-outline-secondary btn-sm mb-3">
-    Volver al detalle
-</a>
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"></button>
+    </div>
+}
 
-<div class="container" style="max-width:700px;">
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"></button>
+    </div>
+}
 
-    <h1 class="h3 mb-4">Editar @Model.Ticket.TicketCode</h1>
+<div class="container py-4">
 
-    <form asp-action="UpdateTicket" method="post">
-        <input type="hidden" name="ticketId" value="@Model.Ticket.Id" />
+    <div class="card shadow border-0">
+
+        <div class="card-header bg-primary text-white">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <h3 class="mb-0">
+                    Editar Ticket @Model.Ticket.TicketCode
+                </h3>
+
+                <a asp-action="Detail"
+                   asp-route-id="@Model.Ticket.Id"
+                   class="btn btn-light btn-sm">
+
+                    Volver
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="card-body">
+
+            <form asp-action="UpdateTicket"
+                  method="post">
+
+                <input type="hidden"
+                       name="ticketId"
+                       value="@Model.Ticket.Id" />
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Departamento
+                        </label>
+
+                        <select name="departmentId"
+                                id="departmentSelect"
+                                class="form-select">
 
         <div class="mb-3">
             <label class="form-label fw-semibold">Estado</label>
@@ -50,33 +106,140 @@
             <select name="category" class="form-select">
                 @foreach (var c in new[] { "Hardware", "Software", "Red", "Accesos", "Otro" })
                 {
-                    <option value="@c" selected="@(Model.Ticket.Category == c)">@c</option>
+                    <option value="@c" selected="@(Model.Ticket.CategoryName == c)">@c</option>
                 }
             </select>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label fw-semibold">Departamento</label>
-            <select name="departmentId" class="form-select">
-                @foreach (var d in Model.Departments)
-                {
-                    <option value="@d.Id" selected="@(Model.Ticket.DepartmentId == d.Id)">@d.Name</option>
-                }
-            </select>
+                            <input type="hidden"
+                                   name="assignedTo"
+                                   value="" />
+                        }
+                        else
+                        {
+                            <select name="assignedTo"
+                                    class="form-select">
+
+                                <option value="">
+                                    Sin asignar
+                                </option>
+
+                                @if (Model.CurrentUser.Id == Model.Ticket.AssignedTo)
+                                {
+                                    <option value="@Model.CurrentUser.Id"
+                                            selected>
+                                        Asignado a mí
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="@Model.CurrentUser.Id">
+                                        Asignarme este ticket
+                                    </option>
+                                }
+
+                                @foreach (var user in Model.AssignableUsers)
+                                {
+                                    if (user.Id != Model.CurrentUser.Id)
+                                    {
+                                        <option value="@user.Id"
+                                                selected="@(Model.Ticket.AssignedTo == user.Id)">
+                                            @user.FirstName @user.LastName
+                                        </option>
+                                    }
+                                }
+
+                            </select>
+                        }
+
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+
+                        <label class="form-label">
+                            Fecha límite
+                        </label>
+
+                        <input type="date"
+                               name="dueDate"
+                               class="form-control"
+                               value="@(Model.Ticket.DueDate?.ToString("yyyy-MM-dd"))" />
+
+                    </div>
+
+                </div>
+
+                <hr />
+
+                <div class="d-flex justify-content-end gap-2">
+
+                    <a asp-action="Detail"
+                       asp-route-id="@Model.Ticket.Id"
+                       class="btn btn-secondary">
+
+                        Cancelar
+
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-success">
+
+                        Guardar cambios
+
+                    </button>
+
+                </div>
+
+            </form>
+
         </div>
 
-        <div class="mb-3">
-            <label class="form-label fw-semibold">Técnico asignado</label>
-            <select name="assignedTo" class="form-select">
-                <option value="">Sin asignar</option>
-                @foreach (var t in Model.Technicians)
-                {
-                    <option value="@t.Id" selected="@(Model.Ticket.AssignedTo == t.Id)">@t.FirstName @t.LastName</option>
-                }
-            </select>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Guardar cambios</button>
-    </form>
+    </div>
 
 </div>
+
+@section Scripts
+{
+    <script>
+
+        document
+            .getElementById("departmentSelect")
+            .addEventListener("change", async function () {
+
+                const departmentId = this.value;
+
+                const categorySelect =
+                    document.getElementById("categorySelect");
+
+                categorySelect.innerHTML =
+                    "<option>Cargando...</option>";
+
+                if (departmentId === "") {
+
+                    categorySelect.innerHTML =
+                        "<option value=''>Seleccione...</option>";
+
+                    return;
+                }
+
+                const response =
+                    await fetch(`/Ticket/GetCategories?departmentId=${departmentId}`);
+
+                const categories =
+                    await response.json();
+
+                categorySelect.innerHTML =
+                    "<option value=''>Seleccione...</option>";
+                                    categories.forEach(category => {
+
+                    categorySelect.innerHTML +=
+                        `<option value="${category.id}">
+                            ${category.name}
+                        </option>`;
+
+                });
+
+            });
+
+    </script>
+}

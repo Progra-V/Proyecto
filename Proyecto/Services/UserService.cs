@@ -2,10 +2,17 @@
 using Proyecto.Models;
 using Proyecto.SupabaseClient;
 
+
+
 namespace Proyecto.Services
 {
     public static class UserService
     {
+
+
+        private const int AdminRole = 1;
+        private const int TechnicianRole = 2;
+        private const int EmployeeRole = 3;
         public static async Task<User?> GetByEmail(string email)
         {
             try
@@ -77,5 +84,6 @@ namespace Proyecto.Services
 
             await Edit(user);
         }
+
     }
 }

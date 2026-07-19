@@ -2,8 +2,16 @@
 {
     public class NavigationPages
     {
-        public String Controller{ get; set; }
-        public String Action { get; set; }
-        public String Title { get; set; }
+        public string Title { get; set; } = string.Empty;
+
+        public string Controller { get; set; } = string.Empty;
+
+        public string Action { get; set; } = string.Empty;
+
+        // Sección del menú (Main, Catalogs, Administration)
+        public string Section { get; set; } = string.Empty;
+
+        // Ícono de Bootstrap Icons
+        public string Icon { get; set; } = string.Empty;
     }
 }

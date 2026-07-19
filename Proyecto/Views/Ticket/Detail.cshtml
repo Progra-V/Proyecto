@@ -5,20 +5,38 @@
 
     string statusClass = Model.Ticket.Status?.ToLower() switch
     {
-        "pending" or "pendiente" => "bg-secondary",
-        "in review" or "en revisión" => "bg-info text-dark",
-        "in progress" or "en progreso" => "bg-warning text-dark",
-        "cancelled" or "cancelado" => "bg-dark",
-        "finished" or "finalizado" => "bg-success",
+        "pending" => "bg-secondary",
+        "in review" => "bg-info text-dark",
+        "in progress" => "bg-warning text-dark",
+        "cancelled" => "bg-dark",
+        "completed" => "bg-success",
         _ => "bg-light text-dark border"
     };
 
     string priorityClass = Model.Ticket.Priority?.ToLower() switch
     {
-        "high" or "alta" => "bg-danger",
-        "medium" or "media" => "bg-warning text-dark",
-        "low" or "baja" => "bg-success",
+        "high" => "bg-danger",
+        "medium" => "bg-warning text-dark",
+        "low" => "bg-success",
         _ => "bg-light text-dark border"
+    };
+
+    string statusText = Model.Ticket.Status switch
+    {
+        "Pending" => "Pendiente",
+        "In Review" => "En Revisión",
+        "In Progress" => "En Progreso",
+        "Cancelled" => "Cancelado",
+        "Completed" => "Finalizado",
+        _ => Model.Ticket.Status
+    };
+
+    string priorityText = Model.Ticket.Priority switch
+    {
+        "High" => "Alta",
+        "Medium" => "Media",
+        "Low" => "Baja",
+        _ => Model.Ticket.Priority
     };
 }
 
@@ -36,8 +54,13 @@
         </div>
 
         <div class="d-flex gap-2">
-            <span class="badge @statusClass px-3 py-2 fs-6">@Model.Ticket.Status</span>
-            <span class="badge @priorityClass px-3 py-2 fs-6">@Model.Ticket.Priority</span>
+            <span class="badge @statusClass px-3 py-2 fs-6">
+                @statusText
+            </span>
+
+            <span class="badge @priorityClass px-3 py-2 fs-6">
+                @priorityText
+            </span>
         </div>
     </div>
 
@@ -60,46 +83,64 @@
             <hr class="my-4">
 
             <div class="row g-4">
+
                 <div class="col-md-3">
                     <span class="text-muted small text-uppercase fw-semibold">Riesgo</span>
                     <p class="mb-0">@(Model.Ticket.Risk ?? "Sin definir")</p>
                 </div>
+
                 <div class="col-md-3">
                     <span class="text-muted small text-uppercase fw-semibold">Categoría</span>
-                    <p class="mb-0">@(Model.Ticket.Category ?? "Sin definir")</p>
+                    <<p class="mb-0">@(Model.Ticket.CategoryName ?? "Sin definir")</p>
                 </div>
+
                 <div class="col-md-3">
                     <span class="text-muted small text-uppercase fw-semibold">Departamento</span>
                     <p class="mb-0">@(Model.DepartmentName ?? "Sin departamento")</p>
                 </div>
+
                 <div class="col-md-3">
                     <span class="text-muted small text-uppercase fw-semibold">Fecha límite</span>
                     <p class="mb-0">
-                        @(Model.Ticket.DueDate.HasValue ? Model.Ticket.DueDate.Value.ToString("dd/MM/yyyy") : "Sin fecha")
+                        @(Model.Ticket.DueDate.HasValue
+                            ? Model.Ticket.DueDate.Value.ToString("dd/MM/yyyy")
+                            : "Sin fecha")
                     </p>
                 </div>
+
                 <div class="col-md-3">
                     <span class="text-muted small text-uppercase fw-semibold">Solicitante</span>
                     <p class="mb-0">@(Model.Ticket.CreatedByName ?? "Desconocido")</p>
                 </div>
+
                 <div class="col-md-3">
                     <span class="text-muted small text-uppercase fw-semibold">Técnico asignado</span>
                     <p class="mb-0">@(Model.Ticket.AssignedToName ?? "Sin asignar")</p>
                 </div>
+
             </div>
 
         </div>
 
         <div class="card-footer bg-light border-0 px-4 py-3">
-            <span class="text-muted small">Creado: @Model.Ticket.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
-            <span class="text-muted small ms-3">Actualizado: @Model.Ticket.UpdatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+            <span class="text-muted small">
+                Creado: @Model.Ticket.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+            </span>
+
+            <span class="text-muted small ms-3">
+                Actualizado: @Model.Ticket.UpdatedAt.ToString("dd/MM/yyyy HH:mm")
+            </span>
         </div>
     </div>
 
     <div class="card shadow-sm border-0">
+
         <div class="card-header bg-white">
-            <h5 class="mb-0 fw-bold">Comentarios (@(Model.Comments?.Count ?? 0))</h5>
+            <h5 class="mb-0 fw-bold">
+                Comentarios (@(Model.Comments?.Count ?? 0))
+            </h5>
         </div>
+
         <div class="card-body">
 
             @if (Model.Comments != null && Model.Comments.Any())
@@ -107,30 +148,52 @@
                 foreach (var comment in Model.Comments)
                 {
                     <div class="mb-3 p-3 bg-light rounded border">
+
                         <div class="d-flex justify-content-between">
                             <strong>@(comment.CreatedByName ?? "Anónimo")</strong>
-                            <small class="text-muted">@comment.CreatedAt.ToString("dd MMM yyyy HH:mm")</small>
+                            <small class="text-muted">
+                                @comment.CreatedAt.ToString("dd MMM yyyy HH:mm")
+                            </small>
                         </div>
-                        <p class="mb-0 mt-2">@(comment.CommentText ?? "")</p>
+
+                        <p class="mb-0 mt-2">
+                            @(comment.CommentText ?? "")
+                        </p>
 
                         @if (comment.CreatedBy == Model.ActiveSessionUserId)
                         {
                             <a asp-action="DeleteComment"
                                asp-route-ticketId="@Model.Ticket.Id"
                                asp-route-commentId="@comment.Id"
-                               class="small text-danger">Eliminar</a>
+                               class="small text-danger">
+                                Eliminar
+                            </a>
                         }
+
                     </div>
                 }
             }
 
             <form asp-action="PostComment" method="post">
-                <input name="ticketId" type="hidden" value="@Model.Ticket.Id" />
-                <textarea name="commentText" class="form-control mb-2" rows="3" placeholder="Escribe tu comentario..."></textarea>
-                <button type="submit" class="btn btn-primary btn-sm">Comentar</button>
+
+                <input name="ticketId"
+                       type="hidden"
+                       value="@Model.Ticket.Id" />
+
+                <textarea name="commentText"
+                          class="form-control mb-2"
+                          rows="3"
+                          placeholder="Escribe tu comentario..."></textarea>
+
+                <button type="submit"
+                        class="btn btn-primary btn-sm">
+                    Comentar
+                </button>
+
             </form>
 
         </div>
+
     </div>
 
 </div>

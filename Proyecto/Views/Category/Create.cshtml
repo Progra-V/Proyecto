@@ -1,0 +1,35 @@
+﻿@model Proyecto.Models.Category
+
+@{
+    ViewData["Title"] = "Nueva categoría";
+}
+
+<div class="container-fluid">
+
+    <div class="mb-4">
+
+        <h2 class="fw-bold">
+            Nueva categoría
+        </h2>
+
+        <p class="text-muted">
+            Complete la información para registrar una nueva categoría.
+        </p>
+
+    </div>
+
+    <form asp-action="Create"
+          method="post">
+
+        <partial name="_CategoryForm"
+                 model="Model" />
+
+    </form>
+
+</div>
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+}

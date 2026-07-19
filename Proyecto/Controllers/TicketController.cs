@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Proyecto.Models;
+using Proyecto.Models.ViewModels;
 using Proyecto.Services;
 
 namespace Proyecto.Controllers
 {
-    public class TicketController : Controller
+    public class TicketController : BaseController
     {
         public async Task<IActionResult> Index()
         {
@@ -51,28 +52,47 @@ namespace Proyecto.Controllers
             List<Department> departments =
                 await DepartmentService.GetAll();
 
-            List<User> allUsers = await UserService.GetAll();
+            List<User> allUsers =
+                await UserService.GetAll();
 
-            // resolver nombres de comentarios
+            // Resolver nombres de comentarios
             foreach (var c in comments)
             {
-                c.CreatedByName = allUsers.Where(u => u.Id == c.CreatedBy)
+                c.CreatedByName = allUsers
+                    .Where(u => u.Id == c.CreatedBy)
                     .Select(u => $"{u.FirstName} {u.LastName}")
                     .FirstOrDefault();
             }
 
-            // resolver nombres del ticket (solicitante y técnico asignado)
+            // Resolver nombres del ticket
             var creador = allUsers.FirstOrDefault(u => u.Id == ticket.CreatedBy);
-            ticket.CreatedByName = creador != null ? $"{creador.FirstName} {creador.LastName}" : null;
 
-            var tecnico = ticket.AssignedTo.HasValue
+            ticket.CreatedByName =
+                creador != null
+                    ? $"{creador.FirstName} {creador.LastName}"
+                    : null;
+
+            var asignado = ticket.AssignedTo.HasValue
                 ? allUsers.FirstOrDefault(u => u.Id == ticket.AssignedTo.Value)
                 : null;
-            ticket.AssignedToName = tecnico != null ? $"{tecnico.FirstName} {tecnico.LastName}" : null;
 
-            List<User> technicians = allUsers
-                .Where(x => x.RoleId == 2 && x.IsActive)
-                .ToList();
+            ticket.AssignedToName =
+                asignado != null
+                    ? $"{asignado.FirstName} {asignado.LastName}"
+                    : null;
+
+            ticket.DepartmentName =
+                departments
+                .FirstOrDefault(x => x.Id == ticket.DepartmentId)
+                ?.Name;
+
+            List<CategoryViewModel> categories =
+                await CategoryService.GetAll();
+
+            ticket.CategoryName =
+                categories
+                .FirstOrDefault(x => x.Id == ticket.CategoryId)
+                ?.Name;
 
             TicketViewModels model = new TicketViewModels
             {
@@ -81,7 +101,8 @@ namespace Proyecto.Controllers
                 ActiveSessionUserId = currentUser.Id,
                 DepartmentName = ticket.DepartmentName,
                 Departments = departments,
-                Technicians = technicians
+                Categories = categories,
+                CurrentUser = currentUser,
             };
 
             return View(model);
@@ -143,27 +164,104 @@ namespace Proyecto.Controllers
         }
 
 
+        public async Task<IActionResult> Create()
+        {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
+                return RedirectToAction("Index", "Login");
+
+            var userJson = HttpContext.Session.GetString("user");
+
+            if (string.IsNullOrEmpty(userJson))
+                return RedirectToAction("Index", "Login");
+
+            User currentUser = JsonConvert.DeserializeObject<User>(userJson)!;
+
+            TicketViewModels model = new TicketViewModels
+            {
+                Ticket = new Ticket(),
+                CurrentUser = currentUser,
+                Departments = await DepartmentService.GetAll(),
+                Categories = new List<CategoryViewModel>(),
+            };
+
+            return View(model);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(TicketViewModels model)
+        {
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
+                return RedirectToAction("Index", "Login");
+
+            var userJson = HttpContext.Session.GetString("user");
+
+            if (string.IsNullOrEmpty(userJson))
+                return RedirectToAction("Index", "Login");
+
+            User currentUser = JsonConvert.DeserializeObject<User>(userJson)!;
+
+            model.Ticket.Title = model.Ticket.Title?.Trim() ?? string.Empty;
+            model.Ticket.Description = model.Ticket.Description?.Trim();
+            model.Ticket.Justification = model.Ticket.Justification?.Trim();
+
+            if (string.IsNullOrEmpty(model.Ticket.Title))
+            {
+                ModelState.AddModelError(nameof(model.Ticket.Title), "El asunto es obligatorio.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                model.CurrentUser = currentUser;
+                model.Departments = await DepartmentService.GetAll();
+                model.Categories = model.Ticket.DepartmentId > 0
+                    ? await CategoryService.GetByDepartment(model.Ticket.DepartmentId)
+                    : new List<CategoryViewModel>();
+
+                return View(model);
+            }
+
+            model.Ticket.CreatedBy = currentUser.Id;
+            model.Ticket.Status = "Pendiente";
+
+            var created = await TicketService.CreateTicket(model.Ticket);
+
+            TempData["SuccessMessage"] = "El ticket fue creado correctamente.";
+
+            return RedirectToAction("Detail", new { id = created.Id });
+        }
+
+
         public async Task<IActionResult> Edit(long id)
         {
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
                 return RedirectToAction("Index", "Login");
+
+            var userJson = HttpContext.Session.GetString("user");
+
+            if (string.IsNullOrEmpty(userJson))
+                return RedirectToAction("Index", "Login");
+
+            User currentUser = JsonConvert.DeserializeObject<User>(userJson)!;
 
             Ticket? ticket = await TicketService.GetByTicketId(id);
 
             if (ticket == null)
                 return NotFound();
 
-            List<Department> departments = await DepartmentService.GetAll();
+            List<Department> departments =
+                await DepartmentService.GetAll();
 
-            List<User> technicians = (await UserService.GetAll())
-                .Where(x => x.RoleId == 2 && x.IsActive)
-                .ToList();
+            List<CategoryViewModel> categories =
+                await CategoryService.GetByDepartment(ticket.DepartmentId);
 
             TicketViewModels model = new TicketViewModels
             {
                 Ticket = ticket,
                 Departments = departments,
-                Technicians = technicians
+                Categories = categories,
+                CurrentUser = currentUser,
             };
 
             return View(model);
@@ -221,10 +319,19 @@ namespace Proyecto.Controllers
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
                 return RedirectToAction("Index", "Login");
 
-            await TicketService.UpdateStatus(
-                ticketId,
-                newStatus
-            );
+            try
+            {
+                await TicketService.UpdateStatus(
+                    ticketId,
+                    newStatus
+                );
+
+                TempData["Success"] = "El estado del ticket se actualizó correctamente.";
+            }
+            catch (InvalidOperationException ex)
+            {
+                TempData["Error"] = ex.Message;
+            }
 
             return RedirectToAction(
                 "Detail",
@@ -239,27 +346,65 @@ namespace Proyecto.Controllers
             string status,
             string priority,
             string risk,
-            string category,
+            long categoryId,
             int departmentId,
-            int? assignedTo)
+            int? assignedTo,
+            DateTime? dueDate)
         {
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
                 return RedirectToAction("Index", "Login");
 
-            await TicketService.UpdateTicket(
-                ticketId,
-                status,
-                priority,
-                risk,
-                category,
-                departmentId,
-                assignedTo
-            );
+            var userJson = HttpContext.Session.GetString("user");
 
-            return RedirectToAction(
-                "Detail",
-                new { id = ticketId }
-            );
+            if (string.IsNullOrEmpty(userJson))
+                return RedirectToAction("Index", "Login");
+
+            User currentUser = JsonConvert.DeserializeObject<User>(userJson)!;
+
+            try
+            {
+                await TicketService.UpdateTicket(
+                    ticketId,
+                    status,
+                    priority,
+                    risk,
+                    categoryId,
+                    departmentId,
+                    assignedTo,
+                    currentUser
+                );
+
+                TempData["Success"] = "El ticket se actualizó correctamente.";
+
+                return RedirectToAction(
+                    "Detail",
+                    new { id = ticketId }
+                );
+            }
+            catch (InvalidOperationException ex)
+            {
+                TempData["Error"] = ex.Message;
+
+                return RedirectToAction(
+                    "Edit",
+                    new { id = ticketId }
+                );
+            }
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetCategories(int departmentId)
+        {
+            var categories = await CategoryService.GetByDepartment(departmentId);
+
+            var result = categories.Select(c => new
+            {
+                id = c.Id,
+                name = c.Name
+            });
+
+            return Json(result);
         }
     }
 }

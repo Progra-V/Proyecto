@@ -1,10 +1,38 @@
-﻿using Proyecto.Models;
+using Proyecto.Models;
 using Proyecto.SupabaseClient;
 
 namespace Proyecto.Services
+
 {
     public static class TicketService
     {
+
+        public static readonly List<string> StatusCatalog =
+[
+            "Pendiente",
+            "En Revisión",
+            "En Progreso",
+            "Cancelado",
+            "Finalizado"
+];
+
+        public static readonly List<string> PriorityCatalog =
+        [
+            "Alta",
+             "Media",
+            "Baja"
+        ];
+
+        public static readonly List<string> RiskCatalog =
+        [
+            "Bajo",
+            "Medio",
+            "Alto"
+        ];
+
+        private const int AdminRole = 3;
+        private const int TechnicianRole = 2;
+        private const int EmployeeRole = 1;
         public static async Task<List<Ticket>> GetAll()
         {
             Supabase.Client client = await SupabClient.GetSupabaseClientAsync();
@@ -55,13 +83,14 @@ namespace Proyecto.Services
         }
 
         public static async Task UpdateTicket(
-            long ticketId,
-            string status,
-            string priority,
-            string risk,
-            string category,
-            int departmentId,
-            int? assignedTo)
+    long ticketId,
+    string status,
+    string priority,
+    string risk,
+    long categoryId,
+    int departmentId,
+    int? assignedTo,
+    User currentUser)
         {
             Supabase.Client client = await SupabClient.GetSupabaseClientAsync();
 
@@ -71,7 +100,7 @@ namespace Proyecto.Services
                 Status = status,
                 Priority = priority,
                 Risk = risk,
-                Category = category,
+                CategoryId = categoryId,
                 DepartmentId = departmentId,
                 AssignedTo = assignedTo,
                 UpdatedAt = DateTime.UtcNow
@@ -94,14 +123,7 @@ namespace Proyecto.Services
             return result.Model;
         }
 
-        public static async Task Create(Ticket ticket)
-        {
-            Supabase.Client client = await SupabClient.GetSupabaseClientAsync();
-
-            await client
-                .From<Ticket>()
-                .Insert(ticket);
-        }
+   
 
         public static async Task UpdateStatus(long ticketId, string newStatus)
         {
@@ -188,6 +210,7 @@ namespace Proyecto.Services
 
             return chosen.Technician.Id;
         }
+    
 
         public static async Task<Ticket> CreateTicket(Ticket ticket)
         {

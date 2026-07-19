@@ -5,7 +5,7 @@ using Proyecto.Services;
 
 namespace Proyecto.Controllers
 {
-    public class UserController : Controller
+    public class UserController : BaseController
     {
         private bool IsAdmin()
         {
@@ -31,7 +31,6 @@ namespace Proyecto.Controllers
             }
 
             var users = await UserService.GetAll();
-
             return View(users);
         }
 
@@ -60,7 +59,6 @@ namespace Proyecto.Controllers
             user.IsActive = true;
 
             await UserService.Create(user);
-
             return RedirectToAction("Index");
         }
 
@@ -115,5 +113,17 @@ namespace Proyecto.Controllers
 
             return RedirectToAction("Index");
         }
+        private int GetCurrentRole()
+        {
+            var userJson = HttpContext.Session.GetString("user");
+
+            if (string.IsNullOrEmpty(userJson))
+                return 3;
+
+            var user = JsonConvert.DeserializeObject<User>(userJson);
+
+            return user?.RoleId ?? 3;
+        }
+
     }
     }

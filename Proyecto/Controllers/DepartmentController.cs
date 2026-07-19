@@ -5,8 +5,22 @@ using Proyecto.Services;
 
 namespace Proyecto.Controllers
 {
-    public class DepartmentController : Controller
+    public class DepartmentController : BaseController
     {
+
+
+        //Obtener Role del usuario actual desde la sesión
+        private int GetCurrentRole()
+        {
+            var userJson = HttpContext.Session.GetString("user");
+
+            if (string.IsNullOrEmpty(userJson))
+                return 3;
+
+            var user = JsonConvert.DeserializeObject<User>(userJson);
+
+            return user?.RoleId ?? 3;
+        }
         private bool IsAdmin()
         {
             var userJson = HttpContext.Session.GetString("user");

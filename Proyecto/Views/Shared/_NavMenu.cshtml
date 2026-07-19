@@ -1,14 +1,45 @@
-﻿@using Proyecto.Services
+﻿@using Proyecto.Models
 
 @{
     var navList = ViewData["CustomNavMenu"] as List<NavigationPages> ?? new List<NavigationPages>();
+
+    var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
+
+    var groupedMenu = navList.GroupBy(x => x.Section);
 }
 
-<ul class="navbar-nav flex-grow-1">
-    @foreach (var @item in navList)
+<div class="sidebar-menu">
+
+    @foreach (var menuSection in groupedMenu)
     {
-        <li class ="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="@item.Controller" asp-action="@item.Action">@item.Title</a>
-        </li>
+        <div class="menu-section">
+
+            <small class="menu-title">
+                @menuSection.Key.ToUpper()
+            </small>
+
+            <ul class="nav flex-column mb-4">
+
+                @foreach (var item in menuSection)
+                {
+                    <li class="nav-item">
+
+                        <a class="nav-link sidebar-link @(currentController == item.Controller ? "active" : "")"
+                           asp-controller="@item.Controller"
+                           asp-action="@item.Action">
+
+                            <i class="bi @item.Icon me-3"></i>
+
+                            @item.Title
+
+                        </a>
+
+                    </li>
+                }
+
+            </ul>
+
+        </div>
     }
-</ul>
+
+</div>

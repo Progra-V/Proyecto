@@ -26,7 +26,6 @@
             </tr>
         </thead>
 
-
         <tbody>
 
             @if (!Model.Any())
@@ -41,7 +40,6 @@
             {
                 foreach (var ticket in Model)
                 {
-
                     var statusClass = ticket.Status?.ToLower() switch
                     {
                         "pending" => "bg-primary",
@@ -52,7 +50,6 @@
                         _ => "bg-light text-dark border"
                     };
 
-
                     var priorityClass = ticket.Priority?.ToLower() switch
                     {
                         "high" => "bg-danger",
@@ -61,49 +58,54 @@
                         _ => "bg-light text-dark border"
                     };
 
+                    string statusText = ticket.Status switch
+                    {
+                        "Pending" => "Pendiente",
+                        "In Review" => "En Revisión",
+                        "In Progress" => "En Progreso",
+                        "Completed" => "Finalizado",
+                        "Cancelled" => "Cancelado",
+                        _ => ticket.Status ?? "Sin estado"
+                    };
 
+                    string priorityText = ticket.Priority switch
+                    {
+                        "High" => "Alta",
+                        "Medium" => "Media",
+                        "Low" => "Baja",
+                        _ => ticket.Priority ?? "Sin prioridad"
+                    };
 
                     <tr onclick="window.location.href='/Ticket/Detail?id=@ticket.Id'"
                         style="cursor:pointer">
-
 
                         <td class="fw-bold">
                             @ticket.TicketCode
                         </td>
 
-
                         <td>
                             @ticket.Title
                         </td>
-
 
                         <td>
                             @(ticket.DepartmentName ?? "Sin departamento")
                         </td>
 
-
                         <td class="text-center">
-
                             <span class="badge @statusClass">
-                                @ticket.Status
+                                @statusText
                             </span>
-
                         </td>
-
 
                         <td class="text-center">
-
                             <span class="badge @priorityClass">
-                                @ticket.Priority
+                                @priorityText
                             </span>
-
                         </td>
-
 
                         <td>
                             @ticket.CreatedAt.ToString("dd/MM/yyyy")
                         </td>
-
 
                     </tr>
                 }

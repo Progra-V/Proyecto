@@ -1,4 +1,4 @@
-﻿using Supabase.Postgrest.Attributes;
+using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
 
 namespace Proyecto.Models
@@ -18,8 +18,8 @@ namespace Proyecto.Models
         [Column("risk")]
         public string Risk { get; set; } = string.Empty;
 
-        [Column("category")]
-        public string Category { get; set; } = string.Empty;
+        [Column("category_id")]
+        public long CategoryId { get; set; }
 
         [Column("department_id")]
         public int DepartmentId { get; set; }
