@@ -131,27 +131,7 @@ namespace Proyecto.Controllers
 
             return View(model);
         }
-
-        public async Task<IActionResult> Create()
-        {
-            if (!IsLoggedIn())
-                return RedirectToAction("Index", "Login");
-
-            User? currentUser = GetCurrentUser();
-
-            if (currentUser == null)
-                return RedirectToAction("Index", "Login");
-
-            TicketViewModels model = new TicketViewModels
-            {
-                Ticket = new Ticket(),
-                CurrentUser = currentUser,
-                Departments = await DepartmentService.GetAll(),
-                Categories = new List<CategoryViewModel>()
-            };
-
-            return View(model);
-        }
+        
 
 
         [HttpPost]
