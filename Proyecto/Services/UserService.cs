@@ -85,35 +85,5 @@ namespace Proyecto.Services
             await Edit(user);
         }
 
-
-        public static async Task<List<User>> GetAssignableUsers(User currentUser)
-        {
-            Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
-
-            var result = await client
-                .From<User>()
-                .Where(x => x.IsActive == true)
-                .Get();
-
-            List<User> users = result.Models;
-
-            if (currentUser.RoleId == EmployeeRole)
-            {
-                return new List<User>();
-            }
-
-            if (currentUser.RoleId == TechnicianRole)
-            {
-                return users
-                    .Where(x => x.RoleId == TechnicianRole)
-                    .ToList();
-            }
-
-            return users
-                .Where(x => x.RoleId == AdminRole || x.RoleId == TechnicianRole)
-                .ToList();
-        }
     }
 }

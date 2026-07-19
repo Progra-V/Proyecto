@@ -154,14 +154,22 @@
 
                                     </a>
 
-                                    <a asp-controller="Category"
-                                       asp-action="Disable"
-                                       asp-route-id="@category.Id"
-                                       class="btn btn-outline-@(category.IsActive ? "danger" : "success") btn-sm">
+                                    <form asp-controller="Category"
+                                          asp-action="ChangeStatus"
+                                          asp-route-id="@category.Id"
+                                          method="post"
+                                          class="d-inline">
 
-                                        @(category.IsActive ? "Desactivar" : "Activar")
+                                        @Html.AntiForgeryToken()
 
-                                    </a>
+                                        <button type="submit"
+                                                class="btn btn-outline-@(category.IsActive ? "danger" : "success") btn-sm">
+
+                                            @(category.IsActive ? "Desactivar" : "Activar")
+
+                                        </button>
+
+                                    </form>
 
                                 </div>
 

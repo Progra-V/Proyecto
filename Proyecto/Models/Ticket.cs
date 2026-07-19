@@ -23,7 +23,10 @@ namespace Proyecto.Models
         public string? Justification { get; set; }
 
         [Column("category_id")]
-        public long CategoryId { get; set; }
+        public long? CategoryId { get; set; }
+
+        [JsonIgnore]
+        public string? CategoryName { get; set; }
 
         [Column("risk")]
         public string? Risk { get; set; }
@@ -45,10 +48,6 @@ namespace Proyecto.Models
 
         [JsonIgnore]
         public string? AssignedToName { get; set; }
-
-        [JsonIgnore]
-        public string? CategoryName { get; set; }
-
 
         [Column("created_by")]
         public int CreatedBy { get; set; }

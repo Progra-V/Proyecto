@@ -103,22 +103,30 @@ namespace Proyecto.Controllers
                 Departments = departments,
                 Categories = categories,
                 CurrentUser = currentUser,
-                AssignableUsers = await UserService.GetAssignableUsers(currentUser)
             };
 
             return View(model);
         }
+
+
         public async Task<IActionResult> Create()
         {
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
                 return RedirectToAction("Index", "Login");
 
-            List<Department> departments = await DepartmentService.GetAll();
+            var userJson = HttpContext.Session.GetString("user");
+
+            if (string.IsNullOrEmpty(userJson))
+                return RedirectToAction("Index", "Login");
+
+            User currentUser = JsonConvert.DeserializeObject<User>(userJson)!;
 
             TicketViewModels model = new TicketViewModels
             {
                 Ticket = new Ticket(),
-                Departments = departments
+                CurrentUser = currentUser,
+                Departments = await DepartmentService.GetAll(),
+                Categories = new List<CategoryViewModel>(),
             };
 
             return View(model);
@@ -150,7 +158,12 @@ namespace Proyecto.Controllers
 
             if (!ModelState.IsValid)
             {
+                model.CurrentUser = currentUser;
                 model.Departments = await DepartmentService.GetAll();
+                model.Categories = model.Ticket.DepartmentId > 0
+                    ? await CategoryService.GetByDepartment(model.Ticket.DepartmentId)
+                    : new List<CategoryViewModel>();
+
                 return View(model);
             }
 
@@ -194,74 +207,9 @@ namespace Proyecto.Controllers
                 Departments = departments,
                 Categories = categories,
                 CurrentUser = currentUser,
-                AssignableUsers = await UserService.GetAssignableUsers(currentUser)
             };
 
             return View(model);
-        }
-
-        public async Task<IActionResult> Create()
-        {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
-                return RedirectToAction("Index", "Login");
-
-            var userJson = HttpContext.Session.GetString("user");
-
-            if (string.IsNullOrEmpty(userJson))
-                return RedirectToAction("Index", "Login");
-
-            User currentUser = JsonConvert.DeserializeObject<User>(userJson)!;
-
-            TicketViewModels model = new TicketViewModels
-            {
-                CurrentUser = currentUser,
-                Departments = await DepartmentService.GetAll(),
-                Categories = new List<CategoryViewModel>(),
-                AssignableUsers = await UserService.GetAssignableUsers(currentUser)
-            };
-
-            return View(model);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Create(Ticket ticket)
-        {
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
-                return RedirectToAction("Index", "Login");
-
-            var userJson = HttpContext.Session.GetString("user");
-
-            User currentUser =
-                JsonConvert.DeserializeObject<User>(userJson!)!;
-
-            ticket.CreatedBy = currentUser.Id;
-
-            try
-            {
-                await TicketService.Create(ticket, currentUser);
-
-                TempData["Success"] =
-                    "El ticket fue creado correctamente.";
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                throw;
-
-                TicketViewModels model = new TicketViewModels
-                {
-                    Ticket = ticket,
-                    Departments = await DepartmentService.GetAll(),
-                    Categories = ticket.DepartmentId > 0
-                        ? await CategoryService.GetByDepartment(ticket.DepartmentId)
-                        : new List<CategoryViewModel>(),
-                    CurrentUser = currentUser,
-                    AssignableUsers = await UserService.GetAssignableUsers(currentUser)
-                };
-
-                return View(model);
-            }
         }
 
 
@@ -310,8 +258,8 @@ namespace Proyecto.Controllers
 
         [HttpPost]
         public async Task<IActionResult> ChangeStatus(
-        long ticketId,
-        string newStatus)
+            long ticketId,
+            string newStatus)
         {
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
                 return RedirectToAction("Index", "Login");
@@ -335,6 +283,7 @@ namespace Proyecto.Controllers
                 new { id = ticketId }
             );
         }
+
 
         [HttpPost]
         public async Task<IActionResult> UpdateTicket(

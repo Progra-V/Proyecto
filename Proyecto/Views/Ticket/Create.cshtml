@@ -12,133 +12,83 @@
 
     <h1 class="h3 mb-4">Nuevo Ticket</h1>
 
-        <div class="card-body">
+    <div class="card-body">
 
-    <form asp-action="Create" method="post">
-        @Html.AntiForgeryToken()
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
 
-                <div asp-validation-summary="ModelOnly"
-                     class="alert alert-danger"></div>
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-        <div class="mb-3">
-            <label class="form-label fw-semibold">Asunto</label>
-            <input asp-for="Ticket.Title" class="form-control" />
-            <span asp-validation-for="Ticket.Title" class="text-danger small"></span>
-        </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Asunto</label>
+                <input asp-for="Ticket.Title" class="form-control" />
+                <span asp-validation-for="Ticket.Title" class="text-danger small"></span>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label fw-semibold">Descripción</label>
-            <textarea asp-for="Ticket.Description" class="form-control" rows="3"></textarea>
-        </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Descripción</label>
+                <textarea asp-for="Ticket.Description" class="form-control" rows="3"></textarea>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label fw-semibold">Justificación</label>
-            <textarea asp-for="Ticket.Justification" class="form-control" rows="2"></textarea>
-        </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Justificación</label>
+                <textarea asp-for="Ticket.Justification" class="form-control" rows="2"></textarea>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label fw-semibold">Riesgo</label>
-            <select asp-for="Ticket.Risk" class="form-select">
-                @foreach (var r in new[] { "Bajo", "Medio", "Alto" })
-                {
-                    <option value="@r">@r</option>
-                }
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Riesgo</label>
+                <select asp-for="Ticket.Risk" class="form-select">
+                    @foreach (var r in new[] { "Bajo", "Medio", "Alto" })
+                    {
+                        <option value="@r">@r</option>
+                    }
+                </select>
+                <span asp-validation-for="Ticket.Risk" class="text-danger"></span>
+            </div>
 
-            </select>
+            <div class="row">
 
-                        <span asp-validation-for="Ticket.DepartmentId"
-                              class="text-danger"></span>
-
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label fw-semibold">Categoría</label>
-            <select asp-for="Ticket.Category" class="form-select">
-                @foreach (var c in new[] { "Hardware", "Software", "Red", "Accesos", "Otro" })
-                {
-                    <option value="@c">@c</option>
-                }
-
-            </select>
-
-                        <span asp-validation-for="Ticket.CategoryId"
-                              class="text-danger"></span>
-
-        </div>
-
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-semibold">Sistema</label>
+                    <select asp-for="Ticket.DepartmentId" id="departmentSelect" class="form-select">
+                        <option value="">Seleccione...</option>
+                        @foreach (var d in Model.Departments)
+                        {
+                            <option value="@d.Id">@d.Name (@d.Code)</option>
+                        }
+                    </select>
+                    <span asp-validation-for="Ticket.DepartmentId" class="text-danger"></span>
                 </div>
 
-        <div class="mb-3">
-            <label class="form-label fw-semibold">Prioridad</label>
-            <select asp-for="Ticket.Priority" class="form-select">
-                @foreach (var p in new[] { "Baja", "Media", "Alta" })
-                {
-                    <option value="@p" selected="@(p == "Media")">@p</option>
-                }
-
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-semibold">Categoría</label>
+                    <select asp-for="Ticket.CategoryId" id="categorySelect" class="form-select">
+                        <option value="">Seleccione un departamento primero</option>
+                    </select>
+                    <span asp-validation-for="Ticket.CategoryId" class="text-danger"></span>
                 </div>
-                                <div class="row">
 
-                    <div class="col-md-4 mb-3">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-semibold">Prioridad</label>
+                    <select asp-for="Ticket.Priority" class="form-select">
+                        @foreach (var p in new[] { "Baja", "Media", "Alta" })
+                        {
+                            <option value="@p" selected="@(p == "Media")">@p</option>
+                        }
+                    </select>
+                    <span asp-validation-for="Ticket.Priority" class="text-danger"></span>
+                </div>
 
-                        <label class="form-label">
-                            Prioridad
-                        </label>
+            </div>
 
-                        <select asp-for="Ticket.Priority"
-                                class="form-select">
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Fecha límite</label>
+                <input asp-for="Ticket.DueDate" type="date" class="form-control" />
+                <span asp-validation-for="Ticket.DueDate" class="text-danger"></span>
+            </div>
 
-                            <option value="Low">Low</option>
-                            <option value="Medium">Medium</option>
-                            <option value="High">High</option>
-
-            </select>
-
-                        <span asp-validation-for="Ticket.Priority"
-                              class="text-danger"></span>
-
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label fw-semibold">Sistema</label>
-            <select asp-for="Ticket.DepartmentId" class="form-select">
-                @foreach (var d in Model.Departments)
-                {
-                    <option value="@d.Id">@d.Name (@d.Code)</option>
-                }
-            </select>
-
-                        <span asp-validation-for="Ticket.Risk"
-                              class="text-danger"></span>
-
-                    </div>
-
-                    <div class="col-md-4 mb-3">
-
-                        <label class="form-label">
-                            Fecha límite
-                        </label>
-
-                        <input asp-for="Ticket.DueDate"
-                               type="date"
-                               class="form-control" />
-
-                        <span asp-validation-for="Ticket.DueDate"
-                              class="text-danger"></span>
-
-                    </div>
-
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label fw-semibold">Fecha límite</label>
-            <input asp-for="Ticket.DueDate" type="date" class="form-control" />
-        </div>
-
-        <button type="submit" class="btn btn-primary">Crear ticket</button>
-    </form>
-
-</div>
+            <button type="submit" class="btn btn-primary">Crear ticket</button>
+        </form>
 
     </div>
 
@@ -152,7 +102,7 @@
 
         document
             .getElementById("departmentSelect")
-            .addEventListener("change", async function () {
+            .addEventListener("change", async function() {
 
                 const departmentId = this.value;
 
@@ -183,8 +133,8 @@
 
                     categorySelect.innerHTML +=
                         `<option value="${category.id}">
-                            ${category.name}
-                        </option>`;
+                                    ${category.name}
+                                </option>`;
 
                 });
 

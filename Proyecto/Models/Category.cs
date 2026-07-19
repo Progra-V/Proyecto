@@ -13,8 +13,7 @@ namespace Proyecto.Models
 
         [Required(ErrorMessage = "Debe seleccionar un departamento.")]
         [Column("department_id")]
-        public long DepartmentId { get; set; }
-
+        public int DepartmentId { get; set; }
 
         [Required(ErrorMessage = "El nombre es obligatorio.")]
         [StringLength(100, ErrorMessage = "El nombre no puede superar los 100 caracteres.")]

@@ -10,9 +10,7 @@ namespace Proyecto.Services
         // Obtiene todas las categorías.
         public static async Task<List<CategoryViewModel>> GetAll()
         {
-            Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
+            Client client = await SupabClient.GetSupabaseClientAsync();
 
             var categories = (await client
                 .From<Category>()
@@ -48,9 +46,7 @@ namespace Proyecto.Services
         // Obtiene las categorías activas.
         public static async Task<List<CategoryViewModel>> GetActive()
         {
-            Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
+            Client client = await SupabClient.GetSupabaseClientAsync();
 
             var categories = (await client
                 .From<Category>()
@@ -85,35 +81,23 @@ namespace Proyecto.Services
         }
 
         // Obtiene una categoría por su identificador.
+        // Obtiene una categoría por su identificador.
         public static async Task<Category?> GetById(long id)
         {
-            Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
+            Client client = await SupabClient.GetSupabaseClientAsync();
 
             var category = (await client
                 .From<Category>()
                 .Where(x => x.Id == id)
                 .Get()).Model;
 
-            if (category == null)
-                return null;
-
-            var department = (await client
-                .From<Department>()
-                .Where(x => x.Id == category.DepartmentId)
-                .Get()).Model;
-
-
             return category;
         }
 
         // Obtiene las categorías de un departamento.
-        public static async Task<List<CategoryViewModel>> GetByDepartment(long departmentId)
+        public static async Task<List<CategoryViewModel>> GetByDepartment(int departmentId)
         {
-            Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
+            Client client = await SupabClient.GetSupabaseClientAsync();
 
             var categories = (await client
                 .From<Category>()
@@ -149,9 +133,7 @@ namespace Proyecto.Services
         // Crea una categoría.
         public static async Task Create(Category category)
         {
-            Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
+            Client client = await SupabClient.GetSupabaseClientAsync();
 
             category.CreatedAt = DateTime.UtcNow;
             category.UpdatedAt = null;
@@ -163,9 +145,7 @@ namespace Proyecto.Services
         // Actualiza una categoría.
         public static async Task Update(Category category)
         {
-            Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
+            Client client = await SupabClient.GetSupabaseClientAsync();
 
             category.UpdatedAt = DateTime.UtcNow;
 
@@ -173,29 +153,29 @@ namespace Proyecto.Services
         }
 
         // Desactiva una categoría.
-        public static async Task Disable(long id)
+        // Activa o desactiva una categoría.
+        public static async Task ChangeStatus(long id)
         {
-            var category = await GetById(id);
+            Client client = await SupabClient.GetSupabaseClientAsync();
+
+            var category = (await client
+                .From<Category>()
+                .Where(x => x.Id == id)
+                .Get()).Model;
 
             if (category == null)
                 return;
 
-            category.IsActive = false;
+            category.IsActive = !category.IsActive;
             category.UpdatedAt = DateTime.UtcNow;
-
-            Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
 
             await client.From<Category>().Update(category);
         }
 
         // Verifica si una categoría ya existe.
-        public static async Task<bool> Exists(string name, long departmentId)
+        public static async Task<bool> Exists(string name, int departmentId)
         {
-            Client client = SupabClient.getSupabaseClient();
-
-            await client.InitializeAsync();
+            Client client = await SupabClient.GetSupabaseClientAsync();
 
             var result = await client
                 .From<Category>()

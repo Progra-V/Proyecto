@@ -15,11 +15,11 @@ namespace Proyecto.Controllers
             var userJson = HttpContext.Session.GetString("user");
 
             if (string.IsNullOrEmpty(userJson))
-                return 3;
+                return 1;
 
             var user = JsonConvert.DeserializeObject<User>(userJson);
 
-            return user?.RoleId ?? 3;
+            return user?.RoleId ?? 1;
         }
 
         // Muestra la lista de categorías.
@@ -57,10 +57,14 @@ namespace Proyecto.Controllers
 
         // Guarda una categoría.
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Category category)
         {
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
                 return RedirectToAction("Index", "Login");
+
+            ViewData["Title"] = "Nueva categoría";
+            ViewData["CustomNavMenu"] = NavigationService.GetMenuPages(GetCurrentRole());
 
             var departments = await DepartmentService.GetAll();
 
@@ -84,8 +88,11 @@ namespace Proyecto.Controllers
 
             await CategoryService.Create(category);
 
+            TempData["SuccessMessage"] = "La categoría fue creada correctamente.";
+
             return RedirectToAction(nameof(Index));
         }
+
         // Muestra el formulario para editar una categoría.
         public async Task<IActionResult> Edit(long id)
         {
@@ -113,10 +120,14 @@ namespace Proyecto.Controllers
 
         // Actualiza una categoría.
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Category category)
         {
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
                 return RedirectToAction("Index", "Login");
+
+            ViewData["Title"] = "Editar categoría";
+            ViewData["CustomNavMenu"] = NavigationService.GetMenuPages(GetCurrentRole());
 
             var departments = await DepartmentService.GetAll();
 
@@ -131,16 +142,21 @@ namespace Proyecto.Controllers
 
             await CategoryService.Update(category);
 
+            TempData["SuccessMessage"] = "La categoría fue actualizada correctamente.";
+
             return RedirectToAction(nameof(Index));
         }
 
         // Desactiva una categoría.
-        public async Task<IActionResult> Disable(long id)
+        // Activa o desactiva una categoría.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangeStatus(long id)
         {
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("session")))
                 return RedirectToAction("Index", "Login");
 
-            await CategoryService.Disable(id);
+            await CategoryService.ChangeStatus(id);
 
             return RedirectToAction(nameof(Index));
         }

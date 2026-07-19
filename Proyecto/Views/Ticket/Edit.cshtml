@@ -106,7 +106,7 @@
             <select name="category" class="form-select">
                 @foreach (var c in new[] { "Hardware", "Software", "Red", "Accesos", "Otro" })
                 {
-                    <option value="@c" selected="@(Model.Ticket.Category == c)">@c</option>
+                    <option value="@c" selected="@(Model.Ticket.CategoryName == c)">@c</option>
                 }
             </select>
         </div>
