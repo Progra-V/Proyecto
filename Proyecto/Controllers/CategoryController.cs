@@ -6,7 +6,7 @@ using Proyecto.Services;
 
 namespace Proyecto.Controllers
 {
-    public class CategoryController : Controller
+    public class CategoryController : BaseController
     {
 
         //Obtener Role del usuario actual desde la sesión
@@ -29,7 +29,6 @@ namespace Proyecto.Controllers
                 return RedirectToAction("Index", "Login");
 
             ViewData["Title"] = "Categories";
-            ViewData["CustomNavMenu"] = NavigationService.GetMenuPages(GetCurrentRole());
 
             var categories = await CategoryService.GetAll();
 
@@ -43,7 +42,6 @@ namespace Proyecto.Controllers
                 return RedirectToAction("Index", "Login");
 
             ViewData["Title"] = "Nueva categoría";
-            ViewData["CustomNavMenu"] = NavigationService.GetMenuPages(GetCurrentRole());
 
             var departments = await DepartmentService.GetAll();
 
@@ -64,7 +62,6 @@ namespace Proyecto.Controllers
                 return RedirectToAction("Index", "Login");
 
             ViewData["Title"] = "Nueva categoría";
-            ViewData["CustomNavMenu"] = NavigationService.GetMenuPages(GetCurrentRole());
 
             var departments = await DepartmentService.GetAll();
 
@@ -100,7 +97,6 @@ namespace Proyecto.Controllers
                 return RedirectToAction("Index", "Login");
 
             ViewData["Title"] = "Editar categoría";
-            ViewData["CustomNavMenu"] = NavigationService.GetMenuPages(GetCurrentRole());
 
             var category = await CategoryService.GetById(id);
 
@@ -127,7 +123,6 @@ namespace Proyecto.Controllers
                 return RedirectToAction("Index", "Login");
 
             ViewData["Title"] = "Editar categoría";
-            ViewData["CustomNavMenu"] = NavigationService.GetMenuPages(GetCurrentRole());
 
             var departments = await DepartmentService.GetAll();
 

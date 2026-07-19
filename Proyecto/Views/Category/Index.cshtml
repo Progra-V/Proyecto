@@ -9,19 +9,27 @@
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-5">
 
         <div>
-            <h1 class="display-5 fw-bold text-primary mb-2">
+
+            <h1 class="display-5 fw-bold text-primary mb-1">
                 Categorías
             </h1>
 
-            <p class="text-muted fs-5 mb-0">
+            <p class="text-muted fs-5 mb-2">
                 Administre las categorías registradas en el sistema.
             </p>
+
+            <span class="badge bg-secondary px-3 py-2 fs-6">
+                Total de registros: @(Model?.Count ?? 0)
+            </span>
+
         </div>
 
         <a asp-controller="Category"
            asp-action="Create"
            class="btn btn-primary">
-            Nueva categoría
+
+            <i class="bi bi-person-plus"></i>
+            Crear categoría
         </a>
 
     </div>
@@ -40,14 +48,6 @@
 
         </div>
     }
-
-    <div class="mb-4">
-
-        <span class="badge bg-secondary px-3 py-2 fs-6">
-            Total de registros: @(Model?.Count ?? 0)
-        </span>
-
-    </div>
 
     <div class="table-responsive shadow-sm rounded-3">
 

@@ -1,16 +1,5 @@
 @model List<Proyecto.Models.Ticket>
 
-<div class="d-flex justify-content-end mb-3">
-
-    <a asp-action="Create"
-       class="btn btn-primary">
-
-        Crear Ticket
-
-    </a>
-
-</div>
-
 <div class="table-responsive shadow-sm rounded-3">
 
     <table class="table table-hover table-striped align-middle mb-0 bg-white">
@@ -65,7 +54,7 @@
                         "In Progress" => "En Progreso",
                         "Completed" => "Finalizado",
                         "Cancelled" => "Cancelado",
-                        _ => ticket.Status
+                        _ => ticket.Status ?? "Sin estado"
                     };
 
                     string priorityText = ticket.Priority switch
@@ -73,7 +62,7 @@
                         "High" => "Alta",
                         "Medium" => "Media",
                         "Low" => "Baja",
-                        _ => ticket.Priority
+                        _ => ticket.Priority ?? "Sin prioridad"
                     };
 
                     <tr onclick="window.location.href='/Ticket/Detail?id=@ticket.Id'"

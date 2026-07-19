@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+
+@{
+    var session = Context.Session.GetString("session");
+}
+
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
@@ -20,42 +26,37 @@
 
 <body>
 
-    <div class="d-flex">
+    @if (!string.IsNullOrEmpty(session))
+    {
+        <div class="d-flex">
 
-        <!-- Sidebar -->
-        <aside class="sidebar shadow">
+            <aside class="sidebar shadow">
+                <div class="sidebar-header">
+                    <h4 class="fw-bold text-white">
+                        <i class="bi bi-ticket-perforated-fill"></i>
+                        HelpDesk
+                    </h4>
+                </div>
 
-            <div class="sidebar-header">
-                <h4 class="fw-bold text-white">
-                    <i class="bi bi-ticket-perforated-fill"></i>
-                    HelpDesk
-                </h4>
+                <partial name="_NavMenu" />
+            </aside>
+
+            <div class="main-content flex-grow-1">
+                <partial name="_TopNavbar" />
+
+                <main class="container-fluid py-4">
+                    @RenderBody()
+                </main>
             </div>
 
-            <partial name="_NavMenu" />
-
-        </aside>
-
-        <!-- Main Content -->
-        <div class="main-content flex-grow-1">
-
-            <!-- Top Navbar -->
-            <partial name="_TopNavbar" />
-
-            <main class="container-fluid py-4">
-                @RenderBody()
-            </main>
-
         </div>
-
-    </div>
-
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script src="~/js/site.js" asp-append-version="true"></script>
-
-    @await RenderSectionAsync("Scripts", required: false)
+    }
+    else
+    {
+        <main>
+            @RenderBody()
+        </main>
+    }
 
 </body>
 </html>

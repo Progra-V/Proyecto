@@ -6,7 +6,7 @@ using Proyecto.Services;
 
 namespace Proyecto.Controllers
 {
-    public class TicketController : Controller
+    public class TicketController : BaseController
     {
         public async Task<IActionResult> Index()
         {

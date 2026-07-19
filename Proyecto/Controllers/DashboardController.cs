@@ -5,7 +5,7 @@ using Proyecto.Models;
 
 namespace Proyecto.Controllers
 {
-    public class DashboardController : Controller
+    public class DashboardController : BaseController
     {
 
         //Obtener Role del usuario actual desde la sesión
@@ -27,8 +27,6 @@ namespace Proyecto.Controllers
                 return RedirectToAction("Index", "Login");
 
             ViewData["Title"] = "Dashboard";
-
-            ViewData["CustomNavMenu"] = NavigationService.GetMenuPages(GetCurrentRole());
 
             // Obtiene toda la información del Dashboard desde el Service
             var dashboard = await DashboardService.GetDashboardAsync();

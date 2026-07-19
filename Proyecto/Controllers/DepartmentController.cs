@@ -5,7 +5,7 @@ using Proyecto.Services;
 
 namespace Proyecto.Controllers
 {
-    public class DepartmentController : Controller
+    public class DepartmentController : BaseController
     {
 
 
