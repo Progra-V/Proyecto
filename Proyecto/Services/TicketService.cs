@@ -1,4 +1,4 @@
-﻿using Proyecto.Models;
+using Proyecto.Models;
 using Proyecto.SupabaseClient;
 
 namespace Proyecto.Services
