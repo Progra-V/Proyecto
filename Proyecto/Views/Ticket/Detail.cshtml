@@ -3,40 +3,22 @@
 @{
     ViewData["Title"] = "Detalle del Ticket";
 
-    string statusClass = Model.Ticket.Status?.ToLower() switch
+    string statusClass = Model.Ticket.Status switch
     {
-        "pending" => "bg-secondary",
-        "in review" => "bg-info text-dark",
-        "in progress" => "bg-warning text-dark",
-        "cancelled" => "bg-dark",
-        "completed" => "bg-success",
+        "Pendiente" => "bg-secondary",
+        "En Revisión" => "bg-info text-dark",
+        "En Progreso" => "bg-warning text-dark",
+        "Cancelado" => "bg-dark",
+        "Finalizado" => "bg-success",
         _ => "bg-light text-dark border"
     };
 
-    string priorityClass = Model.Ticket.Priority?.ToLower() switch
+    string priorityClass = Model.Ticket.Priority switch
     {
-        "high" => "bg-danger",
-        "medium" => "bg-warning text-dark",
-        "low" => "bg-success",
+        "Alta" => "bg-danger",
+        "Media" => "bg-warning text-dark",
+        "Baja" => "bg-success",
         _ => "bg-light text-dark border"
-    };
-
-    string statusText = Model.Ticket.Status switch
-    {
-        "Pending" => "Pendiente",
-        "In Review" => "En Revisión",
-        "In Progress" => "En Progreso",
-        "Cancelled" => "Cancelado",
-        "Completed" => "Finalizado",
-        _ => Model.Ticket.Status
-    };
-
-    string priorityText = Model.Ticket.Priority switch
-    {
-        "High" => "Alta",
-        "Medium" => "Media",
-        "Low" => "Baja",
-        _ => Model.Ticket.Priority
     };
 }
 
@@ -55,11 +37,11 @@
 
         <div class="d-flex gap-2">
             <span class="badge @statusClass px-3 py-2 fs-6">
-                @statusText
+                @Model.Ticket.Status
             </span>
 
             <span class="badge @priorityClass px-3 py-2 fs-6">
-                @priorityText
+                @Model.Ticket.Priority
             </span>
         </div>
     </div>
@@ -91,7 +73,7 @@
 
                 <div class="col-md-3">
                     <span class="text-muted small text-uppercase fw-semibold">Categoría</span>
-                    <<p class="mb-0">@(Model.Ticket.CategoryName ?? "Sin definir")</p>
+                    <p class="mb-0">@(Model.Ticket.CategoryName ?? "Sin definir")</p>
                 </div>
 
                 <div class="col-md-3">

@@ -31,7 +31,7 @@ namespace Proyecto.Services
 
 
             // TÉCNICO Y ADMINISTRADOR
-            if (userRole == 1 || userRole == 2)
+            if (userRole == 2 || userRole == 3)
             {
                 menu.Add(
                     new NavigationPages
@@ -58,7 +58,7 @@ namespace Proyecto.Services
 
 
             // SOLO ADMINISTRADOR
-            if (userRole == 1)
+            if (userRole == 3)
             {
                 menu.Add(
                     new NavigationPages

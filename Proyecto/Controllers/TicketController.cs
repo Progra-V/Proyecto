@@ -157,10 +157,12 @@ namespace Proyecto.Controllers
 
             if (string.IsNullOrEmpty(model.Ticket.Title))
             {
-                ModelState.AddModelError(
-                    nameof(model.Ticket.Title),
-                    "El asunto es obligatorio."
-                );
+                ModelState.AddModelError(nameof(model.Ticket.Title), "El asunto es obligatorio.");
+            }
+
+            if (!model.Ticket.CategoryId.HasValue || model.Ticket.CategoryId.Value <= 0)
+            {
+                ModelState.AddModelError("Ticket.CategoryId", "Debe seleccionar una categoría.");
             }
 
             if (!ModelState.IsValid)
@@ -195,6 +197,26 @@ namespace Proyecto.Controllers
             );
         }
 
+        public async Task<IActionResult> Create()
+        {
+            if (!IsLoggedIn())
+                return RedirectToAction("Index", "Login");
+
+            User? currentUser = GetCurrentUser();
+
+            if (currentUser == null)
+                return RedirectToAction("Index", "Login");
+
+            TicketViewModels model = new TicketViewModels
+            {
+                Ticket = new Ticket(),
+                CurrentUser = currentUser,
+                Departments = await DepartmentService.GetAll(),
+                Categories = new List<CategoryViewModel>()
+            };
+
+            return View(model);
+        }
 
         public async Task<IActionResult> Edit(long id)
         {
@@ -212,10 +234,17 @@ namespace Proyecto.Controllers
                 return NotFound();
 
             List<Department> departments =
-                await DepartmentService.GetAll();
+            await DepartmentService.GetAll();
 
             List<CategoryViewModel> categories =
                 await CategoryService.GetByDepartment(ticket.DepartmentId);
+
+            // Resolver nombre de la categoría actual del ticket (sin filtrar por activa)
+            if (ticket.CategoryId.HasValue)
+            {
+                var currentCategory = await CategoryService.GetById(ticket.CategoryId.Value);
+                ticket.CategoryName = currentCategory?.Name;
+            }
 
             TicketViewModels model = new TicketViewModels
             {
@@ -323,8 +352,8 @@ namespace Proyecto.Controllers
                 return RedirectToAction("Index", "Login");
 
             // Solo administrador o técnico pueden cambiar estados
-            if (currentUser.RoleId != 1 &&
-                currentUser.RoleId != 2)
+            if (currentUser.RoleId != 2 &&
+                currentUser.RoleId != 3)
             {
                 TempData["Error"] =
                     "No tiene permiso para cambiar el estado del ticket.";

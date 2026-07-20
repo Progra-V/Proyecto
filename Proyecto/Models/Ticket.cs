@@ -32,10 +32,10 @@ namespace Proyecto.Models
         public string? Risk { get; set; }
 
         [Column("status")]
-        public string Status { get; set; } = "Pending";
+        public string Status { get; set; } = "Pendiente";
 
         [Column("priority")]
-        public string Priority { get; set; } = "Medium";
+        public string Priority { get; set; } = "Media";
 
         [Column("department_id")]
         public int DepartmentId { get; set; }
@@ -48,9 +48,6 @@ namespace Proyecto.Models
 
         [JsonIgnore]
         public string? AssignedToName { get; set; }
-
-        [Column("departamento_id")]
-        public int? DepartamentoId { get; set; }
 
         [Column("created_by")]
         public int CreatedBy { get; set; }
@@ -67,5 +64,4 @@ namespace Proyecto.Models
         [Column("due_date")]
         public DateTime? DueDate { get; set; }
     }
-
 }
