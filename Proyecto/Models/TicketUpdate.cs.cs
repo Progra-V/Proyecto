@@ -27,6 +27,9 @@ namespace Proyecto.Models
         [Column("assigned_to")]
         public int? AssignedTo { get; set; }
 
+        [Column("due_date")]
+        public DateTime? DueDate { get; set; }
+
         [Column("updated_at")]
         public DateTime UpdatedAt { get; set; }
     }

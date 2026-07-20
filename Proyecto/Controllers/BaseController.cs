@@ -12,39 +12,52 @@ namespace Proyecto.Controllers
         {
             base.OnActionExecuting(context);
 
-            var session = HttpContext.Session.GetString("session");
+            var session =
+                HttpContext.Session.GetString("session");
 
             if (string.IsNullOrEmpty(session))
                 return;
 
-            ViewData["CustomNavMenu"] = NavigationService.GetMenuPages(GetCurrentRole());
+            ViewData["CustomNavMenu"] =
+                NavigationService.GetMenuPages(
+                    GetCurrentRole()
+                );
         }
 
         protected int GetCurrentRole()
         {
-            var userJson = HttpContext.Session.GetString("user");
+            var userJson =
+                HttpContext.Session.GetString("user");
 
             if (string.IsNullOrEmpty(userJson))
                 return 3;
 
-            var user = JsonConvert.DeserializeObject<User>(userJson);
+            var user =
+                JsonConvert.DeserializeObject<User>(
+                    userJson
+                );
 
             return user?.RoleId ?? 3;
         }
 
         protected User? GetCurrentUser()
         {
-            var userJson = HttpContext.Session.GetString("user");
+            var userJson =
+                HttpContext.Session.GetString("user");
 
             if (string.IsNullOrEmpty(userJson))
                 return null;
 
-            return JsonConvert.DeserializeObject<User>(userJson);
+            return JsonConvert.DeserializeObject<User>(
+                userJson
+            );
         }
 
         protected bool IsLoggedIn()
         {
-            return !string.IsNullOrEmpty(HttpContext.Session.GetString("session"));
+            return !string.IsNullOrEmpty(
+                HttpContext.Session.GetString("session")
+            );
         }
     }
 }
