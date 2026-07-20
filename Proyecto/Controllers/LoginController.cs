@@ -41,6 +41,7 @@ namespace Proyecto.Controllers
                 // Buscar usuario dentro de la tabla users
                 var currentUser = await UserService.GetByEmail(user.Email);
 
+
                 if (currentUser == null)
                 {
                     ViewBag.LoginMessage = "Usuario no registrado en el sistema.";

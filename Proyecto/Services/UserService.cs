@@ -10,9 +10,9 @@ namespace Proyecto.Services
     {
 
 
-        private const int AdminRole = 1;
+        private const int AdminRole = 3;
         private const int TechnicianRole = 2;
-        private const int EmployeeRole = 3;
+        private const int EmployeeRole = 1;
         public static async Task<User?> GetByEmail(string email)
         {
             try

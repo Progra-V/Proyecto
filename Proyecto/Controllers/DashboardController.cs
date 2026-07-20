@@ -29,7 +29,6 @@ namespace Proyecto.Controllers
             if (currentUser == null)
                 return RedirectToAction("Index", "Login");
 
-
             ViewData["Title"] = "Dashboard";
 
             ViewData["UserName"] =

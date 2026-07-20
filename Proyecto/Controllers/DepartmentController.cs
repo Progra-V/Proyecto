@@ -8,19 +8,6 @@ namespace Proyecto.Controllers
     public class DepartmentController : BaseController
     {
 
-
-        //Obtener Role del usuario actual desde la sesión
-        private int GetCurrentRole()
-        {
-            var userJson = HttpContext.Session.GetString("user");
-
-            if (string.IsNullOrEmpty(userJson))
-                return 3;
-
-            var user = JsonConvert.DeserializeObject<User>(userJson);
-
-            return user?.RoleId ?? 3;
-        }
         private bool IsAdmin()
         {
             var userJson = HttpContext.Session.GetString("user");
@@ -31,7 +18,7 @@ namespace Proyecto.Controllers
             User? currentUser =
                 JsonConvert.DeserializeObject<User>(userJson);
 
-            return currentUser != null && currentUser.RoleId == 1;
+            return currentUser != null && currentUser.RoleId == 3;
         }
 
         public async Task<IActionResult> Index()
