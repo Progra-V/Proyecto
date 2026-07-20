@@ -9,14 +9,9 @@ namespace Proyecto.Controllers
     {
         private bool IsAdmin()
         {
-            var userJson = HttpContext.Session.GetString("user");
+            var currentUser = GetCurrentUser();
 
-            if (string.IsNullOrEmpty(userJson))
-                return false;
-
-            User currentUser = JsonConvert.DeserializeObject<User>(userJson);
-
-            return currentUser.RoleId == 1;
+            return currentUser?.RoleId == 1;
         }
 
 
@@ -113,17 +108,6 @@ namespace Proyecto.Controllers
 
             return RedirectToAction("Index");
         }
-        private int GetCurrentRole()
-        {
-            var userJson = HttpContext.Session.GetString("user");
-
-            if (string.IsNullOrEmpty(userJson))
-                return 3;
-
-            var user = JsonConvert.DeserializeObject<User>(userJson);
-
-            return user?.RoleId ?? 3;
-        }
-
+        
     }
-    }
+}

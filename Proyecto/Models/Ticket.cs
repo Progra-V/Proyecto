@@ -49,6 +49,9 @@ namespace Proyecto.Models
         [JsonIgnore]
         public string? AssignedToName { get; set; }
 
+        [Column("departamento_id")]
+        public int? DepartamentoId { get; set; }
+
         [Column("created_by")]
         public int CreatedBy { get; set; }
 

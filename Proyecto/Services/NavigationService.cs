@@ -6,84 +6,34 @@ namespace Proyecto.Services
     {
         public static List<NavigationPages> GetMenuPages(int userRole)
         {
-            // Employee
-            if (userRole == 3)
+            var menu = new List<NavigationPages>
             {
-                return new List<NavigationPages>
+                // PRINCIPAL
+
+                new NavigationPages
                 {
-                    // PRINCIPAL
+                    Section = "Principal",
+                    Title = "Dashboard",
+                    Controller = "Dashboard",
+                    Action = "Index",
+                    Icon = "bi-speedometer2"
+                },
 
-                    new NavigationPages
-                    {
-                        Section = "Principal",
-                        Title = "Dashboard",
-                        Controller = "Dashboard",
-                        Action = "Index",
-                        Icon = "bi-speedometer2"
-                    },
+                new NavigationPages
+                {
+                    Section = "Principal",
+                    Title = "Tickets",
+                    Controller = "Ticket",
+                    Action = "Index",
+                    Icon = "bi-ticket-perforated"
+                }
+            };
 
-                    new NavigationPages
-                    {
-                        Section = "Principal",
-                        Title = "Tickets",
-                        Controller = "Ticket",
-                        Action = "Index",
-                        Icon = "bi-ticket-perforated"
-                    },
 
-                    // CATÁLOGOS ( sin acceso a los catalogos )
-
-              
-
-                    // CUENTA
-
-                    new NavigationPages
-                    {
-                        Section = "Cuenta",
-                        Title = "Mi Perfil",
-                        Controller = "Profile",
-                        Action = "Index",
-                        Icon = "bi-person-circle"
-                    },
-
-                    new NavigationPages
-                    {
-                        Section = "Cuenta",
-                        Title = "Cerrar sesión",
-                        Controller = "Login",
-                        Action = "Logout",
-                        Icon = "bi-box-arrow-right"
-                    }
-                };
-            }
-
-            // Support Technician
-            if (userRole == 2 )
+            // TÉCNICO Y ADMINISTRADOR
+            if (userRole == 1 || userRole == 2)
             {
-                return new List<NavigationPages>
-                {
-                    // PRINCIPAL
-
-                    new NavigationPages
-                    {
-                        Section = "Principal",
-                        Title = "Dashboard",
-                        Controller = "Dashboard",
-                        Action = "Index",
-                        Icon = "bi-speedometer2"
-                    },
-
-                    new NavigationPages
-                    {
-                        Section = "Principal",
-                        Title = "Tickets",
-                        Controller = "Ticket",
-                        Action = "Index",
-                        Icon = "bi-ticket-perforated"
-                    },
-
-                    // CATÁLOGOS
-
+                menu.Add(
                     new NavigationPages
                     {
                         Section = "Catálogos",
@@ -91,8 +41,10 @@ namespace Proyecto.Services
                         Controller = "Category",
                         Action = "Index",
                         Icon = "bi-tags"
-                    },
+                    }
+                );
 
+                menu.Add(
                     new NavigationPages
                     {
                         Section = "Catálogos",
@@ -100,78 +52,15 @@ namespace Proyecto.Services
                         Controller = "Department",
                         Action = "Index",
                         Icon = "bi-building"
-                    },
-
-
-                    // CUENTA
-
-                    new NavigationPages
-                    {
-                        Section = "Cuenta",
-                        Title = "Mi Perfil",
-                        Controller = "Profile",
-                        Action = "Index",
-                        Icon = "bi-person-circle"
-                    },
-
-                    new NavigationPages
-                    {
-                        Section = "Cuenta",
-                        Title = "Cerrar sesión",
-                        Controller = "Login",
-                        Action = "Logout",
-                        Icon = "bi-box-arrow-right"
                     }
-                };
+                );
             }
-            // Administrator
+
+
+            // SOLO ADMINISTRADOR
             if (userRole == 1)
             {
-                return new List<NavigationPages>
-                {
-                    // PRINCIPAL
-
-                    new NavigationPages
-                    {
-                        Section = "Principal",
-                        Title = "Dashboard",
-                        Controller = "Dashboard",
-                        Action = "Index",
-                        Icon = "bi-speedometer2"
-                    },
-
-                    new NavigationPages
-                    {
-                        Section = "Principal",
-                        Title = "Tickets",
-                        Controller = "Ticket",
-                        Action = "Index",
-                        Icon = "bi-ticket-perforated"
-                    },
-
-                    // CATÁLOGOS
-
-                    new NavigationPages
-                    {
-                        Section = "Catálogos",
-                        Title = "Categorías",
-                        Controller = "Category",
-                        Action = "Index",
-                        Icon = "bi-tags"
-                    },
-
-                    new NavigationPages
-                    {
-                        Section = "Catálogos",
-                        Title = "Departamentos",
-                        Controller = "Department",
-                        Action = "Index",
-                        Icon = "bi-building"
-                    },
-
-
-                    // ADMINISTRACIÓN
-
+                menu.Add(
                     new NavigationPages
                     {
                         Section = "Administración",
@@ -179,33 +68,36 @@ namespace Proyecto.Services
                         Controller = "User",
                         Action = "Index",
                         Icon = "bi-people"
-                    },
-
-                    // CUENTA
-
-                    new NavigationPages
-                    {
-                        Section = "Cuenta",
-                        Title = "Mi Perfil",
-                        Controller = "Profile",
-                        Action = "Index",
-                        Icon = "bi-person-circle"
-                    },
-
-                    new NavigationPages
-                    {
-                        Section = "Cuenta",
-                        Title = "Cerrar sesión",
-                        Controller = "Login",
-                        Action = "Logout",
-                        Icon = "bi-box-arrow-right"
                     }
-                };
+                );
             }
 
 
+            // CUENTA
 
-            return new List<NavigationPages>();
+            menu.Add(
+                new NavigationPages
+                {
+                    Section = "Cuenta",
+                    Title = "Mi Perfil",
+                    Controller = "Profile",
+                    Action = "Index",
+                    Icon = "bi-person-circle"
+                }
+            );
+
+            menu.Add(
+                new NavigationPages
+                {
+                    Section = "Cuenta",
+                    Title = "Cerrar sesión",
+                    Controller = "Login",
+                    Action = "Logout",
+                    Icon = "bi-box-arrow-right"
+                }
+            );
+
+            return menu;
         }
     }
 }
