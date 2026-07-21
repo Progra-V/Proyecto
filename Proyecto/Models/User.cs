@@ -21,6 +21,9 @@ namespace Proyecto.Models
         [Column("email")]
         public string Email { get; set; } = string.Empty;
 
+        [Column("phone_number")]
+        public string? Phone { get; set; }
+
         [Column("photo_url")]
         public string? PhotoUrl { get; set; }
 

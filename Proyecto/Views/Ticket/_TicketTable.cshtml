@@ -20,7 +20,7 @@
             @if (!Model.Any())
             {
                 <tr>
-                    <td colspan="7" class="text-center py-4 text-muted">
+                    <td colspan="6" class="text-center py-4 text-muted">
                         No hay tickets registrados.
                     </td>
                 </tr>
@@ -29,40 +29,22 @@
             {
                 foreach (var ticket in Model)
                 {
-                    var statusClass = ticket.Status?.ToLower() switch
+                    var statusClass = ticket.Status switch
                     {
-                        "pending" => "bg-primary",
-                        "in review" => "bg-info text-dark",
-                        "in progress" => "bg-warning text-dark",
-                        "completed" => "bg-success",
-                        "cancelled" => "bg-danger",
+                        "Pendiente" => "bg-secondary",
+                        "En Revisión" => "bg-info text-dark",
+                        "En Progreso" => "bg-warning text-dark",
+                        "Cancelado" => "bg-dark",
+                        "Finalizado" => "bg-success",
                         _ => "bg-light text-dark border"
                     };
 
-                    var priorityClass = ticket.Priority?.ToLower() switch
+                    var priorityClass = ticket.Priority switch
                     {
-                        "high" => "bg-danger",
-                        "medium" => "bg-warning text-dark",
-                        "low" => "bg-info text-dark",
+                        "Alta" => "bg-danger",
+                        "Media" => "bg-warning text-dark",
+                        "Baja" => "bg-success",
                         _ => "bg-light text-dark border"
-                    };
-
-                    string statusText = ticket.Status switch
-                    {
-                        "Pending" => "Pendiente",
-                        "In Review" => "En Revisión",
-                        "In Progress" => "En Progreso",
-                        "Completed" => "Finalizado",
-                        "Cancelled" => "Cancelado",
-                        _ => ticket.Status ?? "Sin estado"
-                    };
-
-                    string priorityText = ticket.Priority switch
-                    {
-                        "High" => "Alta",
-                        "Medium" => "Media",
-                        "Low" => "Baja",
-                        _ => ticket.Priority ?? "Sin prioridad"
                     };
 
                     <tr onclick="window.location.href='/Ticket/Detail?id=@ticket.Id'"
@@ -80,17 +62,15 @@
                             @(ticket.DepartmentName ?? "Sin departamento")
                         </td>
 
-                       
-
                         <td class="text-center">
                             <span class="badge @statusClass">
-                                @statusText
+                                @ticket.Status
                             </span>
                         </td>
 
                         <td class="text-center">
                             <span class="badge @priorityClass">
-                                @priorityText
+                                @ticket.Priority
                             </span>
                         </td>
 

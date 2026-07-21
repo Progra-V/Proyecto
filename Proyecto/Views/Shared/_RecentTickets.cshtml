@@ -47,37 +47,37 @@
             {
                 string statusClass = ticket.Status switch
                 {
-                    "Pending" => "bg-warning text-dark",
-                    "In Review" => "bg-primary",
-                    "In Progress" => "bg-info text-dark",
-                    "Completed" => "bg-success",
-                    "Cancelled" => "bg-danger",
+                    "Pendiente" => "bg-warning text-dark",
+                    "En Revisión" => "bg-primary",
+                    "En Progreso" => "bg-info text-dark",
+                    "Finalizado" => "bg-success",
+                    "Cancelado" => "bg-danger",
                     _ => "bg-secondary"
                 };
 
                 string statusText = ticket.Status switch
                 {
-                    "Pending" => "Pendiente",
-                    "In Review" => "En Revisión",
-                    "In Progress" => "En Progreso",
-                    "Completed" => "Finalizado",
-                    "Cancelled" => "Cancelado",
+                    "Pendiente" => "Pendiente",
+                    "En Revisión" => "En Revisión",
+                    "En Progreso" => "En Progreso",
+                    "Finalizado" => "Finalizado",
+                    "Cancelado" => "Cancelado",
                     _ => ticket.Status
                 };
 
                 string priorityClass = ticket.Priority switch
                 {
-                    "High" => "bg-danger",
-                    "Medium" => "bg-warning text-dark",
-                    "Low" => "bg-success",
+                    "Alta" => "bg-danger",
+                    "Media" => "bg-warning text-dark",
+                    "Baja" => "bg-success",
                     _ => "bg-secondary"
                 };
 
                 string priorityText = ticket.Priority switch
                 {
-                    "High" => "Alta",
-                    "Medium" => "Media",
-                    "Low" => "Baja",
+                    "Alta" => "Alta",
+                    "Media" => "Media",
+                    "Baja" => "Baja",
                     _ => ticket.Priority
                 };
 
