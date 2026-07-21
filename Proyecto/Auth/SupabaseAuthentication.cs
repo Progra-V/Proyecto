@@ -20,5 +20,33 @@ namespace Proyecto.Auth
                 return null;
             }
         }
+
+        public static async Task<bool> ChangePassword(
+            string accessToken,
+            string refreshToken,
+            string newPassword)
+        {
+            try
+            {
+                Client client = await SupabClient.GetSupabaseClientAsync();
+
+                // Fijar explícitamente la sesión del usuario actual
+                // antes de operar (mitiga el riesgo de cliente compartido)
+                await client.Auth.SetSession(accessToken, refreshToken);
+
+                var updatedUser = await client.Auth.Update(
+                    new Supabase.Gotrue.UserAttributes
+                    {
+                        Password = newPassword
+                    }
+                );
+
+                return updatedUser != null;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }
