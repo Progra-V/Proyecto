@@ -102,7 +102,7 @@ namespace Proyecto.Services
                 await SupabClient.GetSupabaseClientAsync();
 
             Ticket? currentTicket =
-                await GetByTicketId(ticketId);
+    await GetByTicketId(ticketId);
 
             if (currentTicket == null)
             {
@@ -111,11 +111,21 @@ namespace Proyecto.Services
                 );
             }
 
+            var category = await CategoryService.GetById(categoryId);
+
+            if (category == null)
+                throw new InvalidOperationException("La categoría seleccionada no existe.");
+
+            if (category.DepartmentId != departmentId)
+                throw new InvalidOperationException("La categoría seleccionada no pertenece al departamento indicado.");
+
 
             // EMPLEADO
-            if (currentUser.RoleId == 3)
+
+
+            // EMPLEADO
+            if (currentUser.RoleId == 1)
             {
-                // Solo puede editar sus propios tickets
                 if (currentTicket.CreatedBy != currentUser.Id)
                 {
                     throw new InvalidOperationException(
@@ -123,7 +133,6 @@ namespace Proyecto.Services
                     );
                 }
 
-                // Solo puede editar mientras esté pendiente
                 if (currentTicket.Status != "Pendiente")
                 {
                     throw new InvalidOperationException(
@@ -131,16 +140,11 @@ namespace Proyecto.Services
                     );
                 }
 
-                // El empleado no puede cambiar campos operativos
                 status = currentTicket.Status;
                 priority = currentTicket.Priority;
                 assignedTo = currentTicket.AssignedTo;
             }
-
-            // ADMINISTRADOR
-            if (currentUser.RoleId != 1 &&
-                currentUser.RoleId != 2 &&
-                currentUser.RoleId != 3)
+            else if (currentUser.RoleId != 2 && currentUser.RoleId != 3)
             {
                 throw new InvalidOperationException(
                     "El usuario no tiene un rol válido."
@@ -359,30 +363,31 @@ namespace Proyecto.Services
         }
 
 
-        public static async Task<Ticket> CreateTicket(
-            Ticket ticket)
-        {
-            ticket.TicketCode =
-                await GenerateTicketCode(
-                    ticket.DepartmentId);
+        public static async Task<Ticket> CreateTicket(Ticket ticket)
+{
+    if (ticket.CategoryId.HasValue)
+    {
+        var category = await CategoryService.GetById(ticket.CategoryId.Value);
 
-            ticket.AssignedTo =
-                await AssignTechnician();
+        if (category == null)
+            throw new InvalidOperationException("La categoría seleccionada no existe.");
 
-            ticket.CreatedAt =
-                DateTime.UtcNow;
+        if (category.DepartmentId != ticket.DepartmentId)
+            throw new InvalidOperationException("La categoría seleccionada no pertenece al departamento indicado.");
+    }
 
-            ticket.UpdatedAt =
-                DateTime.UtcNow;
+    ticket.TicketCode = await GenerateTicketCode(ticket.DepartmentId);
+    ticket.AssignedTo = await AssignTechnician();
+    ticket.CreatedAt = DateTime.UtcNow;
+    ticket.UpdatedAt = DateTime.UtcNow;
 
-            Supabase.Client client =
-                await SupabClient.GetSupabaseClientAsync();
+    Supabase.Client client = await SupabClient.GetSupabaseClientAsync();
 
-            var result = await client
-                .From<Ticket>()
-                .Insert(ticket);
+    var result = await client
+        .From<Ticket>()
+        .Insert(ticket);
 
-            return result.Models.First();
-        }
+    return result.Models.First();
+}
     }
 }

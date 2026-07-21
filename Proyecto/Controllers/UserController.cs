@@ -11,7 +11,7 @@ namespace Proyecto.Controllers
         {
             var currentUser = GetCurrentUser();
 
-            return currentUser?.RoleId == 1;
+            return currentUser?.RoleId == 3;
         }
 
 
@@ -101,7 +101,7 @@ namespace Proyecto.Controllers
                 return NotFound();
 
             // Evitar desactivar administradores
-            if (user.RoleId == 1)
+            if (user.RoleId == 3)
                 return RedirectToAction("Index");
 
             await UserService.ChangeStatus(user);

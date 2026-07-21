@@ -26,18 +26,14 @@ namespace Proyecto.Controllers
 
         protected int GetCurrentRole()
         {
-            var userJson =
-                HttpContext.Session.GetString("user");
+            var userJson = HttpContext.Session.GetString("user");
 
             if (string.IsNullOrEmpty(userJson))
-                return 3;
+                return 1;
 
-            var user =
-                JsonConvert.DeserializeObject<User>(
-                    userJson
-                );
+            var user = JsonConvert.DeserializeObject<User>(userJson);
 
-            return user?.RoleId ?? 3;
+            return user?.RoleId ?? 1;
         }
 
         protected User? GetCurrentUser()
