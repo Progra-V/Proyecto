@@ -1,55 +1,68 @@
 ﻿@model UserModel
 
 @{
-    ViewData["Title"] = "Login Page";
+    ViewData["Title"] = "Iniciar sesión";
 }
 
-<div class="container py-5">
-    <div class="text-center mb-5">
+<div class="login-page">
+    <div class="login-card">
 
-        <div class="card mx-auto" style="width:18rem">
-
-            <div class="card-header">
-                Login
+        <div class="login-header">
+            <div class="login-icon">
+                <i class="bi bi-person-circle"></i>
             </div>
 
-            <form asp-action="ValidateLogin" asp-controller="Login" method="post">
-
-                <partial name="_LoginMessage" model="ViewBag.LoginMessage" />
-
-                <div class="card-body">
-
-                    <div class="form-floating mb-3">
-                        <input name="Email"
-                               type="email"
-                               class="form-control"
-                               id="floatingInput">
-                        <label for="floatingInput">
-                            Email
-                        </label>
-                    </div>
-
-                    <div class="form-floating">
-                        <input name="Pwd"
-                               type="password"
-                               class="form-control"
-                               id="floatingPassword">
-                        <label for="floatingPassword">
-                            Password
-                        </label>
-                    </div>
-
-                </div>
-
-                <div class="card-footer">
-                    <button class="btn btn-primary w-100" type="submit">
-                        Login
-                    </button>
-                </div>
-
-            </form>
-
+            <h2>Bienvenido</h2>
+            <p>Ingresa tus credenciales para continuar</p>
         </div>
 
+        <form asp-action="ValidateLogin"
+              asp-controller="Login"
+              method="post">
+
+            <partial name="_LoginMessage"
+                     model="ViewBag.LoginMessage" />
+
+            <div class="login-body">
+
+                <div class="form-floating mb-4">
+                    <input name="Email"
+                           type="email"
+                           class="form-control"
+                           id="floatingInput"
+                           placeholder="correo@ejemplo.com"
+                           autocomplete="email"
+                           required>
+
+                    <label for="floatingInput">
+                        Correo electrónico
+                    </label>
+                </div>
+
+                <div class="form-floating mb-4">
+                    <input name="Pwd"
+                           type="password"
+                           class="form-control"
+                           id="floatingPassword"
+                           placeholder="Contraseña"
+                           autocomplete="current-password"
+                           required>
+
+                    <label for="floatingPassword">
+                        Contraseña
+                    </label>
+                </div>
+
+                <button class="btn btn-primary login-button"
+                        type="submit">
+                    Iniciar sesión
+                </button>
+
+            </div>
+
+        </form>
+
     </div>
+
 </div>
+
