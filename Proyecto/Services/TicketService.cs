@@ -121,9 +121,6 @@ namespace Proyecto.Services
 
 
             // EMPLEADO
-
-
-            // EMPLEADO
             if (currentUser.RoleId == 1)
             {
                 if (currentTicket.CreatedBy != currentUser.Id)

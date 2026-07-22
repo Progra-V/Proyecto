@@ -1,5 +1,11 @@
+/* ==========================================
+   BASE / BOOTSTRAP OVERRIDES
+========================================== */
+
 html {
     font-size: 14px;
+    position: relative;
+    min-height: 100%;
 }
 
 @media (min-width: 768px) {
@@ -8,17 +14,12 @@ html {
     }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-    position: relative;
-    min-height: 100%;
-}
-
 body {
     margin-bottom: 60px;
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
@@ -30,25 +31,6 @@ body {
     text-align: start;
 }
 
-/* ============================= */
-/* Sidebar */
-/* ============================= */
-
-.sidebar {
-    width: 260px;
-    min-height: 100vh;
-    background: #172B4D;
-    color: white;
-    position: fixed;
-    left: 0;
-    top: 0;
-}
-
-.sidebar-header {
-    padding: 20px;
-    text-align: center;
-    border-bottom: 1px solid rgba(255,255,255,.1);
-}
 
 /* ==========================================
    SIDEBAR
@@ -66,6 +48,7 @@ body {
 
 .sidebar-header {
     padding: 25px 20px;
+    text-align: center;
     border-bottom: 1px solid rgba(255,255,255,.15);
 }
 
@@ -114,9 +97,9 @@ body {
     }
 
 
-/* ============================= */
-/* Main Content */
-/* ============================= */
+/* ==========================================
+   MAIN CONTENT / TOP NAVBAR
+========================================== */
 
 .main-content {
     margin-left: 260px;
@@ -124,11 +107,6 @@ body {
     min-height: 100vh;
     background: #F4F5F7;
 }
-
-
-/* ============================= */
-/* Top Navbar */
-/* ============================= */
 
 .top-navbar {
     height: 70px;
@@ -141,44 +119,207 @@ body {
 }
 
 
-/* ============================= */
-/* Cards */
-/* ============================= */
+/* ==========================================
+   GLOBAL CARDS / TABLES / BUTTONS / FORMS
+   (aplica a Category, Department, User y
+   cualquier módulo nuevo que no tenga
+   su propia sección más abajo)
+========================================== */
 
-.dashboard-card {
+.card {
     border: none;
-    border-radius: 12px;
-    transition: .25s;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.05);
 }
 
-    .dashboard-card:hover {
-        transform: translateY(-4px);
-    }
-
-
-/* ============================= */
-/* Tables */
-/* ============================= */
+.card-body {
+    padding: 2rem;
+}
 
 .table {
     background: white;
     border-radius: 12px;
+    margin-bottom: 0;
 }
 
+    .table thead {
+        background: #f8f9fa;
+    }
+
+        .table thead th {
+            border: none;
+            font-weight: 600;
+            color: #495057;
+            padding: 16px;
+        }
+
+    .table tbody td {
+        padding: 16px;
+        vertical-align: middle;
+    }
+
+.table-hover tbody tr {
+    transition: .2s;
+}
+
+    .table-hover tbody tr:hover {
+        background: #f8f9fa;
+    }
+
+.badge {
+    padding: .55rem .9rem;
+    font-size: .75rem;
+    border-radius: 50rem;
+}
+
+.btn {
+    border-radius: 10px;
+}
+
+/* Botones de solo ícono (editar/eliminar en tablas).
+   NO usar .btn-sm para esto — .btn-sm es de Bootstrap
+   y se usa en botones con texto en todo el proyecto;
+   forzarle un ancho fijo corta el texto en esos casos. */
+.btn-icon-sm {
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+}
+
+.form-control,
+.form-select {
+    border-radius: 10px;
+    min-height: 45px;
+}
+
+    .form-control:focus,
+    .form-select:focus {
+        box-shadow: none;
+        border-color: #0d6efd;
+    }
+
+textarea.form-control {
+    min-height: 120px;
+}
+
+@media (max-width: 768px) {
+    .table {
+        font-size: .9rem;
+    }
+}
+
+
 /* ==========================================
-   Dashboard Cards
+   CATEGORY MODULE
+========================================== */
+
+.category-header h2 {
+    font-weight: 700;
+}
+
+.category-header p {
+    color: #6c757d;
+}
+
+
+/* ==========================================
+   DASHBOARD — HEADER
+========================================== */
+
+.dashboard-header {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.05);
+    border: 1px solid #eef1f5;
+}
+
+.dashboard-date {
+    background: #f8f9fa;
+    padding: 18px;
+    border-radius: 14px;
+    display: inline-block;
+    min-width: 170px;
+}
+
+
+/* ==========================================
+   DASHBOARD — STAT CARDS
 ========================================== */
 
 .dashboard-card {
-    border-radius: 16px;
-    transition: .25s ease;
+    border: none;
+    border-radius: 18px;
+    overflow: hidden;
+    transition: .25s;
+    box-shadow: 0 4px 12px rgba(0,0,0,.06);
     background: white;
 }
 
     .dashboard-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 .75rem 1.5rem rgba(0,0,0,.10) !important;
+        transform: translateY(-6px);
+        box-shadow: 0 12px 24px rgba(0,0,0,.10);
     }
+
+    .dashboard-card .card-body {
+        text-align: center;
+        padding: 30px 20px;
+    }
+
+.dashboard-primary {
+    border-top: 5px solid #0d6efd;
+}
+
+.dashboard-warning {
+    border-top: 5px solid #ffc107;
+}
+
+.dashboard-info {
+    border-top: 5px solid #0dcaf0;
+}
+
+.dashboard-success {
+    border-top: 5px solid #198754;
+}
+
+.dashboard-danger {
+    border-top: 5px solid #dc3545;
+}
+
+.dashboard-card-icon {
+    font-size: 34px;
+    margin-bottom: 18px;
+    color: #6c757d;
+}
+
+.dashboard-primary .dashboard-card-icon {
+    color: #0d6efd;
+}
+
+.dashboard-warning .dashboard-card-icon {
+    color: #ffc107;
+}
+
+.dashboard-info .dashboard-card-icon {
+    color: #0dcaf0;
+}
+
+.dashboard-success .dashboard-card-icon {
+    color: #198754;
+}
+
+.dashboard-danger .dashboard-card-icon {
+    color: #dc3545;
+}
+
+.dashboard-number {
+    font-size: 42px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
 
 .dashboard-icon {
     width: 55px;
@@ -191,166 +332,75 @@ body {
     font-size: 22px;
 }
 
-.dashboard-card hr {
-    margin: 18px 0 14px 0;
-    opacity: .15;
-}
 
 /* ==========================================
-   Workspace
+   DASHBOARD — RECENT ACTIVITY
+========================================== */
+
+.ticket-row {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 18px 22px;
+    border-bottom: 1px solid #eef1f4;
+}
+
+    .ticket-row:last-child {
+        border-bottom: none;
+    }
+
+    .ticket-row:hover {
+        background: #f8f9fa;
+    }
+
+.ticket-icon {
+    width: 48px;
+    height: 48px;
+    background: #0d6efd15;
+    color: #0d6efd;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.ticket-content {
+    flex: 1;
+}
+
+
+/* ==========================================
+   DASHBOARD — WORKSPACE
 ========================================== */
 
 .workspace-item {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 15px;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid #eef1f5;
     text-decoration: none;
     color: inherit;
-    padding: 15px;
-    border-radius: 12px;
-    transition: .25s;
-    border: 1px solid #eef1f4;
+    transition: .2s;
 }
 
     .workspace-item:hover {
         background: #f8f9fa;
-        transform: translateX(4px);
-        text-decoration: none;
+        transform: translateX(5px);
         color: inherit;
     }
 
 .workspace-icon {
-    width: 50px;
-    height: 50px;
+    width: 48px;
+    height: 48px;
     border-radius: 12px;
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     color: white;
     font-size: 20px;
     flex-shrink: 0;
-}
-
-/* ===========================================
-   DASHBOARD HEADER
-===========================================*/
-
-.dashboard-header{
-
-    background:#ffffff;
-
-    border-radius:16px;
-
-    padding:28px;
-
-    box-shadow:0 4px 12px rgba(0,0,0,.05);
-
-    border:1px solid #eef1f5;
-}
-
-.dashboard-date{
-
-    background:#f8f9fa;
-
-    padding:18px;
-
-    border-radius:14px;
-
-    display:inline-block;
-
-    min-width:170px;
-}
-
-
-/* ===========================================
-   DASHBOARD CARDS
-===========================================*/
-
-.dashboard-card{
-
-    border-radius:16px;
-
-    transition:.25s ease;
-
-    background:white;
-}
-
-.dashboard-card:hover{
-
-    transform:translateY(-4px);
-
-    box-shadow:0 .8rem 1.6rem rgba(0,0,0,.08)!important;
-}
-
-.dashboard-icon{
-
-    width:55px;
-
-    height:55px;
-
-    border-radius:14px;
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-    color:white;
-
-    font-size:22px;
-}
-
-
-/* ===========================================
-   WORKSPACE
-===========================================*/
-
-.workspace-item{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:15px;
-
-    padding:14px;
-
-    border-radius:12px;
-
-    border:1px solid #eef1f5;
-
-    text-decoration:none;
-
-    color:inherit;
-
-    transition:.2s;
-}
-
-.workspace-item:hover{
-
-    background:#f8f9fa;
-
-    transform:translateX(5px);
-
-    color:inherit;
-}
-
-.workspace-icon{
-
-    width:48px;
-
-    height:48px;
-
-    border-radius:12px;
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-    color:white;
-
-    font-size:20px;
 }
