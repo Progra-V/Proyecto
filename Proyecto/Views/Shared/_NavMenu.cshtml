@@ -26,7 +26,8 @@
 
                         <a class="nav-link sidebar-link @(currentController == item.Controller ? "active" : "")"
                            asp-controller="@item.Controller"
-                           asp-action="@item.Action">
+                           asp-action="@item.Action"
+                           onclick="@(item.RequiresConfirmation ? "return confirm('¿Está seguro de cerrar sesión?');" : "")">
 
                             <i class="bi @item.Icon me-3"></i>
 
