@@ -11,6 +11,7 @@ namespace Proyecto.Models
         [PrimaryKey("id", false)]
         public long Id { get; set; }
 
+        [Required(ErrorMessage = "El departamento es obligatorio.")]
         [Column("department_id")]
         public int DepartmentId { get; set; }
 
@@ -20,6 +21,7 @@ namespace Proyecto.Models
         [Column("name")]
         public string Name { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "La descripción es obligatoria.")]
         [StringLength(500, ErrorMessage = "La descripción no puede superar los 500 caracteres.")]
         [Display(Name = "Descripción")]
         [Column("description")]
