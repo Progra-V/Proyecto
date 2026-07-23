@@ -404,3 +404,71 @@ textarea.form-control {
     font-size: 20px;
     flex-shrink: 0;
 }
+
+/* ==========================================
+   LOGIN — PAGE
+========================================== */
+
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #e9f0f8, #d5e2f2);
+}
+
+.login-card {
+    width: 100%;
+    max-width: 560px;
+    background-color: #ffffff;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.14);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.login-header {
+    text-align: center;
+    padding: 35px 30px 25px;
+    background: linear-gradient(135deg, #0d6efd, #0a58ca);
+    color: white;
+}
+
+    .login-header h2 {
+        margin: 12px 0 5px;
+        font-size: 30px;
+        font-weight: 700;
+    }
+
+    .login-header p {
+        margin: 0;
+        font-size: 15px;
+        opacity: 0.9;
+    }
+
+.login-icon {
+    font-size: 55px;
+    line-height: 1;
+}
+
+.login-body {
+    padding: 45px;
+}
+
+    .login-body .form-control {
+        min-height: 64px;
+        font-size: 16px;
+    }
+
+        .login-body .form-control:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.18);
+        }
+
+.login-button {
+    width: 100%;
+    min-height: 58px;
+    font-size: 18px;
+    font-weight: 600;
+}

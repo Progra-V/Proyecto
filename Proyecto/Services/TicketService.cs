@@ -88,15 +88,15 @@ namespace Proyecto.Services
 
 
         public static async Task UpdateTicket(
-    long ticketId,
-    string status,
-    string priority,
-    string risk,
-    long categoryId,
-    int departmentId,
-    int? assignedTo,
-    DateTime? dueDate,
-    User currentUser)
+            long ticketId,
+            string status,
+            string priority,
+            string risk,
+            long categoryId,
+            int departmentId,
+            int? assignedTo,
+            DateTime? dueDate,
+            User currentUser)
         {
             Supabase.Client client =
                 await SupabClient.GetSupabaseClientAsync();
