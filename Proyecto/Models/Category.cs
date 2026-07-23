@@ -11,7 +11,6 @@ namespace Proyecto.Models
         [PrimaryKey("id", false)]
         public long Id { get; set; }
 
-        [Required(ErrorMessage = "Debe seleccionar un departamento.")]
         [Column("department_id")]
         public int DepartmentId { get; set; }
 

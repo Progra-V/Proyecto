@@ -3,7 +3,11 @@
 
     int hour = DateTime.Now.Hour;
 
-    if (hour < 12)
+    if (hour < 6)
+    {
+        greeting = "Buena madrugada";
+    }
+    else if (hour < 12)
     {
         greeting = "Buenos días";
     }
@@ -25,7 +29,7 @@
 
             <h2 class="fw-bold mb-2">
 
-                Dashboard
+                Inicio
 
             </h2>
 

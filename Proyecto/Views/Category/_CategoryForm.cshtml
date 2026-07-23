@@ -6,46 +6,47 @@
 
         @Html.AntiForgeryToken()
 
-        <div class="row">
+        <div class="mb-3">
 
-            <div class="col-md-6 mb-3">
+            <label asp-for="Name"
+                   class="form-label">
 
-                <label asp-for="Name" class="form-label">
-                    Nombre
-                </label>
+                Nombre
 
-                <input asp-for="Name"
-                       class="form-control"
-                       placeholder="Ingrese el nombre de la categoría" />
+            </label>
 
-                <span asp-validation-for="Name"
-                      class="text-danger"></span>
+            <input asp-for="Name"
+                   class="form-control"
+                   placeholder="Ingrese el nombre de la categoría" />
 
-            </div>
+            <span asp-validation-for="Name"
+                  class="text-danger">
+            </span>
 
-            <div class="col-md-6 mb-3">
+        </div>
 
-                <label asp-for="DepartmentId"
-                       class="form-label">
+        <div class="mb-3">
 
-                    Departamento
+            <label asp-for="DepartmentId"
+                   class="form-label">
 
-                </label>
+                Departamento
 
-                <select asp-for="DepartmentId"
-                        asp-items="ViewBag.Departments"
-                        class="form-select">
+            </label>
 
-                    <option value="">
-                        Seleccione un departamento
-                    </option>
+            <select asp-for="DepartmentId"
+                    asp-items="ViewBag.Departments"
+                    class="form-select">
 
-                </select>
+                <option value="">
+                    Seleccione un departamento
+                </option>
 
-                <span asp-validation-for="DepartmentId"
-                      class="text-danger"></span>
+            </select>
 
-            </div>
+            <span asp-validation-for="DepartmentId"
+                  class="text-danger">
+            </span>
 
         </div>
 
@@ -61,10 +62,12 @@
             <textarea asp-for="Description"
                       rows="4"
                       class="form-control"
-                      placeholder="Ingrese una descripción para la categoría"></textarea>
+                      placeholder="Ingrese una descripción para la categoría">
+            </textarea>
 
             <span asp-validation-for="Description"
-                  class="text-danger"></span>
+                  class="text-danger">
+            </span>
 
         </div>
 

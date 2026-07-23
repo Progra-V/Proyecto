@@ -40,9 +40,13 @@ namespace Proyecto.Controllers
             if (currentUser == null)
                 return RedirectToAction("Index", "Login");
 
-            currentUser.Phone = string.IsNullOrWhiteSpace(phone)
-                ? null
-                : phone.Trim();
+            if (string.IsNullOrWhiteSpace(phone))
+            {
+                TempData["Error"] = "El teléfono no puede quedar vacío.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            currentUser.Phone = phone.Trim();
 
             await UserService.Edit(currentUser);
 

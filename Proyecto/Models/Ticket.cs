@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Proyecto.Models
 {
@@ -13,15 +14,19 @@ namespace Proyecto.Models
         [Column("ticket_code")]
         public string TicketCode { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "El título es obligatorio")]
         [Column("title")]
         public string Title { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "La descripción es obligatoria")]
         [Column("description")]
-        public string? Description { get; set; }
+        public string Description { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "La justificación es obligatoria")]
         [Column("justification")]
-        public string? Justification { get; set; }
+        public string Justification { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "La categoría es obligatoria")]
         [Column("category_id")]
         public long? CategoryId { get; set; }
 
@@ -37,6 +42,7 @@ namespace Proyecto.Models
         [Column("priority")]
         public string Priority { get; set; } = "Media";
 
+        [Required(ErrorMessage = "El departamento es obligatorio")]
         [Column("department_id")]
         public int DepartmentId { get; set; }
 

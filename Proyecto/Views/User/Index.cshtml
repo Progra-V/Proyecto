@@ -115,9 +115,9 @@
                                 @switch (user.RoleId)
                                 {
 
-                                    case 1:
+                                    case 3:
 
-                                        <span class="badge bg-danger">
+                                        <span class="badge bg-warning text-dark">
                                             SuperUsuario
                                         </span>
 
@@ -133,7 +133,7 @@
                                         break;
 
 
-                                    case 3:
+                                    case 1:
 
                                         <span class="badge bg-success">
                                             Empleado
@@ -184,7 +184,7 @@
                             <td>
 
 
-                                @if (user.RoleId != 1)
+                                @if (user.RoleId != 3)
                                 {
 
                                     <form asp-controller="User"
@@ -215,11 +215,10 @@
                                 }
                                 else
                                 {
-
-                                    <span class="text-muted">
+      
+                                    <span class="badge bg-warning text-dark">
                                         Usuario protegido
                                     </span>
-
                                 }
 
 

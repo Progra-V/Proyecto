@@ -20,6 +20,7 @@ namespace Proyecto.Models
         [Column("code")]
         public string Code { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "La descripción es obligatoria.")]
         [StringLength(250)]
         [Column("description")]
         public string? Description { get; set; }
