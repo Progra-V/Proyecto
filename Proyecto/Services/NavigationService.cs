@@ -13,10 +13,10 @@ namespace Proyecto.Services
                 new NavigationPages
                 {
                     Section = "Principal",
-                    Title = "Dashboard",
+                    Title = "Inicio",
                     Controller = "Dashboard",
                     Action = "Index",
-                    Icon = "bi-speedometer2"
+                    Icon = "bi-house-door"
                 },
 
                 new NavigationPages
@@ -79,7 +79,7 @@ namespace Proyecto.Services
                 new NavigationPages
                 {
                     Section = "Cuenta",
-                    Title = "Mi Perfil",
+                    Title = "Mi perfil",
                     Controller = "Profile",
                     Action = "Index",
                     Icon = "bi-person-circle"
@@ -93,7 +93,8 @@ namespace Proyecto.Services
                     Title = "Cerrar sesión",
                     Controller = "Login",
                     Action = "Logout",
-                    Icon = "bi-box-arrow-right"
+                    Icon = "bi-box-arrow-right",
+                    RequiresConfirmation = true
                 }
             );
 
