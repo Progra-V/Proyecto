@@ -1,8 +1,5 @@
-﻿
-using Proyecto.Models.ViewModels;
-using Supabase.Postgrest.Attributes;
-using Supabase.Postgrest.Models;
-
+﻿using Proyecto.Models.ViewModels;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 namespace Proyecto.Models
 {
     public class TicketViewModels
@@ -21,8 +18,8 @@ namespace Proyecto.Models
 
         public List<User> AssignableUsers { get; set; } = new();
 
+        [ValidateNever]
         public User CurrentUser { get; set; } = new();
-
 
     }
 }

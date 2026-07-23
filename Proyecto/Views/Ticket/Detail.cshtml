@@ -1,7 +1,7 @@
 @model TicketViewModels
 
 @{
-    ViewData["Title"] = "Detalle del Ticket";
+    ViewData["Title"] = "Detalle del ticket";
 
     string statusClass = Model.Ticket.Status switch
     {
@@ -23,7 +23,7 @@
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Volver a Tickets</a>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Volver a tickets</a>
     <a asp-action="Edit" asp-route-id="@Model.Ticket.Id" class="btn btn-primary btn-sm">Editar</a>
 </div>
 

@@ -1,7 +1,7 @@
 ﻿@model Proyecto.Models.ViewModels.ProfileViewModel
 
 @{
-    ViewData["Title"] = "Mi Perfil";
+    ViewData["Title"] = "Mi perfil";
 }
 
 @if (TempData["Error"] != null)
@@ -85,7 +85,8 @@
                            name="phone"
                            class="form-control"
                            value="@Model.Phone"
-                           placeholder="Ej. 8888-8888" />
+                           placeholder="Ej. 8888-8888"
+                           required />
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-sm">

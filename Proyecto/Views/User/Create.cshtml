@@ -6,20 +6,15 @@
 
 <div class="container py-5" style="max-width:700px;">
 
-
     <h1 class="h3 text-primary fw-bold mb-4">
-        Crear Usuario
+        Crear usuario
     </h1>
-
-
 
     <form asp-action="Create" method="post">
 
         <div asp-validation-summary="ModelOnly"
              class="text-danger mb-3">
         </div>
-
-
 
         <div class="mb-3">
 
@@ -36,9 +31,6 @@
 
         </div>
 
-
-
-
         <div class="mb-3">
 
             <label class="form-label">
@@ -53,9 +45,6 @@
             </span>
 
         </div>
-
-
-
 
         <div class="mb-3">
 
@@ -89,15 +78,11 @@
 
         </div>
 
-
-
-
         <div class="mb-3">
 
             <label class="form-label">
                 Rol
             </label>
-
 
             <select asp-for="RoleId"
                     class="form-select">
@@ -106,42 +91,31 @@
                     Empleado
                 </option>
 
-
                 <option value="2">
                     Técnico
                 </option>
-
 
                 <option value="3">
                     SuperUsuario
                 </option>
 
-
             </select>
 
         </div>
-
-
-
 
         <input asp-for="IsActive"
                type="hidden"
                value="true" />
 
-
-
-
         <div class="d-flex gap-2">
-
 
             <button type="submit"
                     class="btn btn-primary">
+                <i class="bi bi-check-circle me-2"></i>
 
-                Guardar Usuario
+                Guardar usuario
 
             </button>
-
-
 
             <a asp-action="Index"
                class="btn btn-secondary">
@@ -150,12 +124,6 @@
 
             </a>
 
-
         </div>
-
-
-
     </form>
-
-
 </div>

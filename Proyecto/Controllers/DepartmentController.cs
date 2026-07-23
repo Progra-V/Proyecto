@@ -61,6 +61,8 @@ namespace Proyecto.Controllers
             if (!IsAdmin())
                 return RedirectToAction("Index", "Ticket");
 
+            department.IsActive = true;
+
             department.Name = department.Name?.Trim() ?? string.Empty;
             department.Code = department.Code?.Trim().ToUpper() ?? string.Empty;
             department.Description = department.Description?.Trim();

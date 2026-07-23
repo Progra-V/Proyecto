@@ -315,6 +315,14 @@ textarea.form-control {
     color: #dc3545;
 }
 
+.dashboard-pink {
+    border-top: 5px solid #e83e8c;
+}
+
+    .dashboard-pink .dashboard-card-icon {
+        color: #e83e8c;
+    }
+
 .dashboard-number {
     font-size: 42px;
     font-weight: 700;
